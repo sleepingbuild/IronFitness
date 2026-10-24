@@ -1,0 +1,18 @@
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+*.keystore
+*.jks
+
+# Backend
+backend/target/
+backend/src/main/resources/application-local.yml
+.idea/
+*.iml
+
+# Chung
+.DS_Store
+.env
