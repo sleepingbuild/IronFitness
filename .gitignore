@@ -1,18 +1,24 @@
-# Android
+# ---- Android ----
 android/.gradle/
 android/build/
 android/app/build/
 android/local.properties
 android/.idea/
+android/captures/
 *.keystore
 *.jks
 
-# Backend
+# ---- Backend ----
 backend/target/
 backend/src/main/resources/application-local.yml
+
+# ---- IDE / OS ----
 .idea/
 *.iml
-
-# Chung
+.vscode/
 .DS_Store
+Thumbs.db
+
+# ---- Secret ----
 .env
+*.pem

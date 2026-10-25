@@ -9,7 +9,7 @@ HomeFit: app Android luyện tập tại nhà (Java) + backend Spring Boot (Java
 ## 2. Công nghệ cố định (không tự ý đổi)
 
 - Android: **Java** (không Kotlin), XML + ViewBinding, MVVM, Room, Retrofit, Glide, Media3 ExoPlayer, Navigation Component.
-- Backend: Java 17, Spring Boot 3, Spring Security + JWT, Spring Data JPA, Flyway, MySQL 8, Thymeleaf.
+- Backend: Java 17, Spring Boot 4.x (bản ổn định mới nhất), Spring Security + JWT, Spring Data JPA, Flyway, MySQL 8, Thymeleaf.
 - Không dùng Firebase. Không đưa đăng nhập SĐT/OTP vào MVP.
 - Media bài tập lưu bằng **URL**, backend không lưu file.
 
@@ -69,12 +69,13 @@ Phần dùng chung trong Android (`data/remote`, `data/repository`, `util`) do *
 - Build thành công (Android: `./gradlew assembleDebug`; Backend: `./mvnw verify`).
 - Chạy thử đúng luồng chính, không crash khi xoay màn hình, mất mạng, hoặc dữ liệu rỗng.
 - Tài liệu liên quan đã cập nhật.
-- PR được TV1 hoặc người khác review.
+- PR được Agent 1 (PM) duyệt trước khi merge vào `main`.
 - Đánh dấu hoàn thành trong file tasks.
 
 ## 7. Điều agent KHÔNG được làm
 
 - Không xóa/ghi đè file của người khác khi chưa được yêu cầu.
+- Không sửa trực tiếp repo, không push, không merge vào `main` (xem mục 10).
 - Không thay đổi công nghệ chốt ở mục 2.
 - Không thêm tính năng ngoài MVP (lịch Premium, thanh toán, SĐT/OTP…) khi chưa có task.
 - Không đặt mật khẩu hay khóa thật trong code hoặc tài liệu.
@@ -101,22 +102,34 @@ Phần dùng chung trong Android (`data/remote`, `data/repository`, `util`) do *
 
 Ghi rõ: đang làm task nào, đã thử gì, lỗi gì (log), rồi hỏi TV1. Không đoán mò và không thay đổi tài liệu hợp đồng để "cho chạy được".
 
-## 10. Quy trình giao file qua IronFitnessChanges (BẮT BUỘC với agent)
+## 10. Cách làm việc: thư mục Changes (ngoài repo) và nhánh Git
 
-Agent **không sửa trực tiếp repo**. Mọi thay đổi được giao vào hàng chờ, TV1 tích hợp bằng script.
+Có **hai nơi tách biệt**:
 
-| Agent | Vai trò | Folder được ghi |
+| Nơi | Đường dẫn | Chứa gì | Push lên Git? |
+|---|---|---|---|
+| Repo dự án | `D:\IronFitness` | Chỉ code và tài liệu **đã được duyệt** | Có |
+| Khu vực làm việc của agent | `D:\IronFitnessChanges` | File agent soạn, ghi chú, thông báo cho nhau | **Không** |
+
+Mỗi agent có một thư mục riêng trong `D:\IronFitnessChanges\`:
+
+| Agent | Vai trò | Thư mục |
 |---|---|---|
-| Agent 1 | TV1 Tech Lead | `IronFitnessChanges/agent1-techlead/` |
-| Agent 2 | TV2 Android A | `IronFitnessChanges/agent2-android-account/` |
-| Agent 3 | TV3 Android B | `IronFitnessChanges/agent3-android-workout/` |
-| Agent 4 | TV4 Backend + Admin | `IronFitnessChanges/agent4-backend/` |
-| Agent 5 | TV5 UI/QA/Content | `IronFitnessChanges/agent5-ui-qa-content/` |
+| Agent 1 | TV1 Tech Lead / PM (duyệt và merge) | `agent1-techlead` |
+| Agent 2 | TV2 Android A | `agent2-android-account` |
+| Agent 3 | TV3 Android B | `agent3-android-workout` |
+| Agent 4 | TV4 Backend + Admin | `agent4-backend` |
+| Agent 5 | TV5 UI/QA/Content | `agent5-ui-qa-content` |
 
-Quy tắc:
-1. Chỉ ghi trong folder của mình; file đặt ở `<folder>/files/<đường-dẫn-như-repo>`.
-2. Giao file **đầy đủ nội dung**, không giao đoạn vá.
-3. Chỉ giao file trong phạm vi vai trò (mục 4). Việc ngoài phạm vi ghi vào CHANGELOG, mục "Đề xuất ngoài phạm vi".
-4. Sau mỗi lượt giao, thêm mục mới (trên cùng) vào `CHANGELOG.md` của mình: task ID, danh sách file, cách kiểm tra, phụ thuộc.
-5. Hai agent cùng đề xuất một đường dẫn thì script sẽ chặn; chờ TV1 quyết định.
-6. Chi tiết quy trình: `IronFitnessChanges/README.md`; prompt giao việc: `IronFitnessChanges/PROMPTS.md`; hướng dẫn khởi tạo: `docs/SETUP.md`.
+**Quy trình:**
+1. Agent chỉ ghi vào thư mục của mình: file thay đổi đặt ở `<thư-mục-agent>\files\<đường-dẫn-giống-repo>`, giao file **đầy đủ nội dung**.
+2. Sau mỗi lượt giao, thêm mục mới (trên cùng) vào `CHANGELOG.md` của mình: task ID, danh sách file, cách kiểm tra, phụ thuộc.
+3. Muốn báo cho agent khác (câu hỏi, thay đổi API, phụ thuộc), ghi vào `D:\IronFitnessChanges\BOARD.md`.
+4. Người điều phối chạy `apply-agent.bat`: tạo **nhánh riêng** `agentN/<tên-task>` từ `main`, chép file vào repo.
+5. Build, chạy thử, commit, push nhánh đó, mở Pull Request vào `main`.
+6. **Agent 1 (PM) review PR**. Chỉ khi Agent 1 duyệt mới merge vào `main`. Agent khác không tự merge.
+7. Sau khi merge, mọi người `git pull` trên `main` để lấy bản mới nhất trước khi làm tiếp.
+
+Agent 1 duyệt theo checklist: đúng task và phạm vi vai trò, khớp `docs/API.md` và `docs/DATABASE.md`, build được, không có secret, tài liệu liên quan đã cập nhật.
+
+Chi tiết nằm ở `D:\IronFitnessChanges\README.md`; quy tắc Git ở `CONTRIBUTING.md`; khởi tạo ở `docs/SETUP.md`.

@@ -11,7 +11,7 @@ Trạng thái: `[ ]` chưa làm, `[~]` đang làm, `[x]` xong.
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
 | W1-TV1-01 | Họp khởi động, chốt phạm vi MVP, công nghệ, quy tắc làm việc | Biên bản ngắn | T2 | [ ] |
-| W1-TV1-02 | Tạo repo monorepo (`android/`, `backend/`, `docs/`), `.gitignore`, nhánh `main`/`develop` | Repo | T2 | [ ] |
+| W1-TV1-02 | Tạo repo monorepo (`android/`, `backend/`, `docs/`), `.gitignore`, nhánh `main` và quy tắc nhánh riêng từng agent (`agentN/<task>`) | Repo | T2 | [ ] |
 | W1-TV1-03 | Khởi tạo project Android (package `com.homefit.app`), thêm Room, Retrofit, Glide, Navigation, ViewBinding; tạo sẵn cấu trúc package | Android khung chạy được | T3 | [ ] |
 | W1-TV1-04 | Chốt `docs/API.md` và `docs/DATABASE.md` cùng TV2/3/4 | Hợp đồng bản v1 | T3 | [ ] |
 | W1-TV1-05 | Review PR, hỗ trợ tích hợp | | T2–T6 | [ ] |
