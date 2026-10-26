@@ -21,7 +21,7 @@ Trạng thái: `[ ]` chưa làm, `[~]` đang làm / chờ duyệt, `[x]` xong v�
 - [x] Khu vực agent `D:\IronFitnessChanges` và script `apply-agent.bat`
 - [ ] Bật bảo vệ nhánh `main` trên GitHub (yêu cầu Pull Request)
 
-## TV1 – Agent 1: Tech Lead / PM
+## TV1 – Phạm Hoàng Phi: Tech Lead / PM
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -33,7 +33,7 @@ Trạng thái: `[ ]` chưa làm, `[~]` đang làm / chờ duyệt, `[x]` xong v�
 | W1-TV1-06 | Backlog tuần 2 | `docs/TASKS_WEEK2.md` | T6 | [ ] |
 | W1-TV1-07 | Bật bảo vệ nhánh `main` | Cấu hình GitHub | T3 | [ ] |
 
-## TV4 – Agent 4: Backend và Admin Web (ưu tiên đầu tiên vì TV2/TV3 phụ thuộc)
+## TV4 – Giang Tuấn Kiệt: Backend và Admin Web (ưu tiên đầu tiên vì TV2/TV3 phụ thuộc)
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -47,7 +47,7 @@ Trạng thái: `[ ]` chưa làm, `[~]` đang làm / chờ duyệt, `[x]` xong v�
 
 Thứ tự: 02 → 03 → 04 trước vì TV2 và TV3 phụ thuộc.
 
-## TV2 – Agent 2: Android A (Tài khoản, Profile)
+## TV2 – : Vũ Quang Anh (Tài khoản, Profile)
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -59,7 +59,7 @@ Thứ tự: 02 → 03 → 04 trước vì TV2 và TV3 phụ thuộc.
 
 Phụ thuộc: API auth từ W1-TV4-03. Trước đó dùng dữ liệu giả.
 
-## TV3 – Agent 3: Android B (Thư viện bài tập, Player)
+## TV3 – Giang Văn Quang: Android B (Thư viện bài tập, Player)
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -71,7 +71,7 @@ Phụ thuộc: API auth từ W1-TV4-03. Trước đó dùng dữ liệu giả.
 
 Phụ thuộc: dữ liệu mẫu từ TV5 và API từ W1-TV4-04. Trước đó chèn dữ liệu giả vào Room.
 
-## TV5 – Agent 5: UI/UX, QA, Content
+## TV5 – Phạm Văn Huân: UI/UX, QA, Content
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
