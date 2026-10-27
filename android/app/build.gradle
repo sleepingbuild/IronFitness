@@ -51,4 +51,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata:2.8.7"
     implementation "androidx.navigation:navigation-fragment:2.7.7"
     implementation "androidx.navigation:navigation-ui:2.7.7"
+
+    // AdMob (W1-TV1-08, xem docs/ADS.md). Phiên bản: kiểm tra lại trên trang release notes AdMob trước khi merge.
+    implementation "com.google.android.gms:play-services-ads:25.5.0"
 }
