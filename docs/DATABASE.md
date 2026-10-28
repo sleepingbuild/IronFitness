@@ -67,22 +67,26 @@ Ràng buộc: **đúng một** trong `duration_sec` hoặc `reps` có giá trị
 
 UNIQUE (`user_id`, `client_uuid`). INDEX (`completed_at`) cho thống kê.
 
-### refresh_tokens (tùy chọn, nếu dùng refresh token)
-`id`, `user_id` FK, `token_hash` UNIQUE, `expires_at`, `revoked` BOOLEAN.
+### refresh_tokens (bắt buộc, phục vụ `POST /auth/refresh`)
+`id`, `user_id` FK, `token_hash` UNIQUE (lưu băm, không lưu token gốc), `expires_at`, `revoked` BOOLEAN NOT NULL DEFAULT FALSE, `created_at`.
 
 ### Làm sau (Premium)
 `custom_plans`, `custom_plan_items` – lịch tập cá nhân. **Chưa tạo ở MVP.**
 
 ### Migration
-- `V1__init.sql`: tạo bảng trên.
-- `V2__seed.sql`: 4 danh mục, 12–16 bài mẫu (do TV5 cung cấp), 1 tài khoản admin (mật khẩu băm BCrypt, bắt buộc đổi).
+- `V1__init.sql`: tạo các bảng `users`, `categories`, `exercises`, `workout_sessions`, `refresh_tokens`.
+- `V2__seed_categories.sql`: 4 danh mục (Bụng, Ngực, Chân, Toàn thân).
+- `V3__seed_exercises.sql`: 12–16 bài mẫu, dựa trên `docs/seed/exercises.csv` do TV5 cung cấp.
+- **Tài khoản admin không nằm trong migration** (không lưu mật khẩu trong Git). Backend tạo admin đầu tiên khi khởi động từ cấu hình (`application-local.yml` hoặc biến môi trường), chỉ tạo nếu chưa có user nào có role `ADMIN`.
 
 ## 2. Room (Android)
 
-Database: `AppDatabase` (version 1). Entity phản ánh dữ liệu server cần cache cộng thêm dữ liệu local.
+Database: `AppDatabase` (version 1, file `homefit.db`). Entity phản ánh dữ liệu server cần cache cộng thêm dữ liệu local.
+
+Quy ước kiểu dữ liệu: mọi trường thời gian trong Room lưu **epoch millis (UTC, kiểu `long`)**; chuỗi ISO-8601 của server được chuyển bằng `DateUtils`. Entity nằm ở `com.homefit.app.data.local.entity`, DAO ở `data.local.dao`.
 
 ### CategoryEntity
-`id` (PK, = id server), `name`, `slug`, `iconUrl`, `sortOrder`, `updatedAt`.
+`id` (PK, = id server), `name`, `slug`, `iconUrl`, `sortOrder`, `updatedAt`. Chỉ lưu danh mục đang `isActive`.
 
 ### ExerciseEntity
 `id` (PK, = id server), `categoryId` (index), `name`, `description`, `mediaUrl`, `mediaType`, `durationSec` (nullable), `reps` (nullable), `restSec`, `sortOrder`, `updatedAt`.
@@ -91,7 +95,8 @@ Database: `AppDatabase` (version 1). Entity phản ánh dữ liệu server cần
 | Trường | Ghi chú |
 |---|---|
 | `localId` | PK autoGenerate |
-| `clientUuid` | UUID, unique, gửi lên server |
+| `userId` | id người dùng trên server (lấy từ `TokenStore`). **Mọi truy vấn lịch sử lọc theo cột này** để hai tài khoản trên cùng một máy không lẫn lịch sử. Có INDEX |
+| `clientUuid` | UUID, UNIQUE index, gửi lên server |
 | `categoryId` | nullable |
 | `startedAt`, `completedAt` | epoch millis |
 | `totalSeconds` | |
@@ -99,14 +104,16 @@ Database: `AppDatabase` (version 1). Entity phản ánh dữ liệu server cần
 | `synced` | boolean, `false` đến khi server xác nhận |
 
 ### UserProfileEntity (1 dòng)
-`id` (cố định = 1), `email`, `displayName`, `heightCm`, `weightKg`, `isPremium`.
+`id` (cố định = 1), `userId` (id trên server), `email`, `displayName`, `heightCm` (nullable), `weightKg` (nullable), `isPremium`.
 
 ### DAO chính
-- `CategoryDao`: `getAll()` (LiveData), `upsertAll(list)`, `deleteMissing(ids)`.
-- `ExerciseDao`: `getByCategory(categoryId)` (LiveData), `upsertAll(list)`.
-- `WorkoutLogDao`: `insert`, `getUnsynced()`, `markSynced(uuids)`, `getByMonth(from, to)`, `countAll()`, `sumSeconds()`, `getDatesWithWorkout(from, to)` cho Calendar.
-- `UserProfileDao`: `get()` (LiveData), `upsert`.
+- `CategoryDao`: `getAll()` (LiveData), `upsertAll(list)`, `deleteByIds(ids)` (bản ghi server đã tắt), `deleteMissing(ids)` (sau đồng bộ đầy đủ).
+- `ExerciseDao`: `getByCategory(categoryId)` (LiveData), `getByCategoryNow(categoryId)` (đồng bộ, cho Player), `upsertAll(list)`, `deleteByIds(ids)`, `deleteMissing(ids)`.
+- `WorkoutLogDao` (đều nhận `userId`): `insert` (IGNORE khi trùng `clientUuid`), `insertAll`, `getUnsynced(userId, limit)`, `markSynced(uuids)`, `getByMonth(userId, from, to)`, `countAll(userId)`, `sumSeconds(userId)`, `getDatesWithWorkout(userId, from, to)` (trả danh sách `completedAt`, app đổi sang ngày theo múi giờ máy để đánh dấu Calendar).
+- `UserProfileDao`: `get()` (LiveData), `getNow()`, `upsert`, `clear()`.
 
 ### Quy ước
 - Ngày tập trên Calendar tính theo múi giờ máy (từ `completedAt`).
 - Đổi schema Room phải tăng version và viết `Migration` (không dùng `fallbackToDestructiveMigration` ở bản release).
+- Đăng xuất xóa token, mốc đồng bộ và `UserProfileEntity`, **giữ** `workout_logs` (đã gắn `userId`).
+- Mốc đồng bộ danh mục/bài tập (`updatedAfter`) lưu ở SharedPreferences (`SyncStore`), không lưu trong Room.

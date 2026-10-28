@@ -8,7 +8,7 @@ HomeFit: app Android luyện tập tại nhà (Java) + backend Spring Boot (Java
 
 ## 2. Công nghệ cố định (không tự ý đổi)
 
-- Android: **Java** (không Kotlin), XML + ViewBinding, MVVM, Room, Retrofit, Glide, Media3 ExoPlayer, Navigation Component.
+- Android: **Java** (không Kotlin), XML + ViewBinding, MVVM, Room, Retrofit, Glide, Media3 ExoPlayer, Navigation Component, **AdMob** (`play-services-ads`, yêu cầu bài nhóm, xem `docs/ADS.md`).
 - Backend: Java 17, Spring Boot 4.x (bản ổn định mới nhất), Spring Security + JWT, Spring Data JPA, Flyway, MySQL 8, Thymeleaf.
 - Không dùng Firebase. Không đưa đăng nhập SĐT/OTP vào MVP.
 - Media bài tập lưu bằng **URL**, backend không lưu file.
@@ -85,14 +85,16 @@ Phần dùng chung trong Android (`data/remote`, `data/repository`, `util`) do *
 
 **Giai đoạn:** Tuần 1 – Setup và nền tảng
 
-- [ ] Repo và cấu trúc thư mục (TV1)
-- [ ] Project Android khởi tạo, có Room + Retrofit khung (TV1/TV2/TV3)
-- [ ] Backend khởi tạo, MySQL, Flyway V1 (TV4)
+- [x] Repo và cấu trúc thư mục (TV1)
+- [x] Project Android khởi tạo, có Room + Retrofit khung (TV1/TV2/TV3)
+- [~] Backend khởi tạo (xong); MySQL, Flyway V1 (TV4, đang làm)
 - [ ] API Auth hoạt động (TV4)
 - [ ] Đăng ký/đăng nhập trên app (TV2)
 - [ ] Màn danh mục và danh sách bài tập, đọc từ Room (TV3)
 - [ ] Admin CRUD danh mục (TV4)
 - [ ] Wireframe và dữ liệu bài tập mẫu (TV5)
+- [x] Tích hợp AdMob bản thử nghiệm và màn demo (TV1, W1-TV1-08)
+- [~] Tầng dữ liệu Android: Room, Retrofit, repository, tiện ích (TV1, W1-TV1-09, chờ merge)
 
 **Quyết định mở / cần hỏi:**
 - Nơi deploy backend + MySQL (chốt tuần 3–4).
