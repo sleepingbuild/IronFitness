@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -24,7 +25,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
  * Điểm duy nhất của app dùng AdMob (xem docs/ADS.md).
  * Tất cả hàm phải gọi trên main thread.
  *
- * Các ID bên dưới là ID THỬ NGHIỆM của Google. Không thay bằng ID thật trong Git.
+ * Các ID bên dưới là ID THỬ NGHIỆM của Google. Nếu dùng ID thật, xem docs/ADS.md mục 9.
  */
 public final class AdsManager {
 
@@ -73,18 +74,23 @@ public final class AdsManager {
         return adsEnabled;
     }
 
+    /** True nếu một interstitial đã tải xong và có thể hiện. */
+    public static boolean isInterstitialReady() {
+        return adsEnabled && interstitial != null;
+    }
+
     /**
-     * Gắn banner vào container. Trả về AdView để Fragment gọi {@code destroy()} ở onDestroyView.
+     * Gắn banner vào container. Trả về AdView để nơi gọi gọi {@code destroy()} khi hủy view.
      * Trả về null nếu quảng cáo đang tắt hoặc chưa init.
      */
     @Nullable
     public static AdView attachBanner(@NonNull FrameLayout container) {
         container.removeAllViews();
         if (!adsEnabled || !initialized) {
-            container.setVisibility(android.view.View.GONE);
+            container.setVisibility(View.GONE);
             return null;
         }
-        container.setVisibility(android.view.View.VISIBLE);
+        container.setVisibility(View.VISIBLE);
         AdView adView = new AdView(container.getContext());
         adView.setAdUnitId(BANNER_UNIT_ID);
         adView.setAdSize(AdSize.BANNER);
@@ -94,12 +100,21 @@ public final class AdsManager {
     }
 
     /**
-     * Hiện interstitial nếu đã sẵn sàng và đủ khoảng cách thời gian.
-     * {@code onDone} LUÔN được gọi đúng một lần (dù có hiện quảng cáo hay không).
+     * Dùng trong luồng thật: hiện interstitial nếu đã sẵn sàng và đủ khoảng cách thời gian.
+     * {@code onDone} LUÔN được gọi đúng một lần. Trả về true nếu quảng cáo được hiện.
      */
-    public static void showInterstitialIfReady(@NonNull Activity activity, @NonNull Runnable onDone) {
+    public static boolean showInterstitialIfReady(@NonNull Activity activity, @NonNull Runnable onDone) {
+        return showInterstitial(activity, onDone, false);
+    }
+
+    /**
+     * Như trên, nhưng {@code ignoreInterval = true} bỏ qua giới hạn 3 phút (chỉ dùng cho màn demo).
+     */
+    public static boolean showInterstitial(@NonNull Activity activity, @NonNull Runnable onDone,
+                                           boolean ignoreInterval) {
         long now = SystemClock.elapsedRealtime();
-        boolean intervalOk = now - lastInterstitialShownAt >= MIN_INTERSTITIAL_INTERVAL_MS;
+        boolean intervalOk = ignoreInterval
+                || now - lastInterstitialShownAt >= MIN_INTERSTITIAL_INTERVAL_MS;
         InterstitialAd ad = interstitial;
 
         if (!adsEnabled || !initialized || ad == null || !intervalOk) {
@@ -107,7 +122,7 @@ public final class AdsManager {
                 preloadInterstitial();
             }
             onDone.run();
-            return;
+            return false;
         }
 
         interstitial = null;
@@ -135,6 +150,7 @@ public final class AdsManager {
             }
         });
         ad.show(activity);
+        return true;
     }
 
     private static void preloadInterstitial() {

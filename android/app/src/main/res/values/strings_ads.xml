@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ads_demo_title">Demo tích hợp AdMob</string>
+    <string name="ads_demo_desc">Màn hình tạm để minh chứng đã tích hợp AdMob. Banner ở cuối màn hình là quảng cáo thử nghiệm (có nhãn Test Ad).</string>
+    <string name="ads_demo_status_on">Quảng cáo: đang BẬT</string>
+    <string name="ads_demo_status_off">Quảng cáo: đã TẮT (giả lập người dùng Premium)</string>
+    <string name="ads_demo_interstitial_ready">Interstitial: đã tải xong, sẵn sàng hiện</string>
+    <string name="ads_demo_interstitial_not_ready">Interstitial: chưa sẵn sàng (đang tải hoặc đã tắt)</string>
+    <string name="ads_demo_btn_interstitial">Hiện quảng cáo toàn màn hình (Interstitial)</string>
+    <string name="ads_demo_btn_premium_on">Giả lập Premium: tắt quảng cáo</string>
+    <string name="ads_demo_btn_premium_off">Hủy giả lập Premium: bật lại quảng cáo</string>
+    <string name="ads_demo_btn_refresh">Làm mới trạng thái</string>
+    <string name="ads_demo_toast_closed">Đã đóng quảng cáo, ứng dụng tiếp tục bình thường</string>
+    <string name="ads_demo_toast_not_ready">Quảng cáo chưa tải xong, thử lại sau vài giây</string>
+</resources>
