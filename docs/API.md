@@ -5,7 +5,7 @@ Hợp đồng giữa Android và Backend. **Đổi API phải cập nhật file 
 - Base URL: `/api/v1`
 - Định dạng: JSON, UTF-8. Tên trường dạng `camelCase`.
 - Thời gian: ISO-8601 UTC, ví dụ `2026-10-24T08:30:00Z`.
-- Xác thực: header `Authorization: Bearer <accessToken>` (trừ nhóm Auth).
+- Xác thực: header `Authorization: Bearer <accessToken>` (trừ nhóm Auth). Client **không gửi** header này tới `/auth/*`.
 
 ## Lỗi thống nhất
 
@@ -25,11 +25,13 @@ Hợp đồng giữa Android và Backend. **Đổi API phải cập nhật file 
 ## 1. Auth
 
 ### POST /auth/register
+Validate: email hợp lệ; mật khẩu tối thiểu 8 ký tự; `displayName` 1–100 ký tự. Email đã tồn tại trả 409 `CONFLICT`.
+
 ```json
 // request
 { "email": "a@mail.com", "password": "Min8chars", "displayName": "An" }
 // 201
-{ "accessToken": "...", "refreshToken": "...", "expiresIn": 3600, "user": { /* User */ } }
+{ "accessToken": "...", "refreshToken": "...", "expiresIn": 3600, "user": { /* User, cùng cấu trúc với GET /me */ } }
 ```
 
 ### POST /auth/login
@@ -105,7 +107,13 @@ Idempotent theo `clientUuid`: gửi lại cùng uuid trả 200 với bản ghi c
 ```
 
 ### GET /workout-sessions?from=<ISO>&to=<ISO>
-Dùng khi đăng nhập máy mới để khôi phục lịch sử vào Room.
+Dùng khi đăng nhập máy mới để khôi phục lịch sử vào Room. Chỉ trả buổi tập của user trong token, lọc theo `completedAt`.
+```json
+// 200
+[ { "id": 55, "clientUuid": "7c1e...-uuid", "categoryId": 1,
+    "startedAt": "2026-10-24T08:00:00Z", "completedAt": "2026-10-24T08:20:00Z",
+    "totalSeconds": 1200, "exercisesDone": 8 } ]
+```
 
 ## 5. Admin API (role ADMIN, tùy chọn)
 
@@ -122,3 +130,5 @@ Admin Web dùng controller Thymeleaf riêng tại `/admin`. Nếu cần API cho 
 - Đồng bộ danh mục/bài tập: lưu `lastSyncAt` (lấy từ `updatedAt` lớn nhất nhận được), lần sau gọi với `updatedAfter`.
 - Timeout gợi ý: connect 10s, read 20s.
 - Không retry tự động với lỗi 4xx (trừ 401 → refresh một lần).
+- Lỗi mạng ở client dùng mã nội bộ `NETWORK_ERROR` (không có trong bảng lỗi server).
+- Refresh token thất bại (401/403): xóa phiên và đưa người dùng về màn Đăng nhập.

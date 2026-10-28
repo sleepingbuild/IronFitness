@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_network">Không kết nối được máy chủ. Kiểm tra mạng và thử lại.</string>
+    <string name="error_unauthorized">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</string>
+    <string name="error_forbidden">Bạn không có quyền thực hiện thao tác này.</string>
+    <string name="error_not_found">Không tìm thấy dữ liệu.</string>
+    <string name="error_conflict">Dữ liệu bị trùng.</string>
+    <string name="error_validation">Dữ liệu không hợp lệ.</string>
+    <string name="error_server">Máy chủ gặp lỗi. Vui lòng thử lại sau.</string>
+    <string name="error_unknown">Đã xảy ra lỗi. Vui lòng thử lại.</string>
+</resources>

@@ -44,8 +44,9 @@ com.homefit.app
 │   ├── local          # Room: AppDatabase, entity, dao
 │   ├── remote         # Retrofit: ApiService, dto, AuthInterceptor
 │   ├── repository     # AuthRepository, ExerciseRepository, WorkoutLogRepository
-│   └── prefs          # TokenStore (EncryptedSharedPreferences), Settings
-├── domain             # model thuần Java (nếu cần), mapper
+│   └── prefs          # TokenStore, SyncStore, Settings
+├── ads                # AdsManager (AdMob), xem docs/ADS.md
+├── domain             # Mappers (DTO ⇄ Entity), model thuần Java nếu cần
 ├── ui
 │   ├── auth           # Splash, Login, Register
 │   ├── profile        # Profile, BMI
@@ -54,7 +55,7 @@ com.homefit.app
 │   ├── history        # Calendar, Stats
 │   └── settings       # Nhắc tập
 ├── notification       # ReminderScheduler, ReminderReceiver
-├── util               # BmiCalculator, DateUtils, Resource<T>
+├── util               # BmiCalculator, DateUtils, Resource<T>, ErrorMessages, AppExecutors
 └── di                 # (tùy chọn) khởi tạo thủ công singleton hoặc Hilt
 ```
 
@@ -65,7 +66,7 @@ com.homefit.app
 | Danh mục, bài tập | Server | App tải và lưu vào Room, UI đọc từ Room. Làm mới khi mở app (so `updatedAt`). Mất mạng vẫn xem được bài đã cache |
 | Lịch sử buổi tập | Tạo ở app | Ghi vào Room trước (`synced=false`), worker đẩy lên server khi có mạng, sau đó `synced=true`. Dùng `clientUuid` để server chống trùng |
 | Hồ sơ (chiều cao, cân nặng) | App + server | Lưu Room, đồng bộ qua `PUT /me/profile` |
-| Token JWT | Server | Lưu `EncryptedSharedPreferences`, không lưu trong Room |
+| Token JWT | Server | Lưu SharedPreferences riêng (`MODE_PRIVATE`), không lưu trong Room. Chưa mã hóa vì chưa thêm thư viện security-crypto; nâng cấp bằng Android Keystore nếu còn thời gian |
 | Giờ nhắc tập | Chỉ local | Lưu SharedPreferences, không cần server |
 
 > GIF/Video chỉ cache bởi Glide/ExoPlayer (cache HTTP), không lưu file vào Room.
@@ -153,6 +154,9 @@ resources
 | 5 | JWT cho app, session cho admin | Phù hợp từng loại client |
 | 6 | Bỏ đăng nhập SĐT khỏi MVP | OTP SMS tốn phí và phức tạp |
 | 7 | `clientUuid` cho buổi tập | Đồng bộ lại nhiều lần không bị trùng |
+| 8 | AdMob (không dùng IAP) cho yêu cầu bài nhóm | Chạy bằng ID thử nghiệm, không cần Play Console trả phí; chi tiết ở `docs/ADS.md` |
+| 9 | `WorkoutLogEntity.userId` | Hai tài khoản trên cùng máy không lẫn lịch sử |
+| 10 | Repository trả `LiveData<Resource<T>>`, gọi API bằng `Callback` | Phù hợp Java + MVVM, không thêm thư viện bất đồng bộ |
 
 ## 6. Rủi ro và lưu ý
 

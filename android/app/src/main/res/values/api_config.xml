@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Địa chỉ backend. Phải kết thúc bằng "/".
+        Emulator: http://10.0.2.2:8080/api/v1/
+        Máy thật: thay bằng IP LAN của máy chạy backend, ví dụ http://192.168.1.10:8080/api/v1/
+        HTTP thường chỉ được phép ở bản debug (xem src/debug).
+    -->
+    <string name="api_base_url" translatable="false">http://10.0.2.2:8080/api/v1/</string>
+</resources>
