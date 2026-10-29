@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Đồ thị điều hướng. Hiện 4 tab dùng PlaceholderFragment; các task sau thay android:name
+  bằng màn thật (CategoryFragment, HistoryFragment, ProfileFragment, SettingsFragment).
+  Không dùng SafeArgs: truyền tham số bằng Bundle.
+-->
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/workoutFragment">
+
+    <fragment
+        android:id="@+id/workoutFragment"
+        android:name="com.homefit.app.ui.common.PlaceholderFragment"
+        android:label="@string/nav_workout"
+        tools:layout="@layout/fragment_placeholder" />
+
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.homefit.app.ui.common.PlaceholderFragment"
+        android:label="@string/nav_history"
+        tools:layout="@layout/fragment_placeholder" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.homefit.app.ui.common.PlaceholderFragment"
+        android:label="@string/nav_profile"
+        tools:layout="@layout/fragment_placeholder" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.homefit.app.ui.common.PlaceholderFragment"
+        android:label="@string/nav_settings"
+        tools:layout="@layout/fragment_placeholder" />
+</navigation>

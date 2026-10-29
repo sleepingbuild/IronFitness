@@ -1,5 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Bảng màu HomeFit, chế độ SÁNG. Chế độ tối: values-night/colors.xml (cùng tên màu).
+  Quy tắc: layout và theme chỉ dùng thuộc tính theme (?attr/colorPrimary...) hoặc tên màu hf_*,
+  không ghi mã màu trực tiếp. Chi tiết và tỉ lệ tương phản: docs/design/tokens.md.
+-->
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Thương hiệu: cam sắt (hành động chính) -->
+    <color name="hf_primary">#B83F00</color>
+    <color name="hf_on_primary">#FFFFFF</color>
+    <color name="hf_primary_container">#FFDBCC</color>
+    <color name="hf_on_primary_container">#380D00</color>
+
+    <!-- Thép xám xanh (hành động phụ) -->
+    <color name="hf_secondary">#4E5F6B</color>
+    <color name="hf_on_secondary">#FFFFFF</color>
+    <color name="hf_secondary_container">#D2E4F2</color>
+    <color name="hf_on_secondary_container">#0A1D28</color>
+
+    <!-- Xanh ngọc (nghỉ, hồi phục) -->
+    <color name="hf_tertiary">#00696B</color>
+    <color name="hf_on_tertiary">#FFFFFF</color>
+    <color name="hf_tertiary_container">#B8EEF0</color>
+    <color name="hf_on_tertiary_container">#002021</color>
+
+    <color name="hf_error">#BA1A1A</color>
+    <color name="hf_on_error">#FFFFFF</color>
+    <color name="hf_error_container">#FFDAD6</color>
+    <color name="hf_on_error_container">#410002</color>
+
+    <!-- Nền và bề mặt -->
+    <color name="hf_background">#FFFBF8</color>
+    <color name="hf_on_background">#201A17</color>
+    <color name="hf_surface">#FFFBF8</color>
+    <color name="hf_on_surface">#201A17</color>
+    <color name="hf_surface_variant">#F5DED4</color>
+    <color name="hf_on_surface_variant">#52443C</color>
+    <color name="hf_surface_container_lowest">#FFFFFF</color>
+    <color name="hf_surface_container_low">#FCF1EB</color>
+    <color name="hf_surface_container">#F8EDE6</color>
+    <color name="hf_surface_container_high">#F2E7E0</color>
+    <color name="hf_surface_container_highest">#ECE1DA</color>
+    <color name="hf_surface_dim">#E3D8D2</color>
+    <color name="hf_surface_bright">#FFFBF8</color>
+    <color name="hf_outline">#85736B</color>
+    <color name="hf_outline_variant">#D8C2B8</color>
+    <color name="hf_inverse_surface">#362F2B</color>
+    <color name="hf_inverse_on_surface">#FBEEE8</color>
+    <color name="hf_inverse_primary">#FFB596</color>
+
+    <!-- Trạng thái Workout Player (luôn kèm chữ, không dùng màu đơn lẻ) -->
+    <color name="hf_phase_exercise">#B83F00</color>
+    <color name="hf_on_phase_exercise">#FFFFFF</color>
+    <color name="hf_phase_rest">#00696B</color>
+    <color name="hf_on_phase_rest">#FFFFFF</color>
+    <color name="hf_phase_paused">#4E5F6B</color>
+    <color name="hf_on_phase_paused">#FFFFFF</color>
+
+    <!-- Phân loại BMI (dùng làm màu chữ trên nền surface, luôn kèm nhãn chữ) -->
+    <color name="hf_bmi_underweight">#1D5FA8</color>
+    <color name="hf_bmi_normal">#1B6D2F</color>
+    <color name="hf_bmi_overweight">#8A5100</color>
+    <color name="hf_bmi_obese">#BA1A1A</color>
 </resources>

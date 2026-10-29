@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Khoảng cách, bo góc, cỡ chữ HomeFit. Nội dung được dùng cho mọi màn, xem docs/design/tokens.md. -->
+<resources>
+    <!-- Thang khoảng cách (bội số của 4dp) -->
+    <dimen name="space_xs">4dp</dimen>
+    <dimen name="space_sm">8dp</dimen>
+    <dimen name="space_md">12dp</dimen>
+    <dimen name="space_lg">16dp</dimen>
+    <dimen name="space_xl">24dp</dimen>
+    <dimen name="space_xxl">32dp</dimen>
+    <dimen name="screen_padding">16dp</dimen>
+
+    <!-- Bo góc -->
+    <dimen name="corner_small">12dp</dimen>
+    <dimen name="corner_medium">16dp</dimen>
+    <dimen name="corner_large">28dp</dimen>
+
+    <!-- Vùng chạm và kích thước thành phần -->
+    <dimen name="touch_min">48dp</dimen>
+    <dimen name="button_height">52dp</dimen>
+    <dimen name="button_height_large">64dp</dimen>
+    <dimen name="input_min_height">56dp</dimen>
+    <dimen name="icon_small">20dp</dimen>
+    <dimen name="icon_medium">24dp</dimen>
+    <dimen name="icon_large">48dp</dimen>
+    <dimen name="card_stroke">1dp</dimen>
+    <dimen name="card_elevation">0dp</dimen>
+
+    <!-- Cỡ chữ (sp để theo cỡ chữ hệ thống) -->
+    <dimen name="text_timer">72sp</dimen>
+    <dimen name="text_headline">28sp</dimen>
+    <dimen name="text_title">20sp</dimen>
+    <dimen name="text_subtitle">16sp</dimen>
+    <dimen name="text_body">16sp</dimen>
+    <dimen name="text_body_small">14sp</dimen>
+    <dimen name="text_caption">12sp</dimen>
+    <dimen name="text_button">16sp</dimen>
+</resources>
