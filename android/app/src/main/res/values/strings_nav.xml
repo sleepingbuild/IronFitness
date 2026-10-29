@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_workout">Tập luyện</string>
+    <string name="nav_history">Lịch sử</string>
+    <string name="nav_profile">Hồ sơ</string>
+    <string name="nav_settings">Cài đặt</string>
+
+    <!-- Màn tạm (PlaceholderFragment): xóa khi màn thật thay thế -->
+    <string name="placeholder_message">Màn hình này đang được xây dựng. Phần dưới là mẫu giao diện dùng chung để kiểm tra chế độ sáng và tối.</string>
+    <string name="placeholder_card_title">Thẻ nội dung</string>
+    <string name="placeholder_card_body">Nền surface container, bo góc 16dp, không đổ bóng.</string>
+    <string name="placeholder_btn_primary">Nút chính</string>
+    <string name="placeholder_btn_tonal">Nút phụ</string>
+    <string name="placeholder_btn_outlined">Nút viền</string>
+    <string name="placeholder_btn_text">Nút chữ</string>
+    <string name="placeholder_input_hint">Email</string>
+    <string name="placeholder_phase_title">Màu trạng thái của Player</string>
+    <string name="placeholder_phase_exercise">Tập</string>
+    <string name="placeholder_phase_rest">Nghỉ</string>
+    <string name="placeholder_phase_paused">Tạm dừng</string>
+</resources>

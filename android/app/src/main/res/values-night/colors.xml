@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bảng màu HomeFit, chế độ TỐI. Giữ nguyên tên màu với values/colors.xml. -->
+<resources>
+    <color name="hf_primary">#FFB596</color>
+    <color name="hf_on_primary">#5A1B00</color>
+    <color name="hf_primary_container">#832B00</color>
+    <color name="hf_on_primary_container">#FFDBCC</color>
+
+    <color name="hf_secondary">#B6C9D8</color>
+    <color name="hf_on_secondary">#20333F</color>
+    <color name="hf_secondary_container">#364956</color>
+    <color name="hf_on_secondary_container">#D2E4F2</color>
+
+    <color name="hf_tertiary">#4CD9DB</color>
+    <color name="hf_on_tertiary">#003738</color>
+    <color name="hf_tertiary_container">#004F51</color>
+    <color name="hf_on_tertiary_container">#B8EEF0</color>
+
+    <color name="hf_error">#FFB4AB</color>
+    <color name="hf_on_error">#690005</color>
+    <color name="hf_error_container">#93000A</color>
+    <color name="hf_on_error_container">#FFDAD6</color>
+
+    <color name="hf_background">#181210</color>
+    <color name="hf_on_background">#ECE0DA</color>
+    <color name="hf_surface">#181210</color>
+    <color name="hf_on_surface">#ECE0DA</color>
+    <color name="hf_surface_variant">#52443C</color>
+    <color name="hf_on_surface_variant">#D8C2B8</color>
+    <color name="hf_surface_container_lowest">#120D0B</color>
+    <color name="hf_surface_container_low">#201A17</color>
+    <color name="hf_surface_container">#241C19</color>
+    <color name="hf_surface_container_high">#2F2723</color>
+    <color name="hf_surface_container_highest">#3A312D</color>
+    <color name="hf_surface_dim">#181210</color>
+    <color name="hf_surface_bright">#3F3632</color>
+    <color name="hf_outline">#A08D84</color>
+    <color name="hf_outline_variant">#52443C</color>
+    <color name="hf_inverse_surface">#ECE0DA</color>
+    <color name="hf_inverse_on_surface">#362F2B</color>
+    <color name="hf_inverse_primary">#B83F00</color>
+
+    <color name="hf_phase_exercise">#FFB596</color>
+    <color name="hf_on_phase_exercise">#5A1B00</color>
+    <color name="hf_phase_rest">#4CD9DB</color>
+    <color name="hf_on_phase_rest">#003738</color>
+    <color name="hf_phase_paused">#B6C9D8</color>
+    <color name="hf_on_phase_paused">#20333F</color>
+
+    <color name="hf_bmi_underweight">#A5C8FF</color>
+    <color name="hf_bmi_normal">#7DDB8B</color>
+    <color name="hf_bmi_overweight">#FFB95C</color>
+    <color name="hf_bmi_obese">#FFB4AB</color>
+</resources>
