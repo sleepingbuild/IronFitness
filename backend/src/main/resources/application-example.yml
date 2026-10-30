@@ -1,0 +1,22 @@
+# Sao chép file này thành application-local.yml (cùng thư mục) rồi điền giá trị thật.
+# application-local.yml KHÔNG được commit (đã nằm trong .gitignore).
+spring:
+  datasource:
+    # useSSL=false và allowPublicKeyRetrieval=true chỉ dùng cho MySQL chạy local khi phát triển.
+    url: jdbc:mysql://localhost:3306/homefit?useUnicode=true&characterEncoding=utf8&connectionTimeZone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: CHANGE_ME
+
+# Các khóa dưới đây dùng cho Auth API (task W1-TV4-03).
+homefit:
+  jwt:
+    # Chuỗi ngẫu nhiên dài ít nhất 32 ký tự. Không dùng lại giá trị mẫu này.
+    secret: CHANGE_ME_with_a_random_string_of_at_least_32_characters
+    access-token-minutes: 60
+    refresh-token-days: 30
+  admin:
+    # Tài khoản admin đầu tiên, chỉ tạo khi chưa có admin nào.
+    email: admin@example.com
+    password: CHANGE_ME
+  google:
+    client-id: CHANGE_ME.apps.googleusercontent.com
