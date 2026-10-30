@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Kiểu dùng chung HomeFit: hình dạng, chữ, nút, ô nhập, thẻ, thanh điều hướng dưới.
+  Layout gọi theo tên (style="@style/Widget.HomeFit.Button.Outlined").
+-->
+<resources>
+
+    <!-- Hình dạng -->
+    <style name="ShapeAppearance.HomeFit.Small" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/corner_small</item>
+    </style>
+
+    <style name="ShapeAppearance.HomeFit.Medium" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/corner_medium</item>
+    </style>
+
+    <style name="ShapeAppearance.HomeFit.Large" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/corner_large</item>
+    </style>
+
+    <!-- Chữ -->
+    <style name="TextAppearance.HomeFit.Headline" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textSize">@dimen/text_headline</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.HomeFit.Title" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">@dimen/text_title</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.HomeFit.Subtitle" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textSize">@dimen/text_subtitle</item>
+    </style>
+
+    <style name="TextAppearance.HomeFit.Body" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">@dimen/text_body</item>
+    </style>
+
+    <style name="TextAppearance.HomeFit.BodySmall" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textSize">@dimen/text_body_small</item>
+    </style>
+
+    <style name="TextAppearance.HomeFit.Caption" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">@dimen/text_caption</item>
+    </style>
+
+    <style name="TextAppearance.HomeFit.Button" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">@dimen/text_button</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Số đếm ngược của Player: chữ số cùng độ rộng để không bị nhảy khi đổi số -->
+    <style name="TextAppearance.HomeFit.Timer" parent="TextAppearance.Material3.DisplayLarge">
+        <item name="android:textSize">@dimen/text_timer</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFeatureSettings">tnum</item>
+    </style>
+
+    <!-- Nút -->
+    <style name="Widget.HomeFit.Button" parent="Widget.Material3.Button">
+        <item name="android:minHeight">@dimen/button_height</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.HomeFit.Button</item>
+        <item name="cornerRadius">@dimen/corner_small</item>
+    </style>
+
+    <style name="Widget.HomeFit.Button.Large" parent="Widget.HomeFit.Button">
+        <item name="android:minHeight">@dimen/button_height_large</item>
+    </style>
+
+    <style name="Widget.HomeFit.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:minHeight">@dimen/button_height</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.HomeFit.Button</item>
+        <item name="cornerRadius">@dimen/corner_small</item>
+    </style>
+
+    <style name="Widget.HomeFit.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:minHeight">@dimen/button_height</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.HomeFit.Button</item>
+        <item name="cornerRadius">@dimen/corner_small</item>
+    </style>
+
+    <style name="Widget.HomeFit.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="android:minHeight">@dimen/touch_min</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.HomeFit.Button</item>
+    </style>
+
+    <!-- Ô nhập -->
+    <style name="Widget.HomeFit.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">@dimen/corner_small</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/corner_small</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/corner_small</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/corner_small</item>
+    </style>
+
+    <!-- Thẻ -->
+    <style name="Widget.HomeFit.Card" parent="Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">@color/hf_surface_container</item>
+        <item name="cardCornerRadius">@dimen/corner_medium</item>
+        <item name="cardElevation">@dimen/card_elevation</item>
+    </style>
+
+    <style name="Widget.HomeFit.Card.Outlined" parent="Widget.Material3.CardView.Outlined">
+        <item name="cardBackgroundColor">?attr/colorSurface</item>
+        <item name="cardCornerRadius">@dimen/corner_medium</item>
+        <item name="cardElevation">@dimen/card_elevation</item>
+        <item name="strokeColor">?attr/colorOutlineVariant</item>
+        <item name="strokeWidth">@dimen/card_stroke</item>
+    </style>
+
+    <!-- Thanh điều hướng dưới -->
+    <style name="Widget.HomeFit.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="itemTextAppearanceActive">@style/TextAppearance.HomeFit.Caption</item>
+        <item name="itemTextAppearanceInactive">@style/TextAppearance.HomeFit.Caption</item>
+    </style>
+</resources>
