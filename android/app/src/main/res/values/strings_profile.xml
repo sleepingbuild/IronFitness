@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_title">Hồ sơ</string>
+    <string name="profile_premium">Tài khoản Premium: không hiển thị quảng cáo</string>
+    <string name="profile_section_body">Số đo cơ thể</string>
+    <string name="profile_name">Họ tên</string>
+    <string name="profile_height">Chiều cao (cm)</string>
+    <string name="profile_weight">Cân nặng (kg)</string>
+    <string name="profile_save">Lưu hồ sơ</string>
+    <string name="profile_saving">Đang lưu…</string>
+    <string name="profile_saved">Đã lưu hồ sơ.</string>
+    <string name="profile_saved_local_only">Đã lưu trên máy nhưng chưa đồng bộ được: %1$s</string>
+    <string name="profile_error_height">Chiều cao phải từ %1$d đến %2$d cm.</string>
+    <string name="profile_error_weight">Cân nặng phải từ %1$d đến %2$d kg.</string>
+
+    <string name="profile_logout">Đăng xuất</string>
+    <string name="profile_logout_confirm_title">Đăng xuất?</string>
+    <string name="profile_logout_confirm_message">Lịch sử tập của bạn vẫn được giữ trên máy này.</string>
+
+    <!-- BMI -->
+    <string name="bmi_title">Chỉ số BMI</string>
+    <string name="bmi_empty_hint">Nhập chiều cao và cân nặng hợp lệ để xem BMI.</string>
+    <string name="bmi_underweight">Gầy</string>
+    <string name="bmi_normal">Bình thường</string>
+    <string name="bmi_overweight">Thừa cân</string>
+    <string name="bmi_obese">Béo phì</string>
+    <string name="bmi_legend">Dưới 18,5: gầy · 18,5 đến 24,9: bình thường · 25 đến 29,9: thừa cân · từ 30: béo phì</string>
+    <string name="bmi_disclaimer">BMI chỉ mang tính tham khảo, không thay thế tư vấn của chuyên gia y tế.</string>
+</resources>

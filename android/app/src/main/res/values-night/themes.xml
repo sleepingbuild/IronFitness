@@ -1,7 +1,6 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.IronFitness" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
-    </style>
-</resources>
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Cố ý để trống. Theme nằm ở values/themes.xml, màu tối nằm ở values-night/colors.xml.
+  File này tồn tại để thay thế bản mẫu cũ (bản cũ khai báo lại Base.Theme.IronFitness và sẽ làm mất theme ở chế độ tối).
+-->
+<resources />

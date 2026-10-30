@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Màn TẠM cho 4 tab, đồng thời là mẫu kiểm tra theme sáng/tối. Xóa khi màn thật thay thế. -->
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/screen_padding">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:accessibilityHeading="true"
+            android:textAppearance="@style/TextAppearance.HomeFit.Headline"
+            tools:targetApi="p"
+            tools:text="Tập luyện" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:text="@string/placeholder_message"
+            android:textAppearance="@style/TextAppearance.HomeFit.BodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xl">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/space_lg">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/placeholder_card_title"
+                    android:textAppearance="@style/TextAppearance.HomeFit.Title" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:text="@string/placeholder_card_body"
+                    android:textAppearance="@style/TextAppearance.HomeFit.Body"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xl"
+            android:text="@string/placeholder_btn_primary" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.HomeFit.Button.Tonal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:text="@string/placeholder_btn_tonal" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.HomeFit.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:text="@string/placeholder_btn_outlined" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.HomeFit.Button.Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:text="@string/placeholder_btn_text" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_lg"
+            android:hint="@string/placeholder_input_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:minHeight="@dimen/input_min_height" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xl"
+            android:text="@string/placeholder_phase_title"
+            android:textAppearance="@style/TextAppearance.HomeFit.Subtitle" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/hf_phase_exercise"
+                android:gravity="center"
+                android:padding="@dimen/space_md"
+                android:text="@string/placeholder_phase_exercise"
+                android:textAppearance="@style/TextAppearance.HomeFit.Button"
+                android:textColor="@color/hf_on_phase_exercise" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_sm"
+                android:layout_weight="1"
+                android:background="@color/hf_phase_rest"
+                android:gravity="center"
+                android:padding="@dimen/space_md"
+                android:text="@string/placeholder_phase_rest"
+                android:textAppearance="@style/TextAppearance.HomeFit.Button"
+                android:textColor="@color/hf_on_phase_rest" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_sm"
+                android:layout_weight="1"
+                android:background="@color/hf_phase_paused"
+                android:gravity="center"
+                android:padding="@dimen/space_md"
+                android:text="@string/placeholder_phase_paused"
+                android:textAppearance="@style/TextAppearance.HomeFit.Button"
+                android:textColor="@color/hf_on_phase_paused" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
