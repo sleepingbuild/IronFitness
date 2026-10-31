@@ -55,7 +55,7 @@ class TokenServiceTest {
 
         assertEquals("7", jwt.getSubject());
         assertEquals("USER", jwt.getClaimAsString("role"));
-        assertEquals(TokenService.ISSUER, jwt.getIssuer().toString());
+        assertEquals(TokenService.ISSUER, jwt.getClaimAsString("iss"));
     }
 
     @Test
