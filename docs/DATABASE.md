@@ -76,7 +76,9 @@ UNIQUE (`user_id`, `client_uuid`). INDEX (`completed_at`) cho thống kê.
 ### Migration
 - `V1__init.sql`: tạo các bảng `users`, `categories`, `exercises`, `workout_sessions`, `refresh_tokens`.
 - `V2__seed_categories.sql`: 4 danh mục (Bụng, Ngực, Chân, Toàn thân).
-- `V3__seed_exercises.sql`: 12–16 bài mẫu, dựa trên `docs/seed/exercises.csv` do TV5 cung cấp.
+- `V3__seed_sample_exercises.sql`: **dữ liệu thử** (12 bài, 3 bài mỗi nhóm, ảnh giữ chỗ) để dựng giao diện và kiểm thử API. Không phải nội dung thật.
+- `V4__seed_exercises.sql`: ẩn các bài thử của V3 (`is_active = FALSE`, cập nhật `updated_at` để app xóa khỏi Room) và thêm 12–16 bài thật từ `docs/seed/exercises.csv` do TV5 cung cấp.
+- `V5__seed_more_exercises.sql`: mở rộng lên 30–40 bài (W2-TV4-08).
 - **Tài khoản admin không nằm trong migration** (không lưu mật khẩu trong Git). Backend tạo admin đầu tiên khi khởi động từ cấu hình (`application-local.yml` hoặc biến môi trường), chỉ tạo nếu chưa có user nào có role `ADMIN`.
 
 ## 2. Room (Android)
