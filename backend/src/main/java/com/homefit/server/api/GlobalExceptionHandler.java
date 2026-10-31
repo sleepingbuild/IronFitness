@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +42,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleUnreadable(HttpMessageNotReadableException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiError.of("VALIDATION_ERROR", "Dữ liệu gửi lên không hợp lệ."));
+    }
+
+    /** Tham số sai kiểu, ví dụ categoryId=abc. */
+    @ExceptionHandler(TypeMismatchException.class)
+    public ResponseEntity<ApiError> handleTypeMismatch(TypeMismatchException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiError.of("VALIDATION_ERROR", "Tham số gửi lên không hợp lệ."));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
