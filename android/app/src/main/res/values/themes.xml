@@ -1,8 +1,61 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+    <!--
+      Theme HomeFit dùng cho cả sáng và tối: màu đổi theo values-night/colors.xml.
+      Không khai báo lại style này trong values-night (sẽ ghi đè và mất cấu hình).
+    -->
     <style name="Base.Theme.IronFitness" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Màu chính -->
+        <item name="colorPrimary">@color/hf_primary</item>
+        <item name="colorOnPrimary">@color/hf_on_primary</item>
+        <item name="colorPrimaryContainer">@color/hf_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/hf_on_primary_container</item>
+        <item name="colorPrimaryInverse">@color/hf_inverse_primary</item>
+
+        <item name="colorSecondary">@color/hf_secondary</item>
+        <item name="colorOnSecondary">@color/hf_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/hf_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/hf_on_secondary_container</item>
+
+        <item name="colorTertiary">@color/hf_tertiary</item>
+        <item name="colorOnTertiary">@color/hf_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/hf_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/hf_on_tertiary_container</item>
+
+        <item name="colorError">@color/hf_error</item>
+        <item name="colorOnError">@color/hf_on_error</item>
+        <item name="colorErrorContainer">@color/hf_error_container</item>
+        <item name="colorOnErrorContainer">@color/hf_on_error_container</item>
+
+        <!-- Nền và bề mặt -->
+        <item name="android:colorBackground">@color/hf_background</item>
+        <item name="colorOnBackground">@color/hf_on_background</item>
+        <item name="colorSurface">@color/hf_surface</item>
+        <item name="colorOnSurface">@color/hf_on_surface</item>
+        <item name="colorSurfaceVariant">@color/hf_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/hf_on_surface_variant</item>
+        <item name="colorSurfaceContainerLowest">@color/hf_surface_container_lowest</item>
+        <item name="colorSurfaceContainerLow">@color/hf_surface_container_low</item>
+        <item name="colorSurfaceContainer">@color/hf_surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/hf_surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/hf_surface_container_highest</item>
+        <item name="colorSurfaceDim">@color/hf_surface_dim</item>
+        <item name="colorSurfaceBright">@color/hf_surface_bright</item>
+        <item name="colorOutline">@color/hf_outline</item>
+        <item name="colorOutlineVariant">@color/hf_outline_variant</item>
+        <item name="colorSurfaceInverse">@color/hf_inverse_surface</item>
+        <item name="colorOnSurfaceInverse">@color/hf_inverse_on_surface</item>
+
+        <!-- Hình dạng -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.HomeFit.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.HomeFit.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.HomeFit.Large</item>
+
+        <!-- Kiểu mặc định của thành phần -->
+        <item name="materialButtonStyle">@style/Widget.HomeFit.Button</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.HomeFit.Button.Outlined</item>
+        <item name="textInputStyle">@style/Widget.HomeFit.TextInputLayout</item>
+        <item name="materialCardViewStyle">@style/Widget.HomeFit.Card</item>
+        <item name="bottomNavigationStyle">@style/Widget.HomeFit.BottomNavigationView</item>
     </style>
 
     <style name="Theme.IronFitness" parent="Base.Theme.IronFitness" />

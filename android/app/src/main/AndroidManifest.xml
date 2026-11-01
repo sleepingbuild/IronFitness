@@ -18,9 +18,12 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713" />
 
-        <!-- Màn demo AdMob tạm thời, đang là màn khởi động. Agent 2 sẽ chuyển launcher sang Splash. -->
+        <!--
+          W2-TV6-02: MainActivity là màn khởi động (4 tab). Task Splash (W2-TV6-03) sẽ đặt Splash làm điểm vào.
+          Màn demo AdMob giữ lại, không còn là launcher; để mở lại demo, tạm thêm intent-filter MAIN/LAUNCHER cho nó.
+        -->
         <activity
-            android:name=".ui.ads.AdsDemoActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -31,7 +34,7 @@
         </activity>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.ads.AdsDemoActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
     </application>
