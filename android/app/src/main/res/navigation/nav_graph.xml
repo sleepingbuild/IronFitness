@@ -3,8 +3,9 @@
   Đồ thị điều hướng. Điểm vào: Splash. Sau Splash/Đăng nhập/Đăng ký đều xóa toàn bộ ngăn xếp
   (popUpTo nav_graph inclusive) rồi vào tab Tập luyện, nên bấm Back không quay lại màn đăng nhập.
   action_global_login dùng khi đăng xuất hoặc hết phiên.
-  3 tab còn lại (Tập luyện, Lịch sử, Cài đặt) tạm dùng PlaceholderFragment cho đến task sau.
-  Không dùng SafeArgs: truyền tham số bằng Bundle.
+  Tab Tập luyện: Danh mục -> Danh sách bài -> Chi tiết bài -> Buổi tập (Player).
+  Màn Buổi tập và 2 tab Lịch sử, Cài đặt tạm dùng PlaceholderFragment cho đến task sau.
+  Không dùng SafeArgs: truyền tham số bằng Bundle (khóa ở ui/library/LibraryArgs).
 -->
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -61,11 +62,61 @@
             app:popUpToInclusive="true" />
     </fragment>
 
+    <!-- Tab Tập luyện -->
     <fragment
         android:id="@+id/workoutFragment"
-        android:name="com.homefit.app.ui.common.PlaceholderFragment"
+        android:name="com.homefit.app.ui.library.CategoryFragment"
         android:label="@string/nav_workout"
-        tools:layout="@layout/fragment_placeholder" />
+        tools:layout="@layout/fragment_category">
+        <action
+            android:id="@+id/action_category_to_exerciseList"
+            app:destination="@id/exerciseListFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/exerciseListFragment"
+        android:name="com.homefit.app.ui.library.ExerciseListFragment"
+        android:label="@string/nav_exercise_list"
+        tools:layout="@layout/fragment_exercise_list">
+        <argument
+            android:name="categoryId"
+            app:argType="long" />
+        <argument
+            android:name="categoryName"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_exerciseList_to_detail"
+            app:destination="@id/exerciseDetailFragment" />
+        <action
+            android:id="@+id/action_exerciseList_to_player"
+            app:destination="@id/playerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/exerciseDetailFragment"
+        android:name="com.homefit.app.ui.library.ExerciseDetailFragment"
+        android:label="@string/nav_exercise_detail"
+        tools:layout="@layout/fragment_exercise_detail">
+        <argument
+            android:name="categoryId"
+            app:argType="long" />
+        <argument
+            android:name="exerciseId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_detail_to_player"
+            app:destination="@id/playerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/playerFragment"
+        android:name="com.homefit.app.ui.common.PlaceholderFragment"
+        android:label="@string/nav_player"
+        tools:layout="@layout/fragment_placeholder">
+        <argument
+            android:name="categoryId"
+            app:argType="long" />
+    </fragment>
 
     <fragment
         android:id="@+id/historyFragment"

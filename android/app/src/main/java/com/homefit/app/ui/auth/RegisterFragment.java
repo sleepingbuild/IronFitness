@@ -15,6 +15,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.homefit.app.R;
 import com.homefit.app.data.local.entity.UserProfileEntity;
+import com.homefit.app.data.remote.ErrorCodes;
 import com.homefit.app.databinding.FragmentRegisterBinding;
 import com.homefit.app.ui.common.AfterTextChanged;
 import com.homefit.app.ui.common.UiUtils;
@@ -96,7 +97,10 @@ public class RegisterFragment extends Fragment {
                 break;
             case ERROR:
                 setLoading(false);
-                showFormError(ErrorMessages.toText(requireContext(), resource));
+                showFormError(ErrorCodes.UNAUTHORIZED.equals(resource.code)
+                        || ErrorCodes.FORBIDDEN.equals(resource.code)
+                        ? getString(R.string.register_error_unavailable)
+                        : ErrorMessages.toText(requireContext(), resource));
                 break;
             default:
                 break;

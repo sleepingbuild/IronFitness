@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Danh mục -->
+    <string name="library_title">Tập luyện</string>
+    <string name="library_subtitle">Chọn nhóm cơ để bắt đầu</string>
+    <string name="library_empty_categories">Chưa có nhóm cơ nào. Hãy kết nối mạng để tải dữ liệu bài tập.</string>
+
+    <!-- Danh sách bài -->
+    <string name="library_empty_exercises">Nhóm cơ này chưa có bài tập.</string>
+    <string name="library_start_workout">Bắt đầu buổi tập</string>
+
+    <!-- Mô tả bài tập -->
+    <string name="exercise_work_duration">%1$d giây</string>
+    <string name="exercise_work_reps">%1$d lần</string>
+    <string name="exercise_meta">%1$s · Nghỉ %2$d giây</string>
+
+    <!-- Chi tiết bài -->
+    <string name="exercise_detail_title">Chi tiết bài tập</string>
+    <string name="exercise_label_work_duration">Thời gian tập</string>
+    <string name="exercise_label_work_reps">Số lần</string>
+    <string name="exercise_label_rest">Nghỉ sau bài</string>
+    <string name="exercise_description_title">Hướng dẫn</string>
+    <string name="exercise_no_description">Chưa có mô tả cho bài tập này.</string>
+    <string name="exercise_not_found">Không tìm thấy bài tập này.</string>
+    <string name="exercise_media_description">Ảnh minh họa bài tập %1$s</string>
+    <string name="exercise_video_notice">Bài này dùng video. Video sẽ phát trong màn tập.</string>
+
+    <!-- Tên màn hình dùng cho điều hướng -->
+    <string name="nav_exercise_list">Danh sách bài tập</string>
+    <string name="nav_exercise_detail">Chi tiết bài tập</string>
+    <string name="nav_player">Buổi tập</string>
+</resources>
