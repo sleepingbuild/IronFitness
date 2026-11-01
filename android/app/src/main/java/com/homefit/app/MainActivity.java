@@ -86,9 +86,9 @@ public class MainActivity extends AppCompatActivity {
         navController = ((NavHostFragment) host).getNavController();
 
         binding.bottomNav.setOnItemSelectedListener(this::onTabSelected);
-        binding.bottomNav.setOnItemReselectedListener(item -> {
-            // Chọn lại tab đang mở: giữ nguyên màn hình.
-        });
+        binding.bottomNav.setOnItemReselectedListener(item ->
+                // Chọn lại tab đang mở: quay về màn gốc của tab (ví dụ từ Chi tiết bài về Danh mục).
+                navController.popBackStack(item.getItemId(), false));
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             onTopLevelDestination = topLevelDestinations.contains(destination.getId());
             syncBottomNavSelection(destination);
