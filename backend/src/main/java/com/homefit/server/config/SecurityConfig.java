@@ -34,8 +34,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
 /**
- * Hai chuỗi bảo mật: /api/** (JWT, không phiên) và phần còn lại (tạm thời từ chối hết,
- * trang /admin sẽ được thêm ở task W1-TV4-05).
+ * Ba chuỗi bảo mật: /api/** (JWT, không phiên), /admin/** (đăng nhập bằng form, phiên, CSRF, chỉ ADMIN)
+ * và phần còn lại (từ chối hết).
  */
 @Configuration
 @EnableConfigurationProperties({JwtProperties.class, AdminProperties.class})
@@ -105,8 +105,28 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /** Trang quản trị: đăng nhập form + phiên + CSRF (mặc định bật), chỉ vai trò ADMIN. */
     @Bean
     @Order(2)
+    public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/admin/**")
+                .authorizeHttpRequests(a -> a
+                        .requestMatchers("/admin/login").permitAll()
+                        .anyRequest().hasRole("ADMIN"))
+                .formLogin(form -> form
+                        .loginPage("/admin/login")
+                        .loginProcessingUrl("/admin/login")
+                        .defaultSuccessUrl("/admin", true)
+                        .failureUrl("/admin/login?error"))
+                .logout(logout -> logout
+                        .logoutUrl("/admin/logout")
+                        .logoutSuccessUrl("/admin/login?logout"));
+        return http.build();
+    }
+
+    @Bean
+    @Order(3)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(a -> a

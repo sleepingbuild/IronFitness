@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments :: head('Đăng nhập')}"></head>
+<body class="bg-light">
+<main class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5 col-lg-4">
+            <h1 class="h4 text-center mb-4">HomeFit Admin</h1>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="alert alert-danger" th:if="${param.error}">Email hoặc mật khẩu không đúng.</div>
+                    <div class="alert alert-success" th:if="${param.logout}">Bạn đã đăng xuất.</div>
+                    <form th:action="@{/admin/login}" method="post">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="username" name="username" required autofocus>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Mật khẩu</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-dark w-100">Đăng nhập</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

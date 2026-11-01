@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments :: head('Tổng quan')}"></head>
+<body>
+<nav th:replace="~{admin/fragments :: navbar('dashboard')}"></nav>
+<main class="container">
+    <h1 class="h4 mb-4">Tổng quan</h1>
+    <div class="row g-3">
+        <div class="col-6 col-lg-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="display-6" th:text="${stats.users()}">0</div>
+                    <div class="text-muted">Người dùng đã đăng ký</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="display-6" th:text="${stats.sessions()}">0</div>
+                    <div class="text-muted">Lượt tập hoàn thành</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="display-6" th:text="${stats.categories()}">0</div>
+                    <div class="text-muted">Nhóm cơ đang hiện</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <div class="display-6" th:text="${stats.exercises()}">0</div>
+                    <div class="text-muted">Bài tập đang hiện</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>
