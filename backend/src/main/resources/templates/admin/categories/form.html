@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments :: head(${title})}"></head>
+<body>
+<nav th:replace="~{admin/fragments :: navbar('categories')}"></nav>
+<main class="container" style="max-width: 640px;">
+    <h1 class="h4 mb-4" th:text="${title}">Thêm nhóm cơ</h1>
+    <form th:action="@{${formAction}}" th:object="${form}" method="post">
+        <div class="mb-3">
+            <label for="name" class="form-label">Tên nhóm</label>
+            <input type="text" class="form-control" id="name" th:field="*{name}"
+                   th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:errors="*{name}">Lỗi</div>
+        </div>
+        <div class="mb-3">
+            <label for="slug" class="form-label">Slug (chữ thường không dấu, ví dụ abs)</label>
+            <input type="text" class="form-control" id="slug" th:field="*{slug}"
+                   th:classappend="${#fields.hasErrors('slug')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:errors="*{slug}">Lỗi</div>
+        </div>
+        <div class="mb-3">
+            <label for="iconUrl" class="form-label">Địa chỉ ảnh biểu tượng (tùy chọn)</label>
+            <input type="text" class="form-control" id="iconUrl" th:field="*{iconUrl}"
+                   th:classappend="${#fields.hasErrors('iconUrl')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:errors="*{iconUrl}">Lỗi</div>
+        </div>
+        <div class="mb-3">
+            <label for="sortOrder" class="form-label">Thứ tự hiển thị</label>
+            <input type="number" class="form-control" id="sortOrder" th:field="*{sortOrder}"
+                   th:classappend="${#fields.hasErrors('sortOrder')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:errors="*{sortOrder}">Lỗi</div>
+        </div>
+        <div class="form-check mb-4">
+            <input type="checkbox" class="form-check-input" id="active" th:field="*{active}">
+            <label for="active" class="form-check-label">Hiển thị trên ứng dụng</label>
+        </div>
+        <button type="submit" class="btn btn-dark">Lưu</button>
+        <a class="btn btn-outline-secondary" th:href="@{/admin/categories}">Hủy</a>
+    </form>
+</main>
+</body>
+</html>

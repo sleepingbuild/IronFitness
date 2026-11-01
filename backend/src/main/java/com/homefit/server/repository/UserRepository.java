@@ -17,4 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByRole(Role role);
 
     Optional<User> findByGoogleId(String googleId);
+
+    long countByRole(Role role);
 }

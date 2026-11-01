@@ -16,8 +16,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-/** Mọi lỗi của /api/** trả JSON { code, message } đúng docs/API.md. */
-@RestControllerAdvice
+/** Mọi lỗi của controller trong package api (/api/**) trả JSON { code, message } đúng docs/API.md. Trang /admin dùng trang lỗi mặc định. */
+@RestControllerAdvice(basePackages = "com.homefit.server.api")
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);

@@ -14,4 +14,13 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     /** Mọi bản ghi mới đổi sau mốc, kể cả bản vừa bị tắt (để app xóa khỏi Room). */
     List<Category> findByUpdatedAtAfterOrderBySortOrderAscIdAsc(Instant updatedAfter);
+
+    /** Tất cả danh mục (kể cả đã ẩn) cho trang quản trị. */
+    List<Category> findAllByOrderBySortOrderAscIdAsc();
+
+    boolean existsBySlug(String slug);
+
+    boolean existsBySlugAndIdNot(String slug, Long id);
+
+    long countByActiveTrue();
 }
