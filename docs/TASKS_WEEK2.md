@@ -10,6 +10,13 @@ Trạng thái: `[ ]` chưa làm, `[~]` đang làm / chờ duyệt, `[x]` xong v�
 
 Mọi task tuần 1 chưa đạt `[x]` trong `docs/TASKS_WEEK1.md` **chuyển sang tuần 2 và được ưu tiên trước**, giữ nguyên task ID cũ. Agent 1 rà lại danh sách này ngày T2 và ghi vào `BOARD.md`. Không bắt đầu task tuần 2 phụ thuộc vào một task tuần 1 còn dở nếu chưa báo Agent 1.
 
+## Báo cáo nhóm (làm theo từng đợt, không để cuối)
+
+Giảng viên yêu cầu báo cáo gồm bìa, mục lục, lời nói đầu, bảng phân công, công nghệ và 6 chương (tổng quan, use-case, CSDL và ERD, demo, kiểm thử, kết luận) kèm slide. Nhóm làm báo cáo **theo từng đợt**: xong phần nào thêm phần đó.
+- Nguồn nội dung là `docs/report/REPORT_CONTENT.md` (Agent 1 giữ). Một agent riêng (không viết mã) dựng báo cáo và slide từ file này.
+- Các agent khác gửi đóng góp bằng file riêng trong `docs/report/contrib/` và ảnh trong `docs/report/images/`, **không sửa** `REPORT_CONTENT.md`. Task liên quan: `W2-TV1-09`, `W2-TV5-10`, `W2-TV6-09`.
+- Mỗi tính năng làm xong, người làm ghi lại kết quả thật (ảnh chụp, số đo, kết quả test) để đưa vào báo cáo. Không bịa số liệu.
+
 ## Quy trình mỗi task
 
 1. Agent soạn file vào `D:\IronFitnessChanges\<thư-mục-agent>\files\...` (đường dẫn giống repo), ghi `CHANGELOG.md`, báo agent khác qua `BOARD.md` nếu cần.
@@ -38,6 +45,7 @@ Nếu nhóm dùng thêm **Agent 6 – Frontend** (xem `AGENT6_FRONTEND.md`), ph�
 | W2-TV1-06 | Quyết định dùng Media3 ExoPlayer cho video (dựa trên ghi chú W1-TV3-05) và cách làm Calendar (tự làm, không thêm thư viện) | Quyết định ghi vào `ARCHITECTURE.md` | T3 | [ ] |
 | W2-TV1-07 | Dựa trên báo cáo khảo sát, chọn tối đa 2 tính năng mới cho tuần 3–4, cập nhật phạm vi và `docs/API.md`/`docs/DATABASE.md` nếu cần | Backlog tuần 3 (`docs/TASKS_WEEK3.md`, bản nháp) | T6 | [ ] |
 | W2-TV1-08 | Chuẩn bị gói nộp bài nhóm: danh sách minh chứng AdMob, kịch bản demo, người đại diện nộp, kiểm tra không có secret trong repo | `docs/SUBMISSION.md` | T6 | [ ] |
+| W2-TV1-09 | Báo cáo theo đợt: giữ `docs/report/REPORT_CONTENT.md`, tích hợp đóng góp của các agent (`docs/report/contrib/`), cập nhật nhật ký đợt và trạng thái từng mục, gửi cho agent viết báo cáo (không viết mã) | `REPORT_CONTENT.md` đợt 2 | T3 (đợt 1 xong), T6 (đợt 2) | [ ] |
 
 ## TV4 – Agent 4: Backend và Admin Web (ưu tiên đầu tuần vì Android phụ thuộc)
 
@@ -50,7 +58,7 @@ Nếu nhóm dùng thêm **Agent 6 – Frontend** (xem `AGENT6_FRONTEND.md`), ph�
 | W2-TV4-05 | Google login backend: xác thực ID token, tạo hoặc liên kết user theo email (nếu chưa xong ở tuần 1) | `/auth/google` | T4 | [ ] |
 | W2-TV4-06 | Test tích hợp trên MySQL test (schema riêng): đăng ký/đăng nhập/refresh, đồng bộ buổi tập trùng `clientUuid`, dữ liệu người dùng luôn lọc theo user trong token | Test chạy bằng `mvnw verify` | T5 | [ ] |
 | W2-TV4-07 | Cập nhật `docs/SETUP.md`: cách chạy backend, biến môi trường, tạo admin đầu tiên, dữ liệu mẫu, để TV5/TV6 và máy khác chạy được | Tài liệu chạy backend | T3 | [ ] |
-| W2-TV4-08 | Nhận `docs/seed/exercises.csv` bản mở rộng của TV5, viết `V4__seed_more_exercises.sql` | Bài tập mẫu mở rộng | T5 | [ ] |
+| W2-TV4-08 | Nhận `docs/seed/exercises.csv` bản mở rộng của TV5, viết `V5__seed_more_exercises.sql` (V3 là dữ liệu thử, V4 là bài thật đợt đầu; xem `docs/DATABASE.md`) | Bài tập mẫu mở rộng | T5 | [ ] |
 
 Thứ tự: 01 → 02 → 03; 05 và 07 chạy song song.
 
@@ -98,6 +106,7 @@ Khảo sát thị trường là phần **bắt buộc** của tuần 2: giảng 
 | W2-TV5-07 | UI/UX: bản thiết kế hoàn chỉnh cho Lịch sử (Calendar), Thống kê, Cài đặt nhắc tập, tổng kết buổi tập và Admin Web (Dashboard, bài tập); bảng màu, cỡ chữ, khoảng cách ghi thành design tokens để TV6 dùng | `docs/design/` và `docs/design/tokens.md` | T3 | [ ] |
 | W2-TV5-08 | Test case tuần 2: Player (pause, skip, xoay màn hình), Calendar, nhắc tập, đồng bộ offline rồi online, AdMob (banner, interstitial, Premium tắt quảng cáo) | `docs/test/week2.md` | T4 | [ ] |
 | W2-TV5-09 | Test tích hợp cuối tuần trên bản debug với backend thật, báo lỗi theo mức độ | Danh sách lỗi | T6 | [ ] |
+| W2-TV5-10 | Đóng góp báo cáo: kết quả khảo sát (biểu đồ), danh sách kịch bản kiểm thử, số lượng đạt/không đạt, kịch bản hiệu năng và số đo (mục 10 của `REPORT_CONTENT.md`), danh sách lỗi đã sửa | `docs/report/contrib/agent5-dot2-*.md` và ảnh | T6 | [ ] |
 
 Quy tắc khảo sát: tự nguyện, ẩn danh, không thu số điện thoại hoặc email; chỉ dùng dữ liệu cho bài học; ghi rõ nguồn và ngày truy cập khi trích dẫn thông tin đối thủ; nội dung media phải có quyền sử dụng hợp lệ.
 
@@ -122,6 +131,7 @@ Phạm vi: lớp giao diện Android (layout XML, theme, điều hướng, Fragm
 | W2-TV6-06 | Màn Lịch sử (Calendar tháng), Thống kê, Cài đặt nhắc tập, nối vào ViewModel của TV2 | Màn lịch sử và cài đặt | T5 | [ ] |
 | W2-TV6-07 | Đặt vùng banner AdMob (`FrameLayout` `adContainer`) đúng vị trí ở `docs/ADS.md` mục 2 và 5 | Layout có chỗ cho quảng cáo | T4 | [ ] |
 | W2-TV6-08 | Admin Web: layout chung Thymeleaf + Bootstrap, trang Dashboard và Bài tập theo thiết kế của TV5; dùng thuộc tính model do TV4 cung cấp | Template `/admin` | T6 | [ ] |
+| W2-TV6-09 | Đóng góp báo cáo theo `AGENT6_REPORT_TASK.md`: mô tả demo từng màn, ảnh chụp từ bản chạy thật, sơ đồ điều hướng, nguyên tắc thiết kế, khó khăn và giải pháp | `docs/report/contrib/agent6-dot2-*.md` và ảnh | T5–T6 | [ ] |
 
 Phụ thuộc: design tokens của TV5 (W2-TV5-07) và ViewModel của TV2/TV3. Trước đó dùng dữ liệu giả trong layout (`tools:` attributes).
 
