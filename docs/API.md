@@ -115,6 +115,13 @@ Dùng khi đăng nhập máy mới để khôi phục lịch sử vào Room. Ch�
     "totalSeconds": 1200, "exercisesDone": 8 } ]
 ```
 
+### Quy tắc kiểm tra buổi tập (POST /workout-sessions và batch)
+- `clientUuid`: UUID hợp lệ; máy chủ lưu dạng chữ thường. Cùng người dùng gửi lại cùng `clientUuid` luôn trả bản cũ.
+- `startedAt`, `completedAt` bắt buộc; `completedAt` không sớm hơn `startedAt` và không quá 1 ngày trong tương lai (cho phép đồng hồ máy lệch).
+- `totalSeconds` từ 0 đến 86400; `exercisesDone` từ 0 đến 1000; `categoryId` có thể null, nếu có phải tồn tại.
+- Batch: tối đa 100 buổi mỗi lần. Từng buổi được kiểm tra riêng: buổi hợp lệ vào `syncedUuids` (kể cả buổi đã có từ trước), buổi bị từ chối vào `failed` kèm `reason`; một buổi lỗi **không** làm hỏng cả lô. Client chỉ đánh dấu đã đồng bộ các `clientUuid` trong `syncedUuids`.
+- `GET /workout-sessions`: chỉ trả buổi tập của người dùng trong token, lọc theo `completedAt` trong khoảng `from` đến `to` (bỏ trống thì lấy toàn bộ), mới nhất trước.
+
 ## 5. Admin API (role ADMIN, tùy chọn)
 
 Admin Web dùng controller Thymeleaf riêng tại `/admin`. Nếu cần API cho công cụ khác:
