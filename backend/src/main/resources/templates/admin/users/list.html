@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments :: head('Người dùng')}"></head>
+<body>
+<nav th:replace="~{admin/fragments :: navbar('users')}"></nav>
+<main class="container">
+    <h1 class="h4 mb-3">Người dùng (200 người mới nhất)</h1>
+    <div class="alert alert-success" th:if="${message}" th:text="${message}">Đã lưu.</div>
+    <p class="text-muted">Người dùng Premium không thấy quảng cáo trong ứng dụng. Thay đổi có hiệu lực khi họ mở lại ứng dụng.</p>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Tên hiển thị</th>
+                <th>Premium</th>
+                <th>Ngày đăng ký</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="u : ${rows}">
+                <td th:text="${u.id()}">1</td>
+                <td th:text="${u.email()}">a@mail.com</td>
+                <td th:text="${u.displayName()}">An</td>
+                <td>
+                    <span class="badge bg-warning text-dark" th:if="${u.premium()}">Premium</span>
+                    <span class="badge bg-secondary" th:unless="${u.premium()}">Thường</span>
+                </td>
+                <td th:text="${u.createdAtText()}">01/01/2026 08:00</td>
+                <td class="text-end">
+                    <form class="d-inline" method="post" th:action="@{/admin/users/{id}/premium(id=${u.id()})}">
+                        <button type="submit" class="btn btn-sm btn-outline-dark"
+                                th:text="${u.premium()} ? 'Tắt Premium' : 'Bật Premium'">Bật Premium</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(rows)}">
+                <td colspan="6" class="text-center text-muted">Chưa có người dùng nào.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments :: head(${title})}"></head>
+<body>
+<nav th:replace="~{admin/fragments :: navbar('exercises')}"></nav>
+<main class="container" style="max-width: 720px;">
+    <h1 class="h4 mb-4" th:text="${title}">Thêm bài tập</h1>
+    <form th:action="@{${formAction}}" th:object="${form}" method="post">
+        <div class="mb-3">
+            <label for="categoryId" class="form-label">Nhóm cơ</label>
+            <select class="form-select" id="categoryId" th:field="*{categoryId}"
+                    th:classappend="${#fields.hasErrors('categoryId')} ? 'is-invalid'">
+                <option value="">-- Chọn nhóm cơ --</option>
+                <option th:each="o : ${categoryOptions}" th:value="${o.id()}" th:text="${o.name()}">Bụng</option>
+            </select>
+            <div class="invalid-feedback" th:errors="*{categoryId}">Lỗi</div>
+        </div>
+        <div class="mb-3">
+            <label for="name" class="form-label">Tên bài tập</label>
+            <input type="text" class="form-control" id="name" th:field="*{name}"
+                   th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:errors="*{name}">Lỗi</div>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Mô tả cách thực hiện</label>
+            <textarea class="form-control" id="description" rows="4" th:field="*{description}"
+                      th:classappend="${#fields.hasErrors('description')} ? 'is-invalid'"></textarea>
+            <div class="invalid-feedback" th:errors="*{description}">Lỗi</div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="mediaType" class="form-label">Loại media</label>
+                <select class="form-select" id="mediaType" th:field="*{mediaType}">
+                    <option value="GIF">Ảnh GIF</option>
+                    <option value="VIDEO">Video</option>
+                </select>
+            </div>
+            <div class="col-md-8 mb-3">
+                <label for="mediaUrl" class="form-label">Địa chỉ ảnh hoặc video (http/https)</label>
+                <input type="text" class="form-control" id="mediaUrl" th:field="*{mediaUrl}"
+                       th:classappend="${#fields.hasErrors('mediaUrl')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:errors="*{mediaUrl}">Lỗi</div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Xem trước</label>
+            <div>
+                <img id="mediaPreview" alt="Xem trước" th:src="${form.mediaUrl}"
+                     style="max-width: 320px; max-height: 240px;"
+                     th:style="${#strings.isEmpty(form.mediaUrl)} ? 'display:none' : 'max-width: 320px; max-height: 240px;'">
+            </div>
+            <div class="form-text">Chỉ ảnh GIF được xem trước. Nếu ảnh không hiện, kiểm tra lại đường dẫn có còn sống không.</div>
+        </div>
+        <div class="row">
+            <div class="col-md-5 mb-3">
+                <label for="mode" class="form-label">Cách tính</label>
+                <select class="form-select" id="mode" th:field="*{mode}">
+                    <option value="DURATION">Theo thời gian (giây)</option>
+                    <option value="REPS">Theo số lần</option>
+                </select>
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="amount" class="form-label">Giá trị</label>
+                <input type="number" class="form-control" id="amount" th:field="*{amount}"
+                       th:classappend="${#fields.hasErrors('amount')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:errors="*{amount}">Lỗi</div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="restSec" class="form-label">Nghỉ sau bài (giây)</label>
+                <input type="number" class="form-control" id="restSec" th:field="*{restSec}"
+                       th:classappend="${#fields.hasErrors('restSec')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:errors="*{restSec}">Lỗi</div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="sortOrder" class="form-label">Thứ tự hiển thị</label>
+            <input type="number" class="form-control" id="sortOrder" th:field="*{sortOrder}"
+                   th:classappend="${#fields.hasErrors('sortOrder')} ? 'is-invalid'">
+            <div class="invalid-feedback" th:errors="*{sortOrder}">Lỗi</div>
+        </div>
+        <div class="form-check mb-4">
+            <input type="checkbox" class="form-check-input" id="active" th:field="*{active}">
+            <label for="active" class="form-check-label">Hiển thị trên ứng dụng</label>
+        </div>
+        <button type="submit" class="btn btn-dark">Lưu</button>
+        <a class="btn btn-outline-secondary" th:href="@{/admin/exercises}">Hủy</a>
+    </form>
+</main>
+<script>
+    (function () {
+        var input = document.getElementById('mediaUrl');
+        var img = document.getElementById('mediaPreview');
+        input.addEventListener('change', function () {
+            var value = input.value.trim();
+            if (/^https?:\/\//.test(value)) {
+                img.src = value;
+                img.style.display = 'block';
+            } else {
+                img.style.display = 'none';
+            }
+        });
+    })();
+</script>
+</body>
+</html>

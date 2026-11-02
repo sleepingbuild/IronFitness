@@ -1,0 +1,109 @@
+package com.homefit.server.admin;
+
+import com.homefit.server.service.AdminExerciseService;
+
+import jakarta.validation.Valid;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+/** Quản lý bài tập: danh sách (lọc theo nhóm cơ), thêm, sửa, ẩn/hiện. */
+@Controller
+@RequestMapping("/admin/exercises")
+public class AdminExerciseController {
+
+    private static final String FORM_VIEW = "admin/exercises/form";
+    private static final String LIST_URL = "redirect:/admin/exercises";
+
+    private final AdminExerciseService service;
+
+    public AdminExerciseController(AdminExerciseService service) {
+        this.service = service;
+    }
+
+    @GetMapping
+    public String list(@RequestParam(required = false) Long categoryId, Model model) {
+        model.addAttribute("rows", service.listRows(categoryId));
+        model.addAttribute("categoryOptions", service.categoryOptions());
+        model.addAttribute("selectedCategoryId", categoryId);
+        return "admin/exercises/list";
+    }
+
+    @GetMapping("/new")
+    public String newForm(@RequestParam(required = false) Long categoryId, Model model) {
+        ExerciseForm form = new ExerciseForm();
+        form.setCategoryId(categoryId);
+        prepare(model, form, "Thêm bài tập", "/admin/exercises");
+        return FORM_VIEW;
+    }
+
+    @PostMapping
+    public String create(@Valid @ModelAttribute("form") ExerciseForm form, BindingResult result,
+                         Model model, RedirectAttributes redirect) {
+        checkExtra(form, result);
+        if (result.hasErrors()) {
+            fillView(model, "Thêm bài tập", "/admin/exercises");
+            return FORM_VIEW;
+        }
+        service.create(form);
+        redirect.addFlashAttribute("message", "Đã thêm bài tập.");
+        return LIST_URL;
+    }
+
+    @GetMapping("/{id}/edit")
+    public String editForm(@PathVariable Long id, Model model) {
+        prepare(model, service.formFor(id), "Sửa bài tập", "/admin/exercises/" + id);
+        return FORM_VIEW;
+    }
+
+    @PostMapping("/{id}")
+    public String update(@PathVariable Long id, @Valid @ModelAttribute("form") ExerciseForm form,
+                         BindingResult result, Model model, RedirectAttributes redirect) {
+        checkExtra(form, result);
+        if (result.hasErrors()) {
+            fillView(model, "Sửa bài tập", "/admin/exercises/" + id);
+            return FORM_VIEW;
+        }
+        service.update(id, form);
+        redirect.addFlashAttribute("message", "Đã lưu thay đổi.");
+        return LIST_URL;
+    }
+
+    @PostMapping("/{id}/toggle")
+    public String toggle(@PathVariable Long id, RedirectAttributes redirect) {
+        service.toggle(id);
+        redirect.addFlashAttribute("message", "Đã đổi trạng thái hiển thị.");
+        return LIST_URL;
+    }
+
+    private void prepare(Model model, ExerciseForm form, String title, String action) {
+        model.addAttribute("form", form);
+        fillView(model, title, action);
+    }
+
+    private void fillView(Model model, String title, String action) {
+        model.addAttribute("title", title);
+        model.addAttribute("formAction", action);
+        model.addAttribute("categoryOptions", service.categoryOptions());
+    }
+
+    /** Các kiểm tra không diễn đạt được bằng chú thích: giới hạn theo chế độ và nhóm cơ có tồn tại. */
+    private void checkExtra(ExerciseForm form, BindingResult result) {
+        String problem = form.amountProblem();
+        if (problem != null && !result.hasFieldErrors("amount")) {
+            result.rejectValue("amount", "range", problem);
+        }
+        if (form.getCategoryId() != null && !result.hasFieldErrors("categoryId")
+                && !service.categoryExists(form.getCategoryId())) {
+            result.rejectValue("categoryId", "missing", "Nhóm cơ không tồn tại");
+        }
+    }
+}
