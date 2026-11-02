@@ -33,8 +33,8 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 /**
- * Hồ sơ cá nhân: họ tên, chiều cao, cân nặng, BMI tính trực tiếp khi gõ, lưu và đăng xuất (W2-TV6-03).
- * Chiều cao và cân nặng là tùy chọn; để trống thì chỉ không có BMI.
+ * Há»“ sÆ¡ cÃ¡ nhÃ¢n: há» tÃªn, chiá»u cao, cÃ¢n náº·ng, BMI tÃ­nh trá»±c tiáº¿p khi gÃµ, lÆ°u vÃ  Ä‘Äƒng xuáº¥t (W2-TV6-03).
+ * Chiá»u cao vÃ  cÃ¢n náº·ng lÃ  tÃ¹y chá»n; Ä‘á»ƒ trá»‘ng thÃ¬ chá»‰ khÃ´ng cÃ³ BMI.
  */
 public class ProfileFragment extends Fragment {
 
@@ -170,7 +170,7 @@ public class ProfileFragment extends Fragment {
         NavHostFragment.findNavController(this).navigate(R.id.action_global_login);
     }
 
-    /** Cập nhật thẻ BMI theo chữ đang gõ. Chỉ hiện khi cả hai số đều hợp lệ. */
+    /** Cáº­p nháº­t tháº» BMI theo chá»¯ Ä‘ang gÃµ. Chá»‰ hiá»‡n khi cáº£ hai sá»‘ Ä‘á»u há»£p lá»‡. */
     private void renderBmi() {
         if (binding == null) {
             return;
@@ -223,7 +223,7 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    /** Đọc số thập phân, chấp nhận cả dấu phẩy và dấu chấm. Trả null nếu trống hoặc sai. */
+    /** Äá»c sá»‘ tháº­p phÃ¢n, cháº¥p nháº­n cáº£ dáº¥u pháº©y vÃ  dáº¥u cháº¥m. Tráº£ null náº¿u trá»‘ng hoáº·c sai. */
     @Nullable
     private static Double parseDecimal(@NonNull String raw) {
         String text = raw.trim().replace(',', '.');
@@ -265,3 +265,4 @@ public class ProfileFragment extends Fragment {
         super.onDestroyView();
     }
 }
+
