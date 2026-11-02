@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
-  Đồ thị điều hướng. Điểm vào: Splash. Sau Splash/Đăng nhập/Đăng ký đều xóa toàn bộ ngăn xếp
-  (popUpTo nav_graph inclusive) rồi vào tab Tập luyện, nên bấm Back không quay lại màn đăng nhập.
-  action_global_login dùng khi đăng xuất hoặc hết phiên.
-  Tab Tập luyện: Danh mục -> Danh sách bài -> Chi tiết bài -> Buổi tập (Player).
-  Màn Buổi tập và 2 tab Lịch sử, Cài đặt tạm dùng PlaceholderFragment cho đến task sau.
-  Không dùng SafeArgs: truyền tham số bằng Bundle (khóa ở ui/library/LibraryArgs).
+  Äá»“ thá»‹ Ä‘iá»u hÆ°á»›ng. Äiá»ƒm vÃ o: Splash. Sau Splash/ÄÄƒng nháº­p/ÄÄƒng kÃ½ Ä‘á»u xÃ³a toÃ n bá»™ ngÄƒn xáº¿p
+  (popUpTo nav_graph inclusive) rá»“i vÃ o tab Táº­p luyá»‡n, nÃªn báº¥m Back khÃ´ng quay láº¡i mÃ n Ä‘Äƒng nháº­p.
+  action_global_login dÃ¹ng khi Ä‘Äƒng xuáº¥t hoáº·c háº¿t phiÃªn.
+  Tab Táº­p luyá»‡n: Danh má»¥c -> Danh sÃ¡ch bÃ i -> Chi tiáº¿t bÃ i -> Buá»•i táº­p (Player).
+  MÃ n Buá»•i táº­p vÃ  2 tab Lá»‹ch sá»­, CÃ i Ä‘áº·t táº¡m dÃ¹ng PlaceholderFragment cho Ä‘áº¿n task sau.
+  KhÃ´ng dÃ¹ng SafeArgs: truyá»n tham sá»‘ báº±ng Bundle (khÃ³a á»Ÿ ui/library/LibraryArgs).
 -->
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -62,7 +62,7 @@
             app:popUpToInclusive="true" />
     </fragment>
 
-    <!-- Tab Tập luyện -->
+    <!-- Tab Táº­p luyá»‡n -->
     <fragment
         android:id="@+id/workoutFragment"
         android:name="com.homefit.app.ui.library.CategoryFragment"
@@ -135,4 +135,6 @@
         android:name="com.homefit.app.ui.common.PlaceholderFragment"
         android:label="@string/nav_settings"
         tools:layout="@layout/fragment_placeholder" />
+    <fragment android:id="@+id/workoutSummaryFragment" android:name="com.homefit.app.ui.player.WorkoutSummaryFragment" android:label="Tổng kết" tools:layout="@layout/fragment_workout_summary"><argument android:name="totalExercises" app:argType="integer" /><argument android:name="totalSeconds" app:argType="integer" /></fragment>
 </navigation>
+
