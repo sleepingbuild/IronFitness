@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="history_title">Lịch sử &amp; Thống kê</string>
+    <string name="history_subtitle">Theo dõi quá trình tập luyện của bạn</string>
+
+    <!-- Thống kê tổng -->
+    <string name="stats_total_sessions_label">Tổng số buổi</string>
+    <string name="stats_total_minutes_label">Tổng số phút</string>
+    <string name="stats_sessions_format">%1$d</string>
+    <string name="stats_minutes_format">%1$d</string>
+
+    <!-- Điều hướng tháng -->
+    <string name="calendar_prev_month">Tháng trước</string>
+    <string name="calendar_next_month">Tháng sau</string>
+    <string name="calendar_today">Hôm nay</string>
+    <string name="calendar_month_year_format">Tháng %1$d, %2$d</string>
+
+    <!-- Thứ trong tuần (Thứ 2 -> Chủ nhật) -->
+    <string name="dow_mon">T2</string>
+    <string name="dow_tue">T3</string>
+    <string name="dow_wed">T4</string>
+    <string name="dow_thu">T5</string>
+    <string name="dow_fri">T6</string>
+    <string name="dow_sat">T7</string>
+    <string name="dow_sun">CN</string>
+
+    <!-- Danh sách buổi tập theo ngày -->
+    <string name="history_selected_date_format">Buổi tập ngày %1$s</string>
+    <string name="history_empty_day">Chưa có buổi tập nào trong ngày này.</string>
+    <string name="history_category_fallback">Buổi tập tự do</string>
+    <string name="history_session_meta_format">%1$d bài hoàn thành · %2$s</string>
+    <string name="history_duration_min_sec">%1$d phút %2$d giây</string>
+    <string name="history_duration_min_only">%1$d phút</string>
+    <string name="history_duration_sec_only">%1$d giây</string>
+    <string name="history_status_synced">Đã đồng bộ</string>
+    <string name="history_status_pending">Chờ đồng bộ</string>
+    <string name="history_action_sync">Đồng bộ</string>
+    <string name="history_sync_started">Đang đồng bộ lịch sử lên máy chủ…</string>
+</resources>
