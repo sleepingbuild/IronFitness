@@ -33,7 +33,7 @@ Quy ước thêm cho tuần 2:
 
 Nếu nhóm dùng thêm **Agent 6 – Frontend** (xem `AGENT6_FRONTEND.md`), phần **giao diện** của TV2 và TV3 (layout XML, Fragment hiển thị, adapter) chuyển sang TV6; TV2/TV3 giữ **ViewModel, logic, thông báo, timer** và phải giao ViewModel (danh sách LiveData và hàm công khai) **trước** để TV6 nối vào. Các dòng đánh dấu `[UI]` bên dưới là phần chuyển cho TV6. Nếu không có Agent 6, TV2/TV3 làm cả hai phần như tuần 1.
 
-## TV1 – Agent 1: Tech Lead / PM
+## TV1 – Hoàng Phi: Tech Lead / PM
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -47,7 +47,7 @@ Nếu nhóm dùng thêm **Agent 6 – Frontend** (xem `AGENT6_FRONTEND.md`), ph�
 | W2-TV1-08 | Chuẩn bị gói nộp bài nhóm: danh sách minh chứng AdMob, kịch bản demo, người đại diện nộp, kiểm tra không có secret trong repo | `docs/SUBMISSION.md` | T6 | [ ] |
 | W2-TV1-09 | Báo cáo theo đợt: giữ `docs/report/REPORT_CONTENT.md`, tích hợp đóng góp của các agent (`docs/report/contrib/`), cập nhật nhật ký đợt và trạng thái từng mục, gửi cho agent viết báo cáo (không viết mã) | `REPORT_CONTENT.md` đợt 2 | T3 (đợt 1 xong), T6 (đợt 2) | [ ] |
 
-## TV4 – Agent 4: Backend và Admin Web (ưu tiên đầu tuần vì Android phụ thuộc)
+## TV4 – Quang Anh: Backend và Admin Web (ưu tiên đầu tuần vì Android phụ thuộc)
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -62,7 +62,7 @@ Nếu nhóm dùng thêm **Agent 6 – Frontend** (xem `AGENT6_FRONTEND.md`), ph�
 
 Thứ tự: 01 → 02 → 03; 05 và 07 chạy song song.
 
-## TV2 – Agent 2: Android A (Tài khoản, Lịch sử, Nhắc tập)
+## TV2 – Tuấn Kiệt: Android A (Tài khoản, Lịch sử, Nhắc tập)
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -77,7 +77,7 @@ Thứ tự: 01 → 02 → 03; 05 và 07 chạy song song.
 
 Phụ thuộc: API Auth và `/workout-sessions` từ TV4 (W2-TV4-01, W2-TV4-02). Trước đó dùng dữ liệu giả.
 
-## TV3 – Agent 3: Android B (Thư viện bài tập, Workout Player)
+## TV3 – Văn Quang: Android B (Thư viện bài tập, Workout Player)
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -91,7 +91,7 @@ Phụ thuộc: API Auth và `/workout-sessions` từ TV4 (W2-TV4-01, W2-TV4-02).
 
 Phụ thuộc: bài tập mẫu mở rộng từ TV5 (W2-TV5-06) và API đọc từ TV4. Trước đó dùng dữ liệu chèn vào Room.
 
-## TV5 – Agent 5: UI/UX, QA, Content và **Khảo sát thị trường**
+## TV5 – Văn Huân: UI/UX, QA, Content và **Khảo sát thị trường**
 
 Khảo sát thị trường là phần **bắt buộc** của tuần 2: giảng viên yêu cầu app có tính ứng dụng thực tế, nên nhóm phải có bằng chứng về nhu cầu người dùng, đối thủ và định hướng tính năng. Toàn nhóm cùng tham gia thu thập phản hồi (mục W2-ALL-01).
 
@@ -117,7 +117,7 @@ Quy tắc khảo sát: tự nguyện, ẩn danh, không thu số điện thoại
 | W2-ALL-01 | Mỗi thành viên gửi bảng hỏi cho ít nhất 10 người ngoài nhóm và nhắc điền; báo số phản hồi đạt được lên `BOARD.md` | Từ 50 phản hồi trở lên | T4 | [ ] |
 | W2-ALL-02 | Mỗi thành viên đọc báo cáo thị trường và góp ý một điểm (phản biện, bổ sung hoặc câu hỏi) trước buổi chốt | Góp ý ghi vào `BOARD.md` | T5 | [ ] |
 
-## TV6 – Agent 6: Frontend (chỉ khi nhóm dùng Agent 6, xem `AGENT6_FRONTEND.md`)
+## TV6 – All: Frontend
 
 Phạm vi: lớp giao diện Android (layout XML, theme, điều hướng, Fragment hiển thị, adapter) và, sau khi xong Android, template Admin Web. Không viết logic nghiệp vụ, không gọi Room/Retrofit trực tiếp.
 
