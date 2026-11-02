@@ -28,7 +28,7 @@ public class ProfileViewModel extends AndroidViewModel {
         profile = authRepository.getProfile();
     }
 
-    /** Hồ sơ trong Room (nguồn dữ liệu của màn hình). */
+    /** Há»“ sÆ¡ trong Room (nguá»“n dá»¯ liá»‡u cá»§a mÃ n hÃ¬nh). */
     public LiveData<UserProfileEntity> getProfile() {
         return profile;
     }
@@ -37,12 +37,12 @@ public class ProfileViewModel extends AndroidViewModel {
         return saving;
     }
 
-    /** Kết quả lần lưu gần nhất, chỉ xử lý một lần (Snackbar, điều hướng). */
+    /** Káº¿t quáº£ láº§n lÆ°u gáº§n nháº¥t, chá»‰ xá»­ lÃ½ má»™t láº§n (Snackbar, Ä‘iá»u hÆ°á»›ng). */
     public LiveData<Event<Resource<UserProfileEntity>>> getSaveResult() {
         return saveResult;
     }
 
-    /** Đã điền sẵn các ô nhập từ hồ sơ hay chưa (để xoay màn hình không ghi đè chữ đang gõ). */
+    /** ÄÃ£ Ä‘iá»n sáºµn cÃ¡c Ã´ nháº­p tá»« há»“ sÆ¡ hay chÆ°a (Ä‘á»ƒ xoay mÃ n hÃ¬nh khÃ´ng ghi Ä‘Ã¨ chá»¯ Ä‘ang gÃµ). */
     public boolean isFormPrefilled() {
         return formPrefilled;
     }
@@ -71,3 +71,4 @@ public class ProfileViewModel extends AndroidViewModel {
         authRepository.logout();
     }
 }
+
