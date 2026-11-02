@@ -1,102 +1,304 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/windowBackground">
+    android:background="?attr/colorSurface"
+    android:orientation="vertical">
 
-    <!-- Header Stats -->
-    <LinearLayout
-        android:id="@+id/llStats"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="24dp"
-        android:weightSum="2"
-        android:background="?attr/colorSurfaceVariant"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center">
+            android:padding="@dimen/screen_padding">
 
+            <!-- Tiêu đề & Nút đồng bộ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvHistoryTitle"
+                        style="@style/TextAppearance.HomeFit.Headline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/history_title" />
+
+                    <TextView
+                        android:id="@+id/tvHistorySubtitle"
+                        style="@style/TextAppearance.HomeFit.BodySmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_xs"
+                        android:text="@string/history_subtitle"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSyncHistory"
+                    style="@style/Widget.HomeFit.Button.Text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/history_action_sync" />
+            </LinearLayout>
+
+            <!-- 2 Thẻ Thống Kê: Tổng số buổi & Tổng số phút -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.HomeFit.Card"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/space_xs"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/space_lg">
+
+                        <TextView
+                            android:id="@+id/tvTotalSessionsValue"
+                            style="@style/TextAppearance.HomeFit.Headline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="?attr/colorPrimary"
+                            tools:text="12" />
+
+                        <TextView
+                            style="@style/TextAppearance.HomeFit.BodySmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_xs"
+                            android:text="@string/stats_total_sessions_label"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.HomeFit.Card"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/space_xs"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/space_lg">
+
+                        <TextView
+                            android:id="@+id/tvTotalMinutesValue"
+                            style="@style/TextAppearance.HomeFit.Headline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="?attr/colorPrimary"
+                            tools:text="95" />
+
+                        <TextView
+                            style="@style/TextAppearance.HomeFit.BodySmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/space_xs"
+                            android:text="@string/stats_total_minutes_label"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- Thẻ Calendar Tháng -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.HomeFit.Card.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_lg">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/space_md">
+
+                    <!-- Thanh điều hướng tháng -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:id="@+id/btnPrevMonth"
+                            android:layout_width="@dimen/touch_min"
+                            android:layout_height="@dimen/touch_min"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/calendar_prev_month"
+                            android:src="@drawable/ic_chevron_left" />
+
+                        <TextView
+                            android:id="@+id/tvMonthYear"
+                            style="@style/TextAppearance.HomeFit.Title"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            tools:text="Tháng 11, 2026" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnToday"
+                            style="@style/Widget.HomeFit.Button.Text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/calendar_today" />
+
+                        <ImageButton
+                            android:id="@+id/btnNextMonth"
+                            android:layout_width="@dimen/touch_min"
+                            android:layout_height="@dimen/touch_min"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/calendar_next_month"
+                            android:src="@drawable/ic_chevron_right" />
+                    </LinearLayout>
+
+                    <!-- Hàng tiêu đề Thứ 2 -> Chủ Nhật -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_sm"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextAppearance.HomeFit.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/dow_mon"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
+                        <TextView
+                            style="@style/TextAppearance.HomeFit.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/dow_tue"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
+                        <TextView
+                            style="@style/TextAppearance.HomeFit.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/dow_wed"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
+                        <TextView
+                            style="@style/TextAppearance.HomeFit.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/dow_thu"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
+                        <TextView
+                            style="@style/TextAppearance.HomeFit.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/dow_fri"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
+                        <TextView
+                            style="@style/TextAppearance.HomeFit.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/dow_sat"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
+                        <TextView
+                            style="@style/TextAppearance.HomeFit.Caption"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/dow_sun"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+                    </LinearLayout>
+
+                    <!-- Lưới 7 cột các ngày trong tháng -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvCalendarDays"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_xs"
+                        android:nestedScrollingEnabled="false"
+                        tools:itemCount="35"
+                        tools:listitem="@layout/item_calendar_day" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Danh sách buổi tập của ngày đang chọn -->
             <TextView
-                android:id="@+id/tvTotalWorkouts"
+                android:id="@+id/tvSelectedDateHeader"
+                style="@style/TextAppearance.HomeFit.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceHeadlineMedium"
-                android:textStyle="bold"
-                android:textColor="?attr/colorPrimary"
-                tools:text="15" />
+                android:layout_marginTop="@dimen/space_xl"
+                tools:text="Buổi tập ngày 02/11/2026" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tvEmptyDaySessions"
+                style="@style/TextAppearance.HomeFit.Body"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Buổi tập"
-                android:textAppearance="?attr/textAppearanceBodyMedium" />
+                android:layout_marginTop="@dimen/space_md"
+                android:text="@string/history_empty_day"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvDaySessions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/space_md"
+                android:nestedScrollingEnabled="false"
+                tools:itemCount="2"
+                tools:listitem="@layout/item_workout_log" />
         </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="?attr/dividerHorizontal" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/tvTotalMinutes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceHeadlineMedium"
-                android:textStyle="bold"
-                android:textColor="?attr/colorPrimary"
-                tools:text="150" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Phút tập"
-                android:textAppearance="?attr/textAppearanceBodyMedium" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <CalendarView
-        android:id="@+id/calendarView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        app:layout_constraintTop_toBottomOf="@id/llStats"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="16dp"
-        android:text="Do hạn chế của Android CalendarView mặc định, màn hình này hiện chỉ mang tính chất hiển thị ngày tháng. (Tuần sau Agent 6 sẽ custom lại lịch có đánh dấu chấm tròn sau nhé!)."
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:textAlignment="center"
-        app:layout_constraintTop_toBottomOf="@id/calendarView" />
-        
+    <!-- Vùng đặt Banner AdMob (docs/ADS.md mục 2 & 5) -->
     <FrameLayout
         android:id="@+id/adContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:background="?attr/colorSurface" />
+</LinearLayout>

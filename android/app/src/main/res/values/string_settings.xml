@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Cài đặt</string>
+    <string name="settings_subtitle">Quản lý nhắc tập hằng ngày và phiên đăng nhập</string>
+
+    <!-- Nhắc tập -->
+    <string name="settings_reminder_section">Nhắc tập hằng ngày</string>
+    <string name="settings_reminder_switch_title">Bật nhắc tập mỗi ngày</string>
+    <string name="settings_reminder_switch_desc">Hiển thị thông báo nhắc nhở bạn luyện tập đúng giờ</string>
+    <string name="settings_reminder_time_label">Giờ nhắc</string>
+    <string name="settings_reminder_change_time">Đổi giờ</string>
+    <string name="settings_reminder_picker_title">Chọn giờ nhắc tập</string>
+    <string name="settings_reminder_status_on">Đang hẹn nhắc lúc %1$s hằng ngày</string>
+    <string name="settings_reminder_status_off">Đang tắt nhắc tập</string>
+    <string name="settings_reminder_saved_on">Đã bật nhắc tập lúc %1$s hằng ngày</string>
+    <string name="settings_reminder_saved_off">Đã tắt nhắc tập hằng ngày</string>
+    <string name="settings_permission_denied">Vui lòng cấp quyền Thông báo trong Cài đặt máy để nhận nhắc tập.</string>
+
+    <!-- Tài khoản -->
+    <string name="settings_account_section">Tài khoản</string>
+    <string name="settings_account_default_name">Học viên HomeFit</string>
+    <string name="settings_account_email_unknown">Đã đăng nhập</string>
+    <string name="settings_account_plan_premium">Tài khoản Premium (Đã tắt quảng cáo)</string>
+    <string name="settings_account_plan_standard">Tài khoản Tiêu chuẩn (Có quảng cáo)</string>
+    <string name="settings_logout_btn">Đăng xuất</string>
+    <string name="settings_logout_dialog_title">Đăng xuất tài khoản?</string>
+    <string name="settings_logout_dialog_msg">Bạn sẽ cần đăng nhập lại để tiếp tục. Lịch sử tập luyện của bạn vẫn được giữ an toàn.</string>
+    <string name="settings_logout_confirm">Đăng xuất</string>
+</resources>
