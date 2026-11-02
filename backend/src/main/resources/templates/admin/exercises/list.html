@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments :: head('Bài tập')}"></head>
+<body>
+<nav th:replace="~{admin/fragments :: navbar('exercises')}"></nav>
+<main class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h4 m-0">Bài tập</h1>
+        <a class="btn btn-dark" th:href="@{/admin/exercises/new(categoryId=${selectedCategoryId})}">Thêm bài tập</a>
+    </div>
+    <div class="alert alert-success" th:if="${message}" th:text="${message}">Đã lưu.</div>
+    <form class="row g-2 mb-3" method="get" th:action="@{/admin/exercises}">
+        <div class="col-auto">
+            <select class="form-select" name="categoryId">
+                <option value="">Tất cả nhóm cơ</option>
+                <option th:each="o : ${categoryOptions}" th:value="${o.id()}" th:text="${o.name()}"
+                        th:selected="${selectedCategoryId != null and selectedCategoryId == o.id()}">Bụng</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-dark">Lọc</button>
+        </div>
+    </form>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nhóm</th>
+                <th>Tên bài</th>
+                <th>Cách tính</th>
+                <th>Nghỉ</th>
+                <th>Loại</th>
+                <th>Trạng thái</th>
+                <th>Cập nhật</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="e : ${rows}">
+                <td th:text="${e.id()}">1</td>
+                <td th:text="${e.categoryName()}">Bụng</td>
+                <td th:text="${e.name()}">Plank</td>
+                <td th:text="${e.modeText()}">30 giây</td>
+                <td th:text="${e.restSec()} + ' giây'">15 giây</td>
+                <td th:text="${e.mediaType()}">GIF</td>
+                <td>
+                    <span class="badge bg-success" th:if="${e.active()}">Đang hiện</span>
+                    <span class="badge bg-secondary" th:unless="${e.active()}">Đã ẩn</span>
+                </td>
+                <td th:text="${e.updatedAtText()}">01/01/2026 08:00</td>
+                <td class="text-end text-nowrap">
+                    <a class="btn btn-sm btn-outline-dark" th:href="@{/admin/exercises/{id}/edit(id=${e.id()})}">Sửa</a>
+                    <form class="d-inline" method="post" th:action="@{/admin/exercises/{id}/toggle(id=${e.id()})}">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary"
+                                th:text="${e.active()} ? 'Ẩn' : 'Hiện lại'">Ẩn</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(rows)}">
+                <td colspan="9" class="text-center text-muted">Chưa có bài tập nào.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>
