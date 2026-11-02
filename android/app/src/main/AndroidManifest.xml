@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <application
         android:name=".HomeFitApp"
         android:allowBackup="true"
@@ -13,14 +15,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.IronFitness">
 
-        <!-- AdMob: App ID THỬ NGHIỆM của Google (xem docs/ADS.md). Thiếu thẻ này app sẽ crash khi khởi động. -->
+        <!-- AdMob: App ID THá»¬ NGHIá»†M cá»§a Google (xem docs/ADS.md). Thiáº¿u tháº» nÃ y app sáº½ crash khi khá»Ÿi Ä‘á»™ng. -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713" />
 
         <!--
-          W2-TV6-02: MainActivity là màn khởi động (4 tab). Task Splash (W2-TV6-03) sẽ đặt Splash làm điểm vào.
-          Màn demo AdMob giữ lại, không còn là launcher; để mở lại demo, tạm thêm intent-filter MAIN/LAUNCHER cho nó.
+          W2-TV6-02: MainActivity lÃ  mÃ n khá»Ÿi Ä‘á»™ng (4 tab). Task Splash (W2-TV6-03) sáº½ Ä‘áº·t Splash lÃ m Ä‘iá»ƒm vÃ o.
+          MÃ n demo AdMob giá»¯ láº¡i, khÃ´ng cÃ²n lÃ  launcher; Ä‘á»ƒ má»Ÿ láº¡i demo, táº¡m thÃªm intent-filter MAIN/LAUNCHER cho nÃ³.
         -->
         <activity
             android:name=".MainActivity"
@@ -37,6 +39,13 @@
             android:name=".ui.ads.AdsDemoActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <receiver android:name=".ui.settings.ReminderReceiver" android:exported="false" />
+        <receiver android:name=".ui.settings.BootReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
+

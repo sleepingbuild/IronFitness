@@ -138,3 +138,5 @@
     <fragment android:id="@+id/workoutSummaryFragment" android:name="com.homefit.app.ui.player.WorkoutSummaryFragment" android:label="Tổng kết" tools:layout="@layout/fragment_workout_summary"><argument android:name="totalExercises" app:argType="integer" /><argument android:name="totalSeconds" app:argType="integer" /></fragment>
 </navigation>
 
+
+
