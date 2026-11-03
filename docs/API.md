@@ -68,6 +68,19 @@ Validate: email hợp lệ; mật khẩu tối thiểu 8 ký tự; `displayName`
 ```
 Validate: `heightCm` 50–250, `weightKg` 20–300.
 
+### GET /me/stats
+Lấy dữ liệu thống kê quá trình tập của user, dùng cho thành tích và biểu đồ:
+```json
+// 200
+{ 
+  "totalSessions": 12,
+  "totalDurationSec": 5400,
+  "currentStreakDays": 3,
+  "sessionsLast7Days": 4,
+  "sessionsLast30Days": 10
+}
+```
+
 ## 3. Thư viện bài tập (đọc: user đăng nhập)
 
 ### GET /categories?updatedAfter=<ISO>

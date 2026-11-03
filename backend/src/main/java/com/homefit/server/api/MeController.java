@@ -1,5 +1,6 @@
 package com.homefit.server.api;
 
+import com.homefit.server.api.dto.StatsResponse;
 import com.homefit.server.api.dto.UpdateProfileRequest;
 import com.homefit.server.api.dto.UserResponse;
 import com.homefit.server.service.UserService;
@@ -28,6 +29,11 @@ public class MeController {
     @GetMapping
     public UserResponse me(@AuthenticationPrincipal Jwt jwt) {
         return userService.getMe(userId(jwt));
+    }
+
+    @GetMapping("/stats")
+    public StatsResponse stats(@AuthenticationPrincipal Jwt jwt) {
+        return userService.getStats(userId(jwt));
     }
 
     @PutMapping("/profile")
