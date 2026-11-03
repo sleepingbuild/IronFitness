@@ -1,0 +1,32 @@
+-- V5__seed_more_exercises.sql
+UPDATE exercises SET is_active = FALSE, updated_at = NOW() WHERE id <= 12;
+INSERT INTO exercises (category_id, name, description, duration_sec, reps, rest_sec, media_type, media_url, sort_order, updated_at) VALUES
+(1, 'Chống đẩy (Push-up)', 'Bắt đầu với tư thế plank, hạ thấp thân người cho đến khi ngực chạm sàn rồi đẩy lên.', NULL, 15, 30, 'IMAGE', 'https://images.unsplash.com/photo-1598971639058-fab3c3109a00', 1, NOW()),
+(1, 'Nâng tạ tay (Bicep Curl)', 'Đứng thẳng, hai tay cầm tạ, gập tay lên phía vai rồi hạ xuống từ từ.', NULL, 12, 30, 'IMAGE', 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e', 2, NOW()),
+(1, 'Hít xà đơn (Pull-up)', 'Treo người trên xà, kéo người lên đến khi cằm vượt qua xà rồi hạ xuống.', NULL, 8, 45, 'IMAGE', 'https://images.unsplash.com/photo-1598971639058-fab3c3109a00', 3, NOW()),
+(1, 'Plank nâng cao tay', 'Vào tư thế plank, lần lượt nâng tay trái rồi tay phải chạm vào vai đối diện.', 60, NULL, 20, 'IMAGE', 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1', 4, NOW()),
+(1, 'Gập bụng chữ V (V-up)', 'Nằm ngửa, nâng đồng thời hai chân và thân người lên tạo thành hình chữ V.', NULL, 15, 30, 'IMAGE', 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b', 5, NOW()),
+(1, 'Chống đẩy kim cương', 'Đặt hai bàn tay lại gần nhau tạo hình kim cương, thực hiện chống đẩy.', NULL, 10, 30, 'IMAGE', 'https://images.unsplash.com/photo-1598971639058-fab3c3109a00', 6, NOW()),
+(1, 'Bài tập cơ bụng (Crunch)', 'Nằm ngửa, gập gối, siết cơ bụng nâng phần thân trên lên rồi hạ xuống.', NULL, 20, 20, 'IMAGE', 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b', 7, NOW()),
+(2, 'Squat (Ngồi xổm)', 'Đứng rộng bằng vai, hạ thấp thân người như đang ngồi xuống ghế rồi đứng lên.', NULL, 20, 30, 'IMAGE', 'https://images.unsplash.com/photo-1574680096145-d05b474e2155', 1, NOW()),
+(2, 'Lunge (Chùng chân)', 'Bước một chân về phía trước, hạ thấp thân người đến khi cả hai đầu gối tạo góc 90 độ.', NULL, 15, 30, 'IMAGE', 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e', 2, NOW()),
+(2, 'Nâng gót chân (Calf Raise)', 'Đứng thẳng, nhón gót chân lên mức cao nhất có thể rồi từ từ hạ xuống.', NULL, 20, 20, 'IMAGE', 'https://images.unsplash.com/photo-1574680096145-d05b474e2155', 3, NOW()),
+(2, 'Squat nhảy (Jump Squat)', 'Thực hiện squat, sau đó bật nhảy lên cao và tiếp đất nhẹ nhàng.', NULL, 12, 45, 'IMAGE', 'https://images.unsplash.com/photo-1574680096145-d05b474e2155', 4, NOW()),
+(2, 'Bài tập mông (Glute Bridge)', 'Nằm ngửa, gập gối, siết cơ mông và nâng hông lên cao rồi hạ xuống.', NULL, 15, 30, 'IMAGE', 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b', 5, NOW()),
+(2, 'Đá chân sau (Donkey Kick)', 'Quỳ trên thảm, chống hai tay, đá một chân ra sau và lên cao.', NULL, 15, 30, 'IMAGE', 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e', 6, NOW()),
+(2, 'Bước lên bục (Step-up)', 'Tìm một bục cao, bước một chân lên rồi nâng thân người lên theo.', NULL, 15, 30, 'IMAGE', 'https://images.unsplash.com/photo-1574680096145-d05b474e2155', 7, NOW()),
+(3, 'Chạy nâng cao đùi', 'Chạy tại chỗ, cố gắng nâng đầu gối lên cao nhất có thể.', 45, NULL, 20, 'IMAGE', 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5', 1, NOW()),
+(3, 'Jumping Jacks', 'Đứng thẳng, bật nhảy dang rộng hai chân và đưa hai tay lên cao.', 60, NULL, 15, 'IMAGE', 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5', 2, NOW()),
+(3, 'Burpees', 'Kết hợp chống đẩy, nhảy cóc và bật nhảy lên cao.', NULL, 10, 45, 'IMAGE', 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5', 3, NOW()),
+(3, 'Leo núi (Mountain Climber)', 'Tư thế plank, lần lượt co đầu gối về phía ngực với tốc độ nhanh.', 45, NULL, 20, 'IMAGE', 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1', 4, NOW()),
+(3, 'Nhảy dây ảo', 'Mô phỏng động tác nhảy dây, bật nhảy liên tục tại chỗ.', 60, NULL, 15, 'IMAGE', 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5', 5, NOW()),
+(3, 'Đấm bốc tại chỗ', 'Đứng tư thế thủ, thực hiện những cú đấm liên tục về phía trước.', 60, NULL, 20, 'IMAGE', 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b', 6, NOW()),
+(3, 'Nhảy chéo chân (Skater Jump)', 'Bật nhảy sang hai bên, mô phỏng động tác trượt băng.', 45, NULL, 20, 'IMAGE', 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5', 7, NOW()),
+(4, 'Giãn cơ đùi trước', 'Đứng trên một chân, gập gối chân kia ra sau và dùng tay giữ lấy cổ chân.', 30, NULL, 10, 'IMAGE', 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b', 1, NOW()),
+(4, 'Giãn cơ đùi sau', 'Ngồi duỗi thẳng hai chân, cúi người về phía trước chạm tay vào mũi chân.', 45, NULL, 15, 'IMAGE', 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b', 2, NOW()),
+(4, 'Giãn cơ vai', 'Kéo một tay vắt qua ngực, dùng tay kia giữ lại để giãn cơ vai.', 30, NULL, 10, 'IMAGE', 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b', 3, NOW()),
+(4, 'Tư thế chó cúi mặt', 'Chống tay và chân xuống thảm, đẩy hông lên cao tạo hình chữ V ngược.', 45, NULL, 15, 'IMAGE', 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b', 4, NOW()),
+(4, 'Tư thế em bé', 'Quỳ gối, ngồi lên gót chân, vươn dài hai tay ra phía trước trên thảm.', 60, NULL, 15, 'IMAGE', 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b', 5, NOW()),
+(4, 'Giãn cơ ngực', 'Đứng gần tường, đặt một tay lên tường và xoay người ra hướng ngược lại.', 30, NULL, 10, 'IMAGE', 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b', 6, NOW()),
+(4, 'Tư thế rắn hổ mang', 'Nằm sấp, dùng hai tay chống thân trên lên trong khi giữ hông sát đất.', 45, NULL, 15, 'IMAGE', 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b', 7, NOW());
+
