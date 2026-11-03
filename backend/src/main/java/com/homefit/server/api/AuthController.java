@@ -1,6 +1,7 @@
 package com.homefit.server.api;
 
 import com.homefit.server.api.dto.AuthResponse;
+import com.homefit.server.api.dto.GoogleLoginRequest;
 import com.homefit.server.api.dto.LoginRequest;
 import com.homefit.server.api.dto.RefreshRequest;
 import com.homefit.server.api.dto.RefreshResponse;
@@ -35,6 +36,11 @@ public class AuthController {
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
+    }
+
+    @PostMapping("/google")
+    public AuthResponse loginWithGoogle(@Valid @RequestBody GoogleLoginRequest request) {
+        return authService.loginWithGoogle(request);
     }
 
     @PostMapping("/refresh")

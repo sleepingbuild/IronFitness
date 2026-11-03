@@ -2,6 +2,7 @@ package com.homefit.server.service;
 
 import com.homefit.server.api.ApiException;
 import com.homefit.server.api.dto.AuthResponse;
+import com.homefit.server.api.dto.GoogleLoginRequest;
 import com.homefit.server.api.dto.LoginRequest;
 import com.homefit.server.api.dto.RefreshRequest;
 import com.homefit.server.api.dto.RefreshResponse;
@@ -19,6 +20,15 @@ import java.util.Locale;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
+
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import java.util.Collections;
+import java.util.Optional;
 
 /** Đăng ký, đăng nhập, làm mới token. Controller chỉ gọi lớp này. */
 @Service
@@ -31,13 +41,22 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokens;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokens;
+    private final GoogleIdTokenVerifier googleVerifier;
 
     public AuthService(UserRepository users, RefreshTokenRepository refreshTokens,
-                       PasswordEncoder passwordEncoder, TokenService tokens) {
+                       PasswordEncoder passwordEncoder, TokenService tokens,
+                       @Value("${google.client.id:}") String googleClientId) {
         this.users = users;
         this.refreshTokens = refreshTokens;
         this.passwordEncoder = passwordEncoder;
         this.tokens = tokens;
+        
+        GoogleIdTokenVerifier.Builder verifierBuilder = new GoogleIdTokenVerifier.Builder(
+                new NetHttpTransport(), new GsonFactory());
+        if (StringUtils.hasText(googleClientId)) {
+            verifierBuilder.setAudience(Collections.singletonList(googleClientId));
+        }
+        this.googleVerifier = verifierBuilder.build();
     }
 
     @Transactional
@@ -62,6 +81,32 @@ public class AuthService {
             throw ApiException.unauthorized(BAD_CREDENTIALS);
         }
         return buildAuthResponse(user);
+    }
+
+    @Transactional
+    public AuthResponse loginWithGoogle(GoogleLoginRequest request) {
+        try {
+            GoogleIdToken idToken = googleVerifier.verify(request.idToken());
+            if (idToken == null) {
+                throw ApiException.unauthorized("Google ID token không hợp lệ (hết hạn hoặc sai chữ ký).");
+            }
+            GoogleIdToken.Payload payload = idToken.getPayload();
+            String email = normalize(payload.getEmail());
+            
+            User user = users.findByEmail(email).orElse(null);
+            if (user == null) {
+                // Tạo mới nếu chưa có
+                user = new User();
+                user.setEmail(email);
+                user.setDisplayName((String) payload.get("name"));
+                // Google user không cần mật khẩu
+                user.setPasswordHash(null);
+                user = users.save(user);
+            }
+            return buildAuthResponse(user);
+        } catch (Exception e) {
+            throw ApiException.unauthorized("Lỗi khi xác thực với Google: " + e.getMessage());
+        }
     }
 
     /** Xoay vòng: refresh token cũ bị thu hồi, trả cặp token mới. */
