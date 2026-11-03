@@ -115,22 +115,22 @@ Có **hai nơi tách biệt**:
 
 Mỗi agent có một thư mục riêng trong `D:\IronFitnessChanges\`:
 
-| Agent | Vai trò | Thư mục |
-|---|---|---|
-| Agent 1 | TV1 Tech Lead / PM (duyệt và merge) | `agent1-techlead` |
-| Agent 2 | TV2 Android A | `agent2-android-account` |
-| Agent 3 | TV3 Android B | `agent3-android-workout` |
-| Agent 4 | TV4 Backend + Admin | `agent4-backend` |
-| Agent 5 | TV5 UI/QA/Content | `agent5-ui-qa-content` |
+| Agent | Vai trò | Thư mục | Tên Nhánh Git Cố Định |
+|---|---|---|---|
+| Agent 1 | TV1 Tech Lead / PM | `agent1-techlead` | `phi` |
+| Agent 2 | TV2 Android A | `agent2-android-account` | `tuan-kiet` |
+| Agent 3 | TV3 Android B | `agent3-android-workout` | `van-quang` |
+| Agent 4 | TV4 Backend + Admin | `agent4-backend` | `quang-anh` |
+| Agent 5 | TV5 UI/QA/Content | `agent5-ui-qa-content` | `van-huan` |
 
-**Quy trình:**
+**Quy trình (Áp dụng nhánh cố định):**
 1. Agent chỉ ghi vào thư mục của mình: file thay đổi đặt ở `<thư-mục-agent>\files\<đường-dẫn-giống-repo>`, giao file **đầy đủ nội dung**.
 2. Sau mỗi lượt giao, thêm mục mới (trên cùng) vào `CHANGELOG.md` của mình: task ID, danh sách file, cách kiểm tra, phụ thuộc.
 3. Muốn báo cho agent khác (câu hỏi, thay đổi API, phụ thuộc), ghi vào `D:\IronFitnessChanges\BOARD.md`.
-4. Người điều phối chạy `apply-agent.bat`: tạo **nhánh riêng** `agentN/<tên-task>` từ `main`, chép file vào repo.
-5. Build, chạy thử, commit, push nhánh đó, mở Pull Request vào `main`.
+4. Người điều phối chuyển sang **nhánh cá nhân** của agent tương ứng (vd: `git checkout quang-anh`), cập nhật `git pull origin main`, rồi chép file vào repo.
+5. Build, chạy thử, commit, push nhánh đó (`git push origin quang-anh`), mở Pull Request vào `main`.
 6. **Agent 1 (PM) review PR**. Chỉ khi Agent 1 duyệt mới merge vào `main`. Agent khác không tự merge.
-7. Sau khi merge, mọi người `git pull` trên `main` để lấy bản mới nhất trước khi làm tiếp.
+7. Sau khi merge, mọi người về nhánh của mình và `git pull origin main` để lấy bản mới nhất trước khi làm tiếp. Mọi nhánh rác/nhánh tạm nếu lỡ tạo phải xoá ngay sau khi xong việc.
 
 Agent 1 duyệt theo checklist: đúng task và phạm vi vai trò, khớp `docs/API.md` và `docs/DATABASE.md`, build được, không có secret, tài liệu liên quan đã cập nhật.
 
