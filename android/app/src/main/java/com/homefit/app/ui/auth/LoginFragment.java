@@ -1,11 +1,15 @@
 package com.homefit.app.ui.auth;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -13,11 +17,18 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.homefit.app.R;
 import com.homefit.app.data.local.entity.UserProfileEntity;
 import com.homefit.app.data.remote.ErrorCodes;
 import com.homefit.app.databinding.FragmentLoginBinding;
 import com.homefit.app.ui.common.AfterTextChanged;
+import com.homefit.app.ui.common.SnackbarHelper;
 import com.homefit.app.ui.common.UiUtils;
 import com.homefit.app.util.ErrorMessages;
 import com.homefit.app.util.Resource;
@@ -26,11 +37,28 @@ public class LoginFragment extends Fragment {
 
     private FragmentLoginBinding binding;
     private LoginViewModel viewModel;
+    private GoogleSignInClient mGoogleSignInClient;
+
+    private final ActivityResultLauncher<Intent> googleSignInLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
+                try {
+                    GoogleSignInAccount account = task.getResult(ApiException.class);
+                    if (account != null && account.getIdToken() != null) {
+                        // Lấy được ID Token thành công, gửi lên Backend
+                        handleGoogleLoginToBackend(account.getIdToken());
+                    }
+                } catch (ApiException e) {
+                    Log.w("GoogleLogin", "Google sign in failed", e);
+                    if (binding != null) {
+                        SnackbarHelper.show(this, getString(R.string.login_google_error));
+                    }
+                }
+            });
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentLoginBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -40,6 +68,14 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
 
+        // --- CẤU HÌNH GOOGLE SIGN-IN ---
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
+
+        // --- GẮN SỰ KIỆN CLICK (Gộp form cũ và Google) ---
         binding.etEmail.addTextChangedListener(new AfterTextChanged(() -> binding.tilEmail.setError(null)));
         binding.etPassword.addTextChangedListener(new AfterTextChanged(() -> binding.tilPassword.setError(null)));
         binding.etPassword.setOnEditorActionListener((v, actionId, event) -> {
@@ -49,10 +85,15 @@ public class LoginFragment extends Fragment {
             }
             return false;
         });
+
         binding.btnLogin.setOnClickListener(v -> submit());
         binding.btnGoRegister.setOnClickListener(v ->
                 NavHostFragment.findNavController(this).navigate(R.id.action_login_to_register));
 
+        // Nút Google Login (Đảm bảo id là btnGoogleLogin trong file fragment_login.xml)
+        binding.btnGoogleLogin.setOnClickListener(v -> signInWithGoogle());
+
+        // Lắng nghe kết quả login bằng Email
         viewModel.getState().observe(getViewLifecycleOwner(), this::render);
     }
 
@@ -111,6 +152,7 @@ public class LoginFragment extends Fragment {
         binding.btnLogin.setEnabled(!loading);
         binding.btnLogin.setText(loading ? R.string.login_loading : R.string.login_button);
         binding.btnGoRegister.setEnabled(!loading);
+        binding.btnGoogleLogin.setEnabled(!loading); // Khóa nút Google khi đang tải
         binding.tilEmail.setEnabled(!loading);
         binding.tilPassword.setEnabled(!loading);
     }
@@ -118,6 +160,31 @@ public class LoginFragment extends Fragment {
     private void showFormError(@Nullable String message) {
         binding.tvFormError.setText(message);
         binding.tvFormError.setVisibility(message == null ? View.GONE : View.VISIBLE);
+    }
+
+    private void signInWithGoogle() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        googleSignInLauncher.launch(signInIntent);
+    }
+
+    private void handleGoogleLoginToBackend(String idToken) {
+        viewModel.loginWithGoogle(idToken).observe(getViewLifecycleOwner(), resource -> {
+            if (resource == null) return;
+            switch (resource.status) {
+                case LOADING:
+                    setLoading(true);
+                    showFormError(null);
+                    break;
+                case SUCCESS:
+                    setLoading(false);
+                    goToWorkout();
+                    break;
+                case ERROR:
+                    setLoading(false);
+                    SnackbarHelper.show(this, ErrorMessages.toText(requireContext(), resource));
+                    break;
+            }
+        });
     }
 
     @Override

@@ -33,4 +33,8 @@
     <string name="register_loading">Đang tạo tài khoản…</string>
     <string name="register_go_login">Đã có tài khoản? Đăng nhập</string>
     <string name="register_error_unavailable">Chưa thể tạo tài khoản lúc này. Vui lòng thử lại sau.</string>
+
+    <!-- Client ID giả tạm thời để test UI, khi có Backend thật sẽ thay bằng ID của Google Cloud Console -->
+    <string name="default_web_client_id">YOUR_WEB_CLIENT_ID_HERE</string>
+    <string name="login_google_error">Đăng nhập Google bị hủy hoặc thất bại.</string>
 </resources>

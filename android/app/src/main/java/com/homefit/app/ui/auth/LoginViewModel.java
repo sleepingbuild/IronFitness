@@ -52,4 +52,7 @@ public class LoginViewModel extends AndroidViewModel {
         workoutLogRepository.syncPending();
         workoutLogRepository.restoreHistory();
     }
+    public LiveData<Resource<UserProfileEntity>> loginWithGoogle(String idToken) {
+        return authRepository.loginWithGoogle(idToken);
+    }
 }
