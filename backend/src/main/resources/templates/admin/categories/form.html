@@ -1,42 +1,64 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{admin/fragments :: head(${title})}"></head>
+<head th:replace="~{admin/fragments :: head(${category.id == null ? 'Thêm Nhóm cơ' : 'Sửa Nhóm cơ'})}"></head>
 <body>
-<nav th:replace="~{admin/fragments :: navbar('categories')}"></nav>
-<main class="container" style="max-width: 640px;">
-    <h1 class="h4 mb-4" th:text="${title}">Thêm nhóm cơ</h1>
-    <form th:action="@{${formAction}}" th:object="${form}" method="post">
-        <div class="mb-3">
-            <label for="name" class="form-label">Tên nhóm</label>
-            <input type="text" class="form-control" id="name" th:field="*{name}"
-                   th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
-            <div class="invalid-feedback" th:errors="*{name}">Lỗi</div>
-        </div>
-        <div class="mb-3">
-            <label for="slug" class="form-label">Slug (chữ thường không dấu, ví dụ abs)</label>
-            <input type="text" class="form-control" id="slug" th:field="*{slug}"
-                   th:classappend="${#fields.hasErrors('slug')} ? 'is-invalid'">
-            <div class="invalid-feedback" th:errors="*{slug}">Lỗi</div>
-        </div>
-        <div class="mb-3">
-            <label for="iconUrl" class="form-label">Địa chỉ ảnh biểu tượng (tùy chọn)</label>
-            <input type="text" class="form-control" id="iconUrl" th:field="*{iconUrl}"
-                   th:classappend="${#fields.hasErrors('iconUrl')} ? 'is-invalid'">
-            <div class="invalid-feedback" th:errors="*{iconUrl}">Lỗi</div>
-        </div>
-        <div class="mb-3">
-            <label for="sortOrder" class="form-label">Thứ tự hiển thị</label>
-            <input type="number" class="form-control" id="sortOrder" th:field="*{sortOrder}"
-                   th:classappend="${#fields.hasErrors('sortOrder')} ? 'is-invalid'">
-            <div class="invalid-feedback" th:errors="*{sortOrder}">Lỗi</div>
-        </div>
-        <div class="form-check mb-4">
-            <input type="checkbox" class="form-check-input" id="active" th:field="*{active}">
-            <label for="active" class="form-check-label">Hiển thị trên ứng dụng</label>
-        </div>
-        <button type="submit" class="btn btn-dark">Lưu</button>
-        <a class="btn btn-outline-secondary" th:href="@{/admin/categories}">Hủy</a>
-    </form>
-</main>
+<div th:replace="~{admin/fragments :: navbar}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{admin/fragments :: sidebar}"></nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="pt-3 pb-2 mb-4 border-bottom">
+                <h1 class="h2" th:text="${category.id == null ? 'Thêm mới Nhóm cơ' : 'Cập nhật Nhóm cơ'}"></h1>
+            </div>
+
+            <div class="card" style="max-width: 600px;">
+                <div class="card-body">
+                    <form th:action="@{${category.id == null ? '/admin/categories/create' : '/admin/categories/' + category.id + '/edit'}}"
+                          th:object="${category}" method="post">
+
+                        <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger">
+                            Vui lòng kiểm tra lại các thông tin bên dưới.
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="name" class="form-label fw-bold">Tên nhóm cơ <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="slug" class="form-label fw-bold">Slug (Mã định danh) <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="slug" th:field="*{slug}" placeholder="VD: chest, abs..." required>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="iconUrl" class="form-label fw-bold">URL Icon (Tùy chọn)</label>
+                            <input type="url" class="form-control" id="iconUrl" th:field="*{iconUrl}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="sortOrder" class="form-label fw-bold">Thứ tự hiển thị <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="sortOrder" th:field="*{sortOrder}" min="0" required>
+                        </div>
+
+                        <div class="mb-4 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="isActive" th:field="*{isActive}">
+                            <label class="form-check-label fw-bold" for="isActive">Hoạt động (Hiển thị trên App)</label>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a th:href="@{/admin/categories}" class="btn btn-light border">Hủy</a>
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Lưu lại</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<div th:replace="~{admin/fragments :: scripts}"></div>
 </body>
 </html>

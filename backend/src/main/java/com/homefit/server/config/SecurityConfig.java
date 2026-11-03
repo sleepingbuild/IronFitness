@@ -34,8 +34,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
 /**
- * Ba chuỗi bảo mật: /api/** (JWT, không phiên), /admin/** (đăng nhập bằng form, phiên, CSRF, chỉ ADMIN)
- * và phần còn lại (từ chối hết).
+ * Ba chuá»—i báº£o máº­t: /api/** (JWT, khÃ´ng phiÃªn), /admin/** (Ä‘Äƒng nháº­p báº±ng form, phiÃªn, CSRF, chá»‰ ADMIN)
+ * vÃ  pháº§n cÃ²n láº¡i (tá»« chá»‘i háº¿t).
  */
 @Configuration
 @EnableConfigurationProperties({JwtProperties.class, AdminProperties.class})
@@ -53,11 +53,11 @@ public class SecurityConfig {
         String secret = props.secret();
         if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
             throw new IllegalStateException(
-                    "homefit.jwt.secret phải có ít nhất 32 ký tự. Khai báo trong application-local.yml "
-                            + "(xem application-example.yml). Nếu chuỗi có ký tự # hoặc :, đặt trong nháy kép.");
+                    "homefit.jwt.secret pháº£i cÃ³ Ã­t nháº¥t 32 kÃ½ tá»±. Khai bÃ¡o trong application-local.yml "
+                            + "(xem application-example.yml). Náº¿u chuá»—i cÃ³ kÃ½ tá»± # hoáº·c :, Ä‘áº·t trong nhÃ¡y kÃ©p.");
         }
         if (secret.startsWith("CHANGE_ME")) {
-            log.warn("homefit.jwt.secret vẫn là giá trị mẫu. Hãy đổi sang chuỗi ngẫu nhiên riêng.");
+            log.warn("homefit.jwt.secret váº«n lÃ  giÃ¡ trá»‹ máº«u. HÃ£y Ä‘á»•i sang chuá»—i ngáº«u nhiÃªn riÃªng.");
         }
         return new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
     }
@@ -87,7 +87,7 @@ public class SecurityConfig {
 
         http
                 .securityMatcher("/api/**")
-                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configure(http)).csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(a -> a
                         .requestMatchers("/api/v1/auth/**").permitAll()
@@ -97,15 +97,15 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, ex) -> {
                             response.setHeader("WWW-Authenticate", "Bearer");
                             JsonErrorWriter.write(response, HttpStatus.UNAUTHORIZED.value(), "UNAUTHORIZED",
-                                    "Phiên đăng nhập không hợp lệ hoặc đã hết hạn.");
+                                    "PhiÃªn Ä‘Äƒng nháº­p khÃ´ng há»£p lá»‡ hoáº·c Ä‘Ã£ háº¿t háº¡n.");
                         })
                         .accessDeniedHandler((request, response, ex) ->
                                 JsonErrorWriter.write(response, HttpStatus.FORBIDDEN.value(), "FORBIDDEN",
-                                        "Bạn không có quyền thực hiện thao tác này.")));
+                                        "Báº¡n khÃ´ng cÃ³ quyá»n thá»±c hiá»‡n thao tÃ¡c nÃ y.")));
         return http.build();
     }
 
-    /** Trang quản trị: đăng nhập form + phiên + CSRF (mặc định bật), chỉ vai trò ADMIN. */
+    /** Trang quáº£n trá»‹: Ä‘Äƒng nháº­p form + phiÃªn + CSRF (máº·c Ä‘á»‹nh báº­t), chá»‰ vai trÃ² ADMIN. */
     @Bean
     @Order(2)
     public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -136,3 +136,4 @@ public class SecurityConfig {
         return http.build();
     }
 }
+

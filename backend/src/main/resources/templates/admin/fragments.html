@@ -1,35 +1,95 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:fragment="head(title)">
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:text="${title} + ' – HomeFit Admin'">HomeFit Admin</title>
-    <!-- Bootstrap tải từ CDN: cần Internet. Nếu mất mạng trang vẫn dùng được nhưng không có kiểu dáng. -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <title th:text="${title} + ' - HomeFit Admin'">HomeFit Admin</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { font-size: 0.9rem; background-color: #f8f9fa; }
+        .sidebar { min-height: calc(100vh - 56px); background-color: #343a40; }
+        .sidebar .nav-link { color: #c2c7d0; padding: 0.8rem 1rem; }
+        .sidebar .nav-link.active { color: #fff; background-color: #0d6efd; border-radius: 4px; }
+        .sidebar .nav-link:hover:not(.active) { color: #fff; background-color: #495057; border-radius: 4px; }
+        .sidebar .bi { margin-right: 10px; }
+        .main-content { padding: 1.5rem; }
+        .card { box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075); margin-bottom: 1.5rem; }
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    </style>
 </head>
 <body>
-<nav th:fragment="navbar(active)" class="navbar navbar-expand navbar-dark bg-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand" th:href="@{/admin}">HomeFit Admin</a>
-        <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-                <a class="nav-link" th:classappend="${active == 'dashboard'} ? 'active'" th:href="@{/admin}">Tổng quan</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" th:classappend="${active == 'categories'} ? 'active'" th:href="@{/admin/categories}">Nhóm cơ</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" th:classappend="${active == 'exercises'} ? 'active'" th:href="@{/admin/exercises}">Bài tập</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" th:classappend="${active == 'users'} ? 'active'" th:href="@{/admin/users}">Người dùng</a>
-            </li>
-        </ul>
-        <span class="navbar-text me-3" th:text="${adminEmail}">admin@example.com</span>
-        <form th:action="@{/admin/logout}" method="post" class="m-0">
-            <button type="submit" class="btn btn-outline-light btn-sm">Đăng xuất</button>
-        </form>
+
+<!-- Navbar (Topbar) -->
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" th:href="@{/admin/dashboard}">
+            <i class="bi bi-activity text-primary me-2"></i>HomeFit Admin
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="d-none d-lg-flex text-light align-items-center">
+            <i class="bi bi-person-circle me-2"></i>
+            <span>Admin</span>
+            <form th:action="@{/admin/logout}" method="post" class="ms-3 m-0">
+                <button type="submit" class="btn btn-sm btn-outline-light">Đăng xuất</button>
+            </form>
+        </div>
     </div>
 </nav>
+
+<!-- Sidebar -->
+<nav th:fragment="sidebar" id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${activeMenu == 'dashboard' ? 'active' : ''}" th:href="@{/admin/dashboard}">
+                    <i class="bi bi-speedometer2"></i> Tổng quan
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${activeMenu == 'categories' ? 'active' : ''}" th:href="@{/admin/categories}">
+                    <i class="bi bi-tags"></i> Nhóm cơ
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${activeMenu == 'exercises' ? 'active' : ''}" th:href="@{/admin/exercises}">
+                    <i class="bi bi-play-btn"></i> Bài tập
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${activeMenu == 'users' ? 'active' : ''}" th:href="@{/admin/users}">
+                    <i class="bi bi-people"></i> Người dùng
+                </a>
+            </li>
+        </ul>
+        <div class="d-lg-none mt-4 px-3">
+            <form th:action="@{/admin/logout}" method="post">
+                <button type="submit" class="btn btn-sm btn-outline-light w-100">Đăng xuất</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<!-- Scripts -->
+<div th:fragment="scripts">
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    var bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 3000);
+        });
+    </script>
+</div>
+
 </body>
 </html>

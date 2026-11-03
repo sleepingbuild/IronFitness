@@ -1,30 +1,53 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{admin/fragments :: head('Đăng nhập')}"></head>
-<body class="bg-light">
-<main class="container">
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-5 col-lg-4">
-            <h1 class="h4 text-center mb-4">HomeFit Admin</h1>
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="alert alert-danger" th:if="${param.error}">Email hoặc mật khẩu không đúng.</div>
-                    <div class="alert alert-success" th:if="${param.logout}">Bạn đã đăng xuất.</div>
-                    <form th:action="@{/admin/login}" method="post">
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="username" name="username" required autofocus>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Mật khẩu</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <button type="submit" class="btn btn-dark w-100">Đăng nhập</button>
-                    </form>
-                </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Đăng nhập - HomeFit Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-card { max-width: 400px; width: 100%; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); border: none; border-radius: 10px; }
+        .brand-icon { font-size: 3rem; color: #0d6efd; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card login-card mx-auto">
+        <div class="card-body p-4 p-sm-5">
+            <div class="text-center mb-4">
+                <i class="bi bi-activity brand-icon"></i>
+                <h4 class="mt-2 fw-bold">HomeFit Admin</h4>
+                <p class="text-muted small">Hệ thống quản trị nội dung</p>
             </div>
+
+            <div th:if="${param.error}" class="alert alert-danger text-center small py-2">
+                Tên đăng nhập hoặc mật khẩu không đúng.
+            </div>
+            <div th:if="${param.logout}" class="alert alert-success text-center small py-2">
+                Bạn đã đăng xuất thành công.
+            </div>
+
+            <form th:action="@{/admin/login}" method="post">
+                <div class="mb-3">
+                    <label for="username" class="form-label small fw-bold">Tên đăng nhập</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control" id="username" name="username" required autofocus>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="form-label small fw-bold">Mật khẩu</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 fw-bold">Đăng nhập</button>
+            </form>
         </div>
     </div>
-</main>
+</div>
 </body>
 </html>

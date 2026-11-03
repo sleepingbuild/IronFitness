@@ -2,43 +2,91 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{admin/fragments :: head('Tổng quan')}"></head>
 <body>
-<nav th:replace="~{admin/fragments :: navbar('dashboard')}"></nav>
-<main class="container">
-    <h1 class="h4 mb-4">Tổng quan</h1>
-    <div class="row g-3">
-        <div class="col-6 col-lg-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <div class="display-6" th:text="${stats.users()}">0</div>
-                    <div class="text-muted">Người dùng đã đăng ký</div>
+<div th:replace="~{admin/fragments :: navbar}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{admin/fragments :: sidebar}"></nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                <h1 class="h2">Tổng quan hệ thống</h1>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 border-start border-primary border-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-muted fw-bold mb-1">TỔNG NGƯỜI DÙNG</h6>
+                                    <h3 class="mb-0 fw-bold" th:text="${totalUsers} ?: '0'">0</h3>
+                                </div>
+                                <div class="fs-1 text-primary opacity-50"><i class="bi bi-people-fill"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 border-start border-success border-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-muted fw-bold mb-1">NGƯỜI DÙNG PREMIUM</h6>
+                                    <h3 class="mb-0 fw-bold" th:text="${totalPremiumUsers} ?: '0'">0</h3>
+                                </div>
+                                <div class="fs-1 text-success opacity-50"><i class="bi bi-star-fill"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 border-start border-info border-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-muted fw-bold mb-1">TỔNG BÀI TẬP</h6>
+                                    <h3 class="mb-0 fw-bold" th:text="${totalExercises} ?: '0'">0</h3>
+                                </div>
+                                <div class="fs-1 text-info opacity-50"><i class="bi bi-play-btn-fill"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 border-start border-warning border-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-muted fw-bold mb-1">LƯỢT TẬP HOÀN THÀNH</h6>
+                                    <h3 class="mb-0 fw-bold" th:text="${totalSessions} ?: '0'">0</h3>
+                                </div>
+                                <div class="fs-1 text-warning opacity-50"><i class="bi bi-activity"></i></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-6 col-lg-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <div class="display-6" th:text="${stats.sessions()}">0</div>
-                    <div class="text-muted">Lượt tập hoàn thành</div>
+
+            <div class="row">
+                <div class="col-12 col-xl-6 mb-4">
+                    <div class="card">
+                        <div class="card-header bg-white fw-bold">
+                            Phím tắt quản trị
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2 d-md-flex">
+                                <a th:href="@{/admin/exercises/create}" class="btn btn-outline-primary"><i class="bi bi-plus-lg"></i> Thêm bài tập mới</a>
+                                <a th:href="@{/admin/categories/create}" class="btn btn-outline-secondary"><i class="bi bi-plus-lg"></i> Thêm nhóm cơ</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-6 col-lg-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <div class="display-6" th:text="${stats.categories()}">0</div>
-                    <div class="text-muted">Nhóm cơ đang hiện</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-lg-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <div class="display-6" th:text="${stats.exercises()}">0</div>
-                    <div class="text-muted">Bài tập đang hiện</div>
-                </div>
-            </div>
-        </div>
+
+        </main>
     </div>
-</main>
+</div>
+<div th:replace="~{admin/fragments :: scripts}"></div>
 </body>
 </html>
