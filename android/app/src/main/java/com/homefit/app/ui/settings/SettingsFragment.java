@@ -164,6 +164,8 @@ public class SettingsFragment extends Fragment {
             SnackbarHelper.show(this,
                     getString(R.string.settings_reminder_saved_on, formatCurrentTime()));
         }
+
+        new com.homefit.app.notification.ReminderReceiver().onReceive(requireContext(), new android.content.Intent());
     }
 
     private void showTimePicker() {
@@ -208,4 +210,6 @@ public class SettingsFragment extends Fragment {
         binding = null;
         super.onDestroyView();
     }
+
+
 }
