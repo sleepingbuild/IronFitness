@@ -73,23 +73,35 @@ dependencies {
 4. Thêm vào `pom.xml`: `org.flywaydb:flyway-mysql` (module Flyway cho MySQL 8).
 5. IntelliJ: **File → Open** → chọn `D:\IronFitness\backend\pom.xml` → Open as Project; chọn JDK 17+.
 6. Tạo database: `mysql -u root -p -e "CREATE DATABASE homefit CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"`
-7. Tạo `backend\src\main\resources\application-local.yml` (đã nằm trong `.gitignore`):
+7. Tạo `backend\src\main\resources\application-local.yml` (đã nằm trong `.gitignore`) và thêm cấu hình biến môi trường, tạo Admin đầu tiên:
 
 ```yaml
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/homefit?useSSL=false&serverTimezone=UTC&characterEncoding=utf8
     username: root
-    password: MAT_KHAU_CUA_BAN
+    password: MAT_KHAU_CUA_BAN # Đổi thành password MySQL của bạn
   jpa:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+
 server:
-  port: 8080
+  port: 8090 # Đổi thành 8090 để không xung đột với các app 8080 khác
+
+# Bí mật JWT để mã hoá Token (Cần ít nhất 256-bit, tức 32 ký tự)
+jwt:
+  secret: CHUOI_BI_MAT_CUA_BAN_DO_DAI_IT_NHAT_32_KY_TU_ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+# Thông tin tài khoản Admin đầu tiên (sẽ được tự động tạo vào Database ở lần khởi động đầu)
+homefit:
+  admin:
+    email: admin@example.com
+    password: MAT_KHAU_ADMIN_TU_8_KY_TU
 ```
 
-8. Chạy: `cd /d D:\IronFitness\backend` rồi `mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=local`. Mở `http://localhost:8080`; thấy trang đăng nhập mặc định của Spring Security là backend đã chạy.
+8. Chạy Backend: `cd /d D:\IronFitness\backend` rồi chạy lệnh `mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=local`. Backend sẽ chạy ở `http://localhost:8090`. Cấu trúc Database và Dữ liệu mẫu (Categories, Exercises) sẽ được **Flyway tự động nạp** qua các file `V1`, `V2`, `V3`, `V4` trong `src/main/resources/db/migration`.
+9. Khi Terminal hiện `Tomcat started on port 8090`, truy cập `http://localhost:8090/admin` và đăng nhập bằng tài khoản `homefit.admin.email` ở trên. Mọi thành viên khác trong nhóm chỉ cần clone source và làm y hệt bước 7, 8, 9 để có môi trường y hệt!
 
 ## Bước 4 – Commit hai project lên nhánh riêng, merge vào main
 
