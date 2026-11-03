@@ -5,29 +5,29 @@ Repo chỉ chứa code và tài liệu **đã được duyệt**. Chúng ta sử
 ## Nhánh
 
 Dự án chỉ duy trì 5 nhánh cố định tương ứng với 5 thành viên (5 Agent chính):
-- `phi` (Agent 1 - Tech Lead / PM)
-- `tuan-kiet` (Agent 2 - Android A)
-- `van-quang` (Agent 3 - Android B)
-- `quang-anh` (Agent 4 - Backend & Admin Web)
-- `van-huan` (Agent 5 - UI/QA/Content)
+- `phi` (Thành viên 1- Tech Lead / PM)
+- `tuan-kiet` (Thành viên 2 - Android A)
+- `van-quang` (Thành viên 3 - Android B)
+- `quang-anh` (Thành viên 4 - Backend & Admin Web)
+- `van-huan` (Thành viên 5 - UI/QA/Content)
 
 *(Lưu ý: Các task frontend UI do Agent 6 hỗ trợ sẽ commit thẳng vào nhánh của người phụ trách logic màn hình đó).*
 
 | Nhánh | Mục đích |
 |---|---|
 | `main` | Luôn build được. Chỉ nhận merge qua Pull Request đã được Agent 1 duyệt |
-| `[tên-thành-viên]` | Nhánh làm việc tồn tại lâu dài của từng agent (ví dụ: `quang-anh`, `tuan-kiet`) |
+| `[tên-thành-viên]` | Nhánh làm việc tồn tại lâu dài của từng Thành viên (ví dụ: `quang-anh`, `tuan-kiet`) |
 
 **Quy tắc quan trọng:** Bất kỳ nhánh tạm nào (nếu bắt buộc phải tạo) đều phải được **xoá ngay sau khi xong việc**. Không để lại nhánh rác.
 
 ## Quy trình một task
 
-1. Chuyển sang nhánh cá nhân: `git checkout [tên-của-bạn]` (ví dụ: `git checkout quang-anh`).
+1. Chuyển sang nhánh cá nhân: `git checkout [tên thành viên]` (ví dụ: `git checkout quang-anh`).
 2. **LUÔN LUÔN CẬP NHẬT TỪ MAIN:** `git pull origin main` (Để lấy code mới nhất, tránh conflict do nhánh cá nhân là long-running).
 3. Làm việc, đưa file vào repo, build và chạy thử.
 4. Commit nhỏ, rõ ràng:
    `git add -A` → `git commit -m "feat(library): danh sách bài tập [W1-TV3-02]"`
-5. Push lên nhánh cá nhân: `git push origin [tên-của-bạn]`
+5. Push lên nhánh cá nhân: `git push origin [tên thành viên]`
 6. Mở Pull Request từ nhánh cá nhân vào `main` trên GitHub.
 7. **Agent 1 review**. Cần sửa thì sửa trên cùng nhánh rồi push tiếp; được duyệt thì **Squash and merge**.
 8. Sau khi merge, quay về nhánh cá nhân và `git pull origin main` để đồng bộ lại.
@@ -59,8 +59,8 @@ Checklist của người mở PR:
 - [ ] Không có code debug thừa
 - [ ] Tài liệu liên quan đã cập nhật
 
-Checklist Agent 1 khi duyệt:
-- [ ] Đúng task và nằm trong phạm vi thư mục của vai trò (xem `AGENT.md` mục 4)
+Checklist Phi khi duyệt:
+- [ ] Đúng task và nằm trong phạm vi thư mục của vai trò
 - [ ] Khớp `docs/API.md` và `docs/DATABASE.md`
 - [ ] Build được, luồng chính chạy đúng
 - [ ] Không có secret, không thêm thư viện ngoài danh sách khi chưa hỏi
