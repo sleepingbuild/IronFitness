@@ -36,7 +36,7 @@
         app:layout_constraintTop_toBottomOf="@id/tvStateHeader"
         tools:text="Hít đất (Push Up)" />
         
-    <!-- Media / Image -->
+    <!-- Media / Image / Video (ExoPlayer) -->
     <ImageView
         android:id="@+id/ivMedia"
         android:layout_width="0dp"
@@ -49,6 +49,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvExerciseName"
         tools:src="@tools:sample/backgrounds/scenic" />
+
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/playerView"
+        android:layout_width="0dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="32dp"
+        android:visibility="gone"
+        app:use_controller="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvExerciseName" />
 
     <!-- Timer / Reps -->
     <TextView

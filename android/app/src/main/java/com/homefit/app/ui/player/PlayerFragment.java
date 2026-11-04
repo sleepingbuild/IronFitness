@@ -15,10 +15,15 @@ import com.homefit.app.R;
 import com.homefit.app.databinding.FragmentPlayerBinding;
 import com.homefit.app.data.local.entity.ExerciseEntity;
 
+import androidx.media3.common.MediaItem;
+import androidx.media3.exoplayer.ExoPlayer;
+
 public class PlayerFragment extends Fragment {
 
     private FragmentPlayerBinding binding;
     private PlayerViewModel viewModel;
+    private ExoPlayer exoPlayer;
+    private String currentMediaUrl = null;
 
     @Nullable
     @Override
@@ -32,6 +37,10 @@ public class PlayerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(PlayerViewModel.class);
 
+        exoPlayer = new ExoPlayer.Builder(requireContext()).build();
+        binding.playerView.setPlayer(exoPlayer);
+        exoPlayer.setRepeatMode(ExoPlayer.REPEAT_MODE_ALL);
+        
         long categoryId = getArguments() != null ? getArguments().getLong("categoryId", -1) : -1;
         if (categoryId != -1) {
             viewModel.loadExercises(categoryId);
@@ -104,10 +113,35 @@ public class PlayerFragment extends Fragment {
 
         if (state.state != PlayerState.PAUSED) {
             binding.btnPlayPause.setImageResource(R.drawable.ic_pause_24);
+            if (exoPlayer != null && !exoPlayer.isPlaying()) exoPlayer.play();
+        } else {
+            if (exoPlayer != null && exoPlayer.isPlaying()) exoPlayer.pause();
         }
 
         if (current != null && current.mediaUrl != null && (state.state == PlayerState.EXERCISING || state.state == PlayerState.PREPARING)) {
-             Glide.with(this).load(current.mediaUrl).into(binding.ivMedia);
+            // Check if fallback needed when media URL is invalid
+            String url = current.mediaUrl;
+            
+            if (url.endsWith(".mp4") || url.endsWith(".webm") || "VIDEO".equals(current.mediaType)) {
+                binding.ivMedia.setVisibility(View.GONE);
+                binding.playerView.setVisibility(View.VISIBLE);
+                
+                if (!url.equals(currentMediaUrl)) {
+                    currentMediaUrl = url;
+                    MediaItem mediaItem = MediaItem.fromUri(url);
+                    exoPlayer.setMediaItem(mediaItem);
+                    exoPlayer.prepare();
+                    exoPlayer.play();
+                }
+            } else {
+                binding.playerView.setVisibility(View.GONE);
+                binding.ivMedia.setVisibility(View.VISIBLE);
+                
+                Glide.with(this)
+                    .load(url)
+                    .error(R.drawable.bg_media_placeholder) // Add placeholder icon if loading fails
+                    .into(binding.ivMedia);
+            }
         }
     }
 
@@ -130,6 +164,10 @@ public class PlayerFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (exoPlayer != null) {
+            exoPlayer.release();
+            exoPlayer = null;
+        }
         binding = null;
     }
 }
