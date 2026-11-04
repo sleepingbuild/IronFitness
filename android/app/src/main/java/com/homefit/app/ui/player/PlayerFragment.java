@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.media3.common.Player;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import com.bumptech.glide.Glide;
@@ -17,6 +18,7 @@ import com.homefit.app.data.local.entity.ExerciseEntity;
 
 import androidx.media3.common.MediaItem;
 import androidx.media3.exoplayer.ExoPlayer;
+import com.bumptech.glide.Glide;
 
 public class PlayerFragment extends Fragment {
 
@@ -159,6 +161,37 @@ public class PlayerFragment extends Fragment {
         int min = seconds / 60;
         int sec = seconds % 60;
         return String.format("%02d:%02d", min, sec);
+    }
+
+    private void loadExerciseMedia(String mediaUrl, String mediaType) {
+        if ("VIDEO".equalsIgnoreCase(mediaType)) {
+            // Ẩn ảnh GIF, hiện Video Player
+            binding.ivExerciseGif.setVisibility(View.GONE);
+            binding.videoPlayerView.setVisibility(View.VISIBLE);
+
+            if (exoPlayer == null) {
+                exoPlayer = new ExoPlayer.Builder(requireContext()).build();
+                binding.videoPlayerView.setPlayer(exoPlayer);
+                exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL); // Tự động lặp lại video liên tục
+            }
+
+            MediaItem mediaItem = MediaItem.fromUri(mediaUrl);
+            exoPlayer.setMediaItem(mediaItem);
+            exoPlayer.prepare();
+            exoPlayer.play();
+        } else {
+            // Định dạng GIF tĩnh: Ẩn Video, hiện ImageView
+            binding.videoPlayerView.setVisibility(View.GONE);
+            binding.ivExerciseGif.setVisibility(View.VISIBLE);
+
+            // Dừng player nếu đang chạy để tiết kiệm tài nguyên
+            if (exoPlayer != null) {
+                exoPlayer.stop();
+            }
+
+            // Tải GIF bằng Glide (hoặc bạn có thể dùng MediaLoader có sẵn trong ui.common)
+            Glide.with(this).load(mediaUrl).into(binding.ivExerciseGif);
+        }
     }
 
     @Override
