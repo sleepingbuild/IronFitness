@@ -19,6 +19,7 @@ import com.homefit.app.data.remote.dto.AuthResponse;
 import com.homefit.app.data.remote.dto.GoogleLoginRequest;
 import com.homefit.app.data.remote.dto.LoginRequest;
 import com.homefit.app.data.remote.dto.RegisterRequest;
+import com.homefit.app.data.remote.dto.StatsResponse;
 import com.homefit.app.data.remote.dto.UpdateProfileRequest;
 import com.homefit.app.data.remote.dto.UserDto;
 import com.homefit.app.domain.Mappers;
@@ -78,6 +79,22 @@ public class AuthRepository {
             @Override
             protected void onSuccess(@NonNull UserDto body) {
                 saveProfileAndPost(Mappers.toEntity(body), result);
+            }
+
+            @Override
+            protected void onError(@NonNull String code, @Nullable String message) {
+                result.setValue(Resource.error(code, message));
+            }
+        });
+        return result;
+    }
+
+    public LiveData<Resource<StatsResponse>> getStats() {
+        MutableLiveData<Resource<StatsResponse>> result = new MutableLiveData<>(Resource.loading());
+        api.getStats().enqueue(new ApiCallback<StatsResponse>() {
+            @Override
+            protected void onSuccess(@NonNull StatsResponse body) {
+                result.postValue(Resource.success(body));
             }
 
             @Override

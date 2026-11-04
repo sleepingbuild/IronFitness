@@ -92,6 +92,23 @@ public class HistoryFragment extends Fragment {
             }
         });
 
+        viewModel.getApiStats().observe(getViewLifecycleOwner(), resource -> {
+            if (binding != null && resource.isSuccess() && resource.data != null) {
+                binding.tvCurrentStreakValue.setText(getString(R.string.stats_streak_format, resource.data.currentStreakDays));
+                binding.tvLast7DaysValue.setText(String.valueOf(resource.data.sessionsLast7Days));
+                binding.tvLast30DaysValue.setText(String.valueOf(resource.data.sessionsLast30Days));
+                
+                int t = resource.data.totalSessions;
+                String badge;
+                if (t >= 30) badge = "🏅 Tinh anh";
+                else if (t >= 10) badge = "🥇 Chiến binh";
+                else if (t >= 5) badge = "🥈 Người quen";
+                else badge = "🏆 Tân binh";
+                
+                binding.tvBadgeValue.setText(badge);
+            }
+        });
+
         viewModel.getCurrentMonth().observe(getViewLifecycleOwner(), month -> {
             if (binding != null && month != null) {
                 binding.tvMonthYear.setText(getString(
