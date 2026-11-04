@@ -13,7 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Map;
 
 /** Quản lý bài tập: danh sách (lọc theo nhóm cơ), thêm, sửa, ẩn/hiện. */
 @Controller
@@ -82,6 +86,27 @@ public class AdminExerciseController {
         service.toggle(id);
         redirect.addFlashAttribute("message", "Đã đổi trạng thái hiển thị.");
         return LIST_URL;
+    }
+
+    @PostMapping("/import")
+    public String importCsv(@RequestParam("file") MultipartFile file, RedirectAttributes redirect) {
+        if (file.isEmpty()) {
+            redirect.addFlashAttribute("errorMessage", "Vui lòng chọn file CSV.");
+            return LIST_URL;
+        }
+        try {
+            int imported = service.importCsv(file);
+            redirect.addFlashAttribute("message", "Nhập thành công " + imported + " bài tập.");
+        } catch (Exception e) {
+            redirect.addFlashAttribute("errorMessage", "Lỗi nhập CSV: " + e.getMessage());
+        }
+        return LIST_URL;
+    }
+    
+    @GetMapping("/check-link")
+    @ResponseBody
+    public Map<String, String> checkLink(@RequestParam String url) {
+        return service.checkMediaLink(url);
     }
 
     private void prepare(Model model, ExerciseForm form, String title, String action) {

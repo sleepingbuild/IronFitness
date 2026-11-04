@@ -12,7 +12,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,6 +96,78 @@ public class AdminExerciseService {
         Exercise exercise = find(id);
         exercise.setActive(!exercise.isActive());
         exercises.save(exercise);
+    }
+    
+    @Transactional
+    public int importCsv(MultipartFile file) throws Exception {
+        int count = 0;
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+            String line;
+            boolean firstLine = true;
+            while ((line = reader.readLine()) != null) {
+                if (firstLine) {
+                    firstLine = false;
+                    continue; // Skip header
+                }
+                if (line.trim().isEmpty()) continue;
+                String[] parts = line.split(",");
+                if (parts.length < 9) continue;
+                
+                Exercise ex = new Exercise();
+                ex.setCategoryId(Long.parseLong(parts[0].trim()));
+                ex.setName(parts[1].trim());
+                
+                // Nối phần mô tả nếu có dấu phẩy
+                StringBuilder desc = new StringBuilder(parts[2]);
+                for (int j = 3; j < parts.length - 6; j++) {
+                    desc.append(",").append(parts[j]);
+                }
+                ex.setDescription(desc.toString().trim());
+                
+                String durStr = parts[parts.length - 6].trim();
+                ex.setDurationSec(durStr.isEmpty() ? null : Integer.parseInt(durStr));
+                
+                String repsStr = parts[parts.length - 5].trim();
+                ex.setReps(repsStr.isEmpty() ? null : Integer.parseInt(repsStr));
+                
+                String restStr = parts[parts.length - 4].trim();
+                ex.setRestSec(restStr.isEmpty() ? 15 : Integer.parseInt(restStr));
+                
+                String typeStr = parts[parts.length - 3].trim();
+                ex.setMediaType(com.homefit.server.domain.MediaType.valueOf(typeStr.toUpperCase()));
+                
+                ex.setMediaUrl(parts[parts.length - 2].trim());
+                ex.setSortOrder(Integer.parseInt(parts[parts.length - 1].trim()));
+                ex.setActive(true);
+                
+                exercises.save(ex);
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    public Map<String, String> checkMediaLink(String urlString) {
+        Map<String, String> result = new HashMap<>();
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+            huc.setRequestMethod("HEAD");
+            huc.setConnectTimeout(5000);
+            huc.setReadTimeout(5000);
+            int responseCode = huc.getResponseCode();
+            if (responseCode == 200) {
+                result.put("status", "OK");
+                result.put("message", "200 OK");
+            } else {
+                result.put("status", "ERROR");
+                result.put("message", "HTTP " + responseCode);
+            }
+        } catch (Exception e) {
+            result.put("status", "ERROR");
+            result.put("message", e.getMessage());
+        }
+        return result;
     }
 
     private Exercise find(Long id) {

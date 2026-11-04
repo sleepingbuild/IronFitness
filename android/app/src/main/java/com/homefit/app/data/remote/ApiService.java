@@ -10,6 +10,7 @@ import com.homefit.app.data.remote.dto.LoginRequest;
 import com.homefit.app.data.remote.dto.RefreshRequest;
 import com.homefit.app.data.remote.dto.RefreshResponse;
 import com.homefit.app.data.remote.dto.RegisterRequest;
+import com.homefit.app.data.remote.dto.StatsResponse;
 import com.homefit.app.data.remote.dto.UpdateProfileRequest;
 import com.homefit.app.data.remote.dto.UserDto;
 import com.homefit.app.data.remote.dto.WorkoutSessionDto;
@@ -44,6 +45,9 @@ public interface ApiService {
     // ---- Hồ sơ ----
     @GET("me")
     Call<UserDto> getMe();
+
+    @GET("me/stats")
+    Call<StatsResponse> getStats();
 
     @PUT("me/profile")
     Call<UserDto> updateProfile(@Body UpdateProfileRequest body);

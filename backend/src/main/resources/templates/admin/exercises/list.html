@@ -12,6 +12,9 @@
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
                 <h1 class="h2">Quản lý Bài tập</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
+                    <button type="button" class="btn btn-sm btn-outline-secondary me-2" data-bs-toggle="modal" data-bs-target="#importModal">
+                        <i class="bi bi-upload"></i> Nhập CSV
+                    </button>
                     <a th:href="@{/admin/exercises/create}" class="btn btn-sm btn-primary">
                         <i class="bi bi-plus-lg"></i> Thêm bài tập
                     </a>
@@ -20,6 +23,11 @@
 
             <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
                 <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${errorMessage}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
@@ -78,6 +86,9 @@
                                                   th:text="${ex.isActive} ? 'Hoạt động' : 'Đã ẩn'">Hoạt động</span>
                                 </td>
                                 <td class="pe-4 text-end">
+                                    <button class="btn btn-sm btn-outline-info check-link-btn" th:data-url="${ex.mediaUrl}">
+                                        <i class="bi bi-link-45deg"></i> Test Link
+                                    </button>
                                     <a th:href="@{/admin/exercises/{id}/edit(id=${ex.id})}" class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-pencil"></i> Sửa
                                     </a>
@@ -91,6 +102,79 @@
         </main>
     </div>
 </div>
+
+<!-- Modal Import CSV -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form th:action="@{/admin/exercises/import}" method="post" enctype="multipart/form-data">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nhập Bài tập từ CSV</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="csvFile" class="form-label">Chọn file CSV (Cấu trúc: categoryId, name, description, durationSec, reps, restSec, mediaType, mediaUrl, sortOrder)</label>
+                        <input class="form-control" type="file" id="csvFile" name="file" accept=".csv" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Nhập dữ liệu</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Check Link -->
+<div class="modal fade" id="checkLinkModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Kết quả Test Link</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center" id="checkLinkResult">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Đang kiểm tra URL...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div th:replace="~{admin/fragments :: scripts}"></div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkBtns = document.querySelectorAll('.check-link-btn');
+    const resultDiv = document.getElementById('checkLinkResult');
+    const modal = new bootstrap.Modal(document.getElementById('checkLinkModal'));
+
+    checkBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const url = this.getAttribute('data-url');
+            if (!url) return;
+
+            resultDiv.innerHTML = '<div class="spinner-border text-primary" role="status"></div><p class="mt-2">Đang kiểm tra URL...</p>';
+            modal.show();
+
+            fetch('/admin/exercises/check-link?url=' + encodeURIComponent(url))
+                .then(res => res.json())
+                .then(data => {
+                    if(data.status === 'OK') {
+                        resultDiv.innerHTML = '<i class="bi bi-check-circle-fill text-success fs-1"></i><p class="mt-2 text-success">Link hợp lệ (200 OK)</p>';
+                    } else {
+                        resultDiv.innerHTML = '<i class="bi bi-x-circle-fill text-danger fs-1"></i><p class="mt-2 text-danger">Lỗi: ' + data.message + '</p>';
+                    }
+                })
+                .catch(err => {
+                    resultDiv.innerHTML = '<i class="bi bi-exclamation-triangle-fill text-warning fs-1"></i><p class="mt-2 text-warning">Không thể kết nối để kiểm tra.</p>';
+                });
+        });
+    });
+});
+</script>
 </body>
 </html>
