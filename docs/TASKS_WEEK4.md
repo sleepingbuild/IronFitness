@@ -31,7 +31,7 @@ Như `docs/TASKS_WEEK3.md`: nhánh `agentN/<tên-task>`, `apply-agent.bat` khi `
 
 Mọi task tuần 3 chưa `[x]` được xử lý theo quy tắc đóng băng: task thuộc diện "nếu kịp" mà chưa xong **bị cắt** (ghi vào hạn chế đã biết); task lõi chưa xong là **bắt buộc**, làm trước mọi thứ khác và báo ngay `BOARD.md`.
 
-## TV1 – Agent 1: Tech Lead / PM
+## TV1 – Phi: Tech Lead / PM
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -46,7 +46,7 @@ Mọi task tuần 3 chưa `[x]` được xử lý theo quy tắc đóng băng: t
 | W4-TV1-09 | Chuẩn bị **câu hỏi giảng viên có thể hỏi** và câu trả lời (xem Phụ lục) | `docs/QA_PREP.md` | T5 | [ ] |
 | W4-TV1-10 | Chốt bản nộp cuối: kiểm tra `main` đúng tag `v1.0.0`, tải kho mã về thư mục mới, chạy theo `SETUP.md` từ đầu để chắc người khác chạy được | Xác nhận chạy từ đầu | T5 | [ ] |
 
-## TV4 – Agent 1 (kiêm backend): Backend và Admin Web
+## Quang Anh - Phi: Backend và Admin Web
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -58,7 +58,7 @@ Mọi task tuần 3 chưa `[x]` được xử lý theo quy tắc đóng băng: t
 | W4-TV4-06 | Nếu triển khai lên máy chủ (theo `docs/DEPLOY.md`): kiểm tra từ xa bằng điện thoại, đo độ trễ, có phương án quay về máy cá nhân | Kết quả kiểm tra triển khai | T4 (nếu có) | [ ] |
 | W4-TV4-07 | Bản cuối `docs/BACKEND.md`, `docs/API.md`, `docs/DATABASE.md` và hình ERD khớp schema thật (đối chiếu với MySQL) | Tài liệu và hình khớp | T4 | [ ] |
 
-## TV2 – Agent 2: Android A
+## TV2 – Kiệt: Android A
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -66,7 +66,7 @@ Mọi task tuần 3 chưa `[x]` được xử lý theo quy tắc đóng băng: t
 | W4-TV2-02 | Dọn mã: gỡ log gỡ lỗi, mã chết, chuỗi thử; kiểm tra quyền trong `AndroidManifest.xml` (chỉ quyền cần thiết); đặt `versionName` 1.0 | PR dọn dẹp | T4 | [ ] |
 | W4-TV2-03 | Chạy lại toàn bộ unit test; bổ sung test cho lỗi vừa sửa | Test xanh | T4 | [ ] |
 
-## TV3 – Agent 3: Android B
+## TV3 – Quang: Android B
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -74,7 +74,7 @@ Mọi task tuần 3 chưa `[x]` được xử lý theo quy tắc đóng băng: t
 | W4-TV3-02 | Chốt hiệu năng app (khởi động, danh sách, bộ nhớ khi tập dài), ghi số đo cuối vào `docs/test/performance.md` | Số đo cuối | T4 | [ ] |
 | W4-TV3-03 | Dọn mã Player và thư viện như W4-TV2-02; kiểm tra khi thiếu mạng, GIF hỏng, danh sách rỗng | PR dọn dẹp | T4 | [ ] |
 
-## TV5 – Agent 5: UI/UX, QA, Content
+## TV5 – Huân: UI/UX, QA, Content
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -84,7 +84,7 @@ Mọi task tuần 3 chưa `[x]` được xử lý theo quy tắc đóng băng: t
 | W4-TV5-04 | Đóng góp báo cáo đợt 4: số liệu kiểm thử cuối, hiệu năng cuối, kết quả thử nghiệm người dùng, biểu đồ đạt/không đạt, danh sách lỗi đã sửa | `docs/report/contrib/agent5-dot4-*.md` | T3 | [ ] |
 | W4-TV5-05 | Kiểm tra bản nộp: cài APK trên máy sạch, chạy theo kịch bản demo từ đầu đến cuối, kiểm tra các link và ảnh trong báo cáo hiển thị đúng | Xác nhận bản nộp | T5 | [ ] |
 
-## TV6 – Agent 6: Frontend (nếu nhóm dùng Agent 6)
+## Phi - Quang Anh - Huân: Frontend (nếu nhóm dùng Agent 6)
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
