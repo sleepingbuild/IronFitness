@@ -40,7 +40,7 @@ public class PlayerFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(PlayerViewModel.class);
 
         exoPlayer = new ExoPlayer.Builder(requireContext()).build();
-        binding.playerView.setPlayer(exoPlayer);
+        binding.videoPlayerView.setPlayer(exoPlayer);
         exoPlayer.setRepeatMode(ExoPlayer.REPEAT_MODE_ALL);
         
         long categoryId = getArguments() != null ? getArguments().getLong("categoryId", -1) : -1;
@@ -126,7 +126,7 @@ public class PlayerFragment extends Fragment {
             
             if (url.endsWith(".mp4") || url.endsWith(".webm") || "VIDEO".equals(current.mediaType)) {
                 binding.ivMedia.setVisibility(View.GONE);
-                binding.playerView.setVisibility(View.VISIBLE);
+                binding.videoPlayerView.setVisibility(View.VISIBLE);
                 
                 if (!url.equals(currentMediaUrl)) {
                     currentMediaUrl = url;
@@ -136,7 +136,7 @@ public class PlayerFragment extends Fragment {
                     exoPlayer.play();
                 }
             } else {
-                binding.playerView.setVisibility(View.GONE);
+                binding.videoPlayerView.setVisibility(View.GONE);
                 binding.ivMedia.setVisibility(View.VISIBLE);
                 
                 Glide.with(this)
@@ -166,7 +166,7 @@ public class PlayerFragment extends Fragment {
     private void loadExerciseMedia(String mediaUrl, String mediaType) {
         if ("VIDEO".equalsIgnoreCase(mediaType)) {
             // Ẩn ảnh GIF, hiện Video Player
-            binding.ivExerciseGif.setVisibility(View.GONE);
+            binding.ivMedia.setVisibility(View.GONE);
             binding.videoPlayerView.setVisibility(View.VISIBLE);
 
             if (exoPlayer == null) {
@@ -182,7 +182,7 @@ public class PlayerFragment extends Fragment {
         } else {
             // Định dạng GIF tĩnh: Ẩn Video, hiện ImageView
             binding.videoPlayerView.setVisibility(View.GONE);
-            binding.ivExerciseGif.setVisibility(View.VISIBLE);
+            binding.ivMedia.setVisibility(View.VISIBLE);
 
             // Dừng player nếu đang chạy để tiết kiệm tài nguyên
             if (exoPlayer != null) {
@@ -190,7 +190,7 @@ public class PlayerFragment extends Fragment {
             }
 
             // Tải GIF bằng Glide (hoặc bạn có thể dùng MediaLoader có sẵn trong ui.common)
-            Glide.with(this).load(mediaUrl).into(binding.ivExerciseGif);
+            Glide.with(this).load(mediaUrl).into(binding.ivMedia);
         }
     }
 
