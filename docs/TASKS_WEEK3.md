@@ -12,7 +12,7 @@ Trạng thái: `[ ]` chưa làm, `[~]` đang làm / chờ duyệt, `[x]` xong v�
 
 ## Phân công thực tế
 
-- **Backend (TV4) do Agent 1 phụ trách toàn bộ.** Chỉ chuyển cho agent khác khi người điều phối yêu cầu.
+- **Backend (TV4) do Phi phụ trách toàn bộ.** Chỉ chuyển cho agent khác khi người điều phối yêu cầu.
 - Android: TV2 (tài khoản, lịch sử, nhắc tập), TV3 (thư viện, Player), TV6 (giao diện, nếu có). Agent nào chưa hoạt động thì người điều phối báo, Agent 1 nhận phần logic dùng chung; giao diện thuộc TV6.
 - TV5 làm nội dung, kiểm thử, khảo sát. Báo cáo do agent viết báo cáo (không viết mã) dựng từ `docs/report/REPORT_CONTENT.md`.
 
@@ -48,7 +48,7 @@ Nguồn quyết định: `docs/research/market-report.md` (W2-TV5-05). Agent 1 c
 
 Quy tắc chọn: tối đa 2 tính năng; mỗi tính năng phải trả lời được câu hỏi "khảo sát nói gì ủng hộ điều này" (ghi vào báo cáo mục 6.3); không chọn tính năng cần nội dung hoặc quyền sử dụng mà nhóm chưa có.
 
-## TV1 – Agent 1: Tech Lead / PM
+## TV1 – Phi: Tech Lead / PM
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -62,7 +62,7 @@ Quy tắc chọn: tối đa 2 tính năng; mỗi tính năng phải trả lời 
 | W3-TV1-08 | Báo cáo đợt 3: cập nhật `REPORT_CONTENT.md` (khảo sát, ảnh app, kết quả test và hiệu năng, trang admin, đồng bộ offline), tích hợp `contrib`, đổi nhãn trạng thái, gửi agent báo cáo | `REPORT_CONTENT.md` đợt 3 | T6 | [ ] |
 | W3-TV1-09 | Tuyên bố **đóng băng tính năng** (T6): liệt kê tính năng vào bản nộp, tính năng bị cắt, hạn chế đã biết | Danh sách đóng băng trong `BOARD.md` và `docs/SUBMISSION.md` bản nháp | T6 | [ ] |
 
-## TV4 – Agent 1 (kiêm backend): Backend và Admin Web
+## TV4 – Quang Anh(kiêm backend): Backend và Admin Web
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -79,7 +79,7 @@ Quy tắc chọn: tối đa 2 tính năng; mỗi tính năng phải trả lời 
 
 Thứ tự: 01 trước (dữ liệu thật cho cả Android và báo cáo), rồi 03 → 04, 02 và 05 song song, 07 trước ngày đóng băng.
 
-## TV2 – Agent 2: Android A (Tài khoản, Lịch sử, Nhắc tập)
+## TV2 – Kiệt: Android A (Tài khoản, Lịch sử, Nhắc tập)
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -90,7 +90,7 @@ Thứ tự: 01 trước (dữ liệu thật cho cả Android và báo cáo), r�
 | W3-TV2-05 | Mã hóa token bằng Android Keystore (nếu còn thời gian; hiện lưu SharedPreferences riêng, chưa mã hóa) | `TokenStore` mã hóa | T5 (tùy chọn) | [ ] |
 | W3-TV2-06 | Unit test: logic Calendar, chuỗi ngày liên tiếp (ranh giới tháng, nửa đêm, múi giờ), tổng thời gian | Test | T5 | [ ] |
 
-## TV3 – Agent 3: Android B (Thư viện, Workout Player)
+## TV3 – Quang: Android B (Thư viện, Workout Player)
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -100,7 +100,7 @@ Thứ tự: 01 trước (dữ liệu thật cho cả Android và báo cáo), r�
 | W3-TV3-04 | **Hiệu năng app:** `DiffUtil` cho danh sách, cache ảnh Glide hợp lý, giảm thời gian khởi động nguội, đo bằng Android Studio Profiler (kịch bản P01, P02, P06 trong `REPORT_CONTENT.md`), ghi số đo | Số đo + cải tiến | T5 | [ ] |
 | W3-TV3-05 | Unit test Player: chuyển trạng thái, pause giữ thời gian, skip, bài theo số lần, hết bài cuối chuyển FINISHED | Test | T4 | [ ] |
 
-## TV5 – Agent 5: UI/UX, QA, Content
+## TV5 – Huân: UI/UX, QA, Content
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
@@ -113,7 +113,7 @@ Thứ tự: 01 trước (dữ liệu thật cho cả Android và báo cáo), r�
 | W3-TV5-07 | Đóng góp báo cáo đợt 3: kết quả khảo sát đã chốt, kiểm thử chức năng, hiệu năng, thử nghiệm người dùng, biểu đồ đạt/không đạt | `docs/report/contrib/agent5-dot3-*.md` và ảnh | T6 | [ ] |
 | W3-TV5-08 | Kịch bản demo nháp (10–12 phút) và **video quay màn hình dự phòng** cho từng chức năng | `docs/DEMO.md` + video | T6 | [ ] |
 
-## TV6 – Agent 6: Frontend (nếu nhóm dùng Agent 6)
+## Phi - Quang Anh - Huân: Frontend 
 
 | ID | Việc | Sản phẩm | Hạn | TT |
 |---|---|---|---|---|
