@@ -19,19 +19,16 @@ Giảng viên yêu cầu báo cáo gồm bìa, mục lục, lời nói đầu, b
 
 ## Quy trình mỗi task
 
-1. Agent soạn file vào `D:\IronFitnessChanges\<thư-mục-agent>\files\...` (đường dẫn giống repo), ghi `CHANGELOG.md`, báo agent khác qua `BOARD.md` nếu cần.
-2. Chạy `apply-agent.bat <thư-mục-agent> agentN/<tên-task>`: tạo nhánh từ `main` và chép file vào repo.
+1. Thành viên soạn file vào `D:\IronFitnessChanges\<thư-mục-agent>\files\...` (đường dẫn giống repo), ghi `CHANGELOG.md`, báo agent khác qua `BOARD.md` nếu cần.
+2. Chạy `apply-agent.bat <thư-mục-thành viên> tên thành viên/<tên-task>`: tạo nhánh từ `main` và chép file vào repo.
 3. Build, chạy thử, commit **ngay khi build được**, push nhánh, mở Pull Request vào `main`.
-4. **Agent 1 (PM) duyệt**, rồi Squash and merge. Sau đó cập nhật cột TT trong file này.
+4. **Phi (PM) duyệt**, rồi Squash and merge. Sau đó cập nhật cột TT trong file này.
 
 Quy ước thêm cho tuần 2:
 - Mỗi tính năng Android dùng **file chuỗi riêng** (`strings_auth.xml`, `strings_library.xml`, `strings_player.xml`, `strings_history.xml`, `strings_settings.xml`) để tránh xung đột khi nhiều agent cùng sửa `strings.xml`.
 - Giao diện kiểm tra đủ ba trạng thái: đang tải, rỗng, lỗi (dùng `Resource<T>` và `ErrorMessages`).
 - Mỗi PR có ảnh chụp màn hình khi thay đổi giao diện.
 
-## Ghi chú về Agent 6 (Frontend, nếu được thêm vào nhóm)
-
-Nếu nhóm dùng thêm **Agent 6 – Frontend** (xem `AGENT6_FRONTEND.md`), phần **giao diện** của TV2 và TV3 (layout XML, Fragment hiển thị, adapter) chuyển sang TV6; TV2/TV3 giữ **ViewModel, logic, thông báo, timer** và phải giao ViewModel (danh sách LiveData và hàm công khai) **trước** để TV6 nối vào. Các dòng đánh dấu `[UI]` bên dưới là phần chuyển cho TV6. Nếu không có Agent 6, TV2/TV3 làm cả hai phần như tuần 1.
 
 ## TV1 – Hoàng Phi: Tech Lead / PM
 
