@@ -160,14 +160,12 @@ Kiểm thử tích hợp khởi động máy chủ thật và gọi API bằng H
 
 ## Làm việc nhóm
 
-- Nhánh `main` luôn build được. Mỗi người làm trên nhánh riêng `agentN/<mô-tả-task>`, mở Pull Request vào `main`, trưởng nhóm kỹ thuật duyệt rồi Squash and merge.
+- Nhánh `main` luôn build được. Mỗi người làm trên nhánh riêng `tên thành viên`, mở Pull Request vào `main`, trưởng nhóm kỹ thuật duyệt rồi Squash and merge.
 - Thông điệp commit: `<loại>(<phạm vi>): <mô tả> [<task-id>]`, ví dụ `feat(auth): API dang ky [W1-TV4-03]`.
 - Không commit bí mật: `application-local.yml`, `local.properties`, keystore, mật khẩu, khóa JWT.
 - Schema MySQL chỉ đổi bằng file Flyway mới `V{n}__mo_ta.sql`; không sửa migration đã chạy.
 
-## Thành viên
 
-`[Cập nhật: họ tên – MSSV – vai trò của từng thành viên]`
 
 ## Giấy phép và nội dung
 
