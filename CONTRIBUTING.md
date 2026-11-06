@@ -1,6 +1,5 @@
 # CONTRIBUTING – Quy tắc Git
 
-Repo chỉ chứa code và tài liệu **đã được duyệt**. Chúng ta sử dụng mô hình **nhánh cố định theo thành viên**.
 
 ## Nhánh
 
