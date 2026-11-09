@@ -1,53 +1,5 @@
 # TASKS – Tuần 3: Hoàn thiện tính năng, nội dung thật, tính năng khác biệt và đóng băng tính năng
 
-**Mục tiêu:** (1) hoàn chỉnh mọi tính năng lõi còn dở từ tuần 2; (2) làm **tối đa 2 tính năng khác biệt** rút ra từ khảo sát thị trường; (3) thay dữ liệu thử bằng **30–40 bài tập thật** có link GIF hợp lệ; (4) có môi trường demo chạy ổn định, không phụ thuộc Internet; (5) đo hiệu năng và chạy kiểm thử hồi quy; (6) cập nhật báo cáo đợt 3; (7) **đóng băng tính năng vào cuối tuần** (T6): từ tuần 4 chỉ sửa lỗi và hoàn thiện tài liệu.
-
-**Công nghệ:** Android Java + Room + Retrofit + AdMob; Spring Boot 4.x + MySQL + Flyway; Admin Thymeleaf. Không thêm thư viện ngoài danh sách khi chưa hỏi Agent 1 (ngoại lệ đã duyệt: Credential Manager cho đăng nhập Google, Media3 ExoPlayer; xem `docs/DECISIONS.md`).
-
-Trạng thái: `[ ]` chưa làm, `[~]` đang làm / chờ duyệt, `[x]` xong và đã merge vào `main`.
-
-## Giả định về lịch
-
-Đồ án chạy **4 tuần**: tuần 3 là hoàn thiện và đóng băng, tuần 4 là sửa lỗi, báo cáo và nộp (`docs/TASKS_WEEK4.md`). Nếu hạn nộp thực tế khác, báo Agent 1 để chỉnh lịch (gộp hoặc thêm tuần đệm).
-
-## Phân công thực tế
-
-- **Backend (TV4) do Phi phụ trách toàn bộ.** Chỉ chuyển cho agent khác khi người điều phối yêu cầu.
-- Android: TV2 (tài khoản, lịch sử, nhắc tập), TV3 (thư viện, Player), TV6 (giao diện, nếu có). Agent nào chưa hoạt động thì người điều phối báo, Agent 1 nhận phần logic dùng chung; giao diện thuộc TV6.
-- TV5 làm nội dung, kiểm thử, khảo sát. Báo cáo do agent viết báo cáo (không viết mã) dựng từ `docs/report/REPORT_CONTENT.md`.
-
-## Việc tồn đọng từ tuần 2 (làm trước)
-
-Mọi task tuần 2 chưa đạt `[x]` trong `docs/TASKS_WEEK2.md` **chuyển sang tuần 3 và được ưu tiên**, giữ nguyên task ID cũ. Agent 1 rà lại ngày T2 và ghi vào `BOARD.md`. Hai nhóm quan trọng nhất: **Workout Player + lưu buổi tập** (W2-TV3-03/04) và **Lịch sử + Thống kê + Nhắc tập** (W2-TV2-03/04/05). Không bắt đầu tính năng mới phụ thuộc vào các phần này khi chúng còn dở.
-
-## Quy trình mỗi task
-
-1. Agent soạn file vào `D:\IronFitnessChanges\<thư-mục-agent>\files\...` (đường dẫn giống repo), ghi `CHANGELOG.md`, báo agent khác qua `BOARD.md` nếu cần.
-2. Chạy `apply-agent.bat <thư-mục-agent> agentN/<tên-task>` khi `main` sạch (`git status --short` trống).
-3. Build, chạy thử, commit **ngay khi build được**, push nhánh, mở Pull Request vào `main`.
-4. **Agent 1 duyệt**, rồi Squash and merge. Sau đó cập nhật cột TT trong file này.
-
-Quy ước thêm cho tuần 3:
-- Gói phụ thuộc nhau thì **áp dụng theo thứ tự**, gói sau chỉ áp dụng khi PR gói trước đã merge.
-- Tính năng nào làm xong phải có: kịch bản kiểm thử (TV5), ảnh chụp hoặc số đo thật để báo cáo, và dòng ghi vào `docs/report/contrib/`.
-- Tính năng chưa xong vào **T5** bị cắt khỏi bản nộp (xem "Quy tắc đóng băng" bên dưới). Không kéo dài.
-
-## Phụ lục A – Chọn tính năng khác biệt (tối đa 2)
-
-Nguồn quyết định: `docs/research/market-report.md` (W2-TV5-05). Agent 1 chọn trong **W3-TV1-02**. Bảng dưới là các ứng viên đã đánh giá công sức, để chọn nhanh khi báo cáo khảo sát về.
-
-| Mã | Tính năng | Giá trị với người dùng | Backend | Android | Admin | Công sức | Rủi ro |
-|---|---|---|---|---|---|---|---|
-| A | **Thành tích và chuỗi ngày tập** (số ngày tập liên tiếp, huy hiệu mốc 5/10/30 buổi, tổng 7 và 30 ngày) | Giữ động lực, dễ thấy trong demo | `GET /me/stats` (tùy chọn, có thể tính từ Room) | Màn Thống kê mở rộng, huy hiệu | Không | Thấp | Thấp |
-| B | **Gợi ý buổi tập theo BMI và mục tiêu** (luật đơn giản: phân loại BMI cho nhóm cơ và mức độ gợi ý) | Cá nhân hóa, khác biệt rõ | Không bắt buộc | Thẻ gợi ý ở tab Tập luyện | Không | Trung bình | Trung bình: cần chọn luật và ghi rõ là gợi ý, không phải tư vấn y tế |
-| C | **Chương trình tập theo tuần** (lịch 7 ngày cố định) | Có kế hoạch rõ ràng | Bảng `plans`, `plan_items`, API đọc | Màn chương trình, đánh dấu hoàn thành | CRUD chương trình | Cao | Cao (chạm schema, API, 3 màn) |
-| D | **Bài tập yêu thích** | Truy cập nhanh | Bảng `favorites` hoặc chỉ lưu Room | Nút tim, danh sách yêu thích | Không | Thấp | Thấp |
-| E | **Video hướng dẫn** (ExoPlayer, bài `mediaType = VIDEO`) | Hướng dẫn động tác rõ hơn | Không (đã có `mediaType`) | Trình phát video | Đã có trường | Trung bình | Trung bình: cần video có quyền sử dụng |
-
-**Mặc định nếu khảo sát chưa kịp để chọn: làm A và B.** C chỉ chọn nếu khảo sát cho thấy nhu cầu rất rõ và còn dư công sức; khi đó bỏ B.
-
-Quy tắc chọn: tối đa 2 tính năng; mỗi tính năng phải trả lời được câu hỏi "khảo sát nói gì ủng hộ điều này" (ghi vào báo cáo mục 6.3); không chọn tính năng cần nội dung hoặc quyền sử dụng mà nhóm chưa có.
-
 ## TV1 – Phi: Tech Lead / PM
 
 | ID | Việc | Sản phẩm | Hạn | TT |
@@ -131,38 +83,4 @@ Thứ tự: 01 trước (dữ liệu thật cho cả Android và báo cáo), r�
 | W3-ALL-02 | Điền bảng phân công đầy đủ vào Google Sheet và gửi Agent 1 link, họ tên, MSSV để đưa vào báo cáo | Link Google Sheet, danh sách thành viên | T3 | [ ] |
 | W3-ALL-03 | Mỗi thành viên đọc phần báo cáo liên quan đến việc mình làm và sửa chỗ sai hoặc thiếu | Góp ý ghi vào `BOARD.md` | T6 | [ ] |
 
-## Quy tắc đóng băng tính năng (T6)
 
-- Từ T6 đến hết đồ án **không thêm tính năng mới**. Mọi PR chỉ là sửa lỗi, hiệu năng, giao diện nhỏ không đổi logic, hoặc tài liệu.
-- Tính năng đánh dấu "nếu kịp" mà chưa `[x]` vào cuối **T5 thì bị cắt** khỏi bản nộp: gỡ nút, gỡ mã chưa hoàn thiện khỏi giao diện, ghi vào "hạn chế đã biết" và "hướng phát triển" của báo cáo.
-- Agent 1 công bố danh sách tính năng trong bản nộp ở W3-TV1-09.
-
-## Mốc theo ngày
-
-| Ngày | Việc chính |
-|---|---|
-| **T2** | Chốt sổ tuần 2; chọn tính năng khác biệt; bật bảo vệ `main`; bắt đầu dùng thử chéo |
-| **T3** | Player hoàn chỉnh, Lịch sử và Nhắc tập chạy; nội dung thật vào DB (`V4`); chốt cách demo; bảng phân công đầy đủ |
-| **T4** | Tính năng khác biệt #1 chạy (backend và app); công cụ nhập CSV; chỉ mục CSDL; Player đáng tin cậy |
-| **T5** | Tính năng #2; đăng nhập Google (nếu kịp); môi trường demo không cần Internet; hồi quy, hiệu năng, thử nghiệm người dùng; rà bảo mật |
-| **T6** | Đóng băng tính năng; test xanh; báo cáo đợt 3; kịch bản demo nháp và video dự phòng |
-
-## Tiêu chí hoàn thành tuần 3 (demo T6)
-
-1. Mọi tiêu chí demo tuần 2 vẫn đạt (đăng nhập, thư viện, Player, lịch sử, thống kê, nhắc tập, admin, AdMob).
-2. Thư viện có **30–40 bài thật** với GIF hiển thị được; bài thử đã bị ẩn.
-3. **Tính năng khác biệt** đã chọn chạy được từ đầu đến cuối và có minh chứng trong khảo sát (hoặc ghi rõ vì sao chọn).
-4. Admin nhập được bài tập từ CSV và kiểm tra được link media.
-5. Có cách chạy demo **không cần Internet** (Bootstrap cục bộ, script khởi động, tài khoản và lịch sử mẫu).
-6. Bảng kết quả hiệu năng (đăng nhập, đọc danh sách, ghi buổi tập, lô 100 buổi, tải song song, khởi động ứng dụng) và bảng số test đạt/không đạt.
-7. Kết quả thử nghiệm với 5 người dùng ngoài nhóm.
-8. `main` build được (`gradlew assembleDebug`, `mvnw verify`), không có secret, không còn mã demo AdMob; danh sách đóng băng đã công bố.
-
-## Rủi ro tuần 3
-
-- Tồn đọng tuần 2 chiếm hết tuần 3 → rà ngày T2, cắt tính năng khác biệt xuống còn một (A) nếu Player hoặc Lịch sử vẫn dở sau T3.
-- Không có link GIF có giấy phép cho 30–40 bài → bắt đầu từ T2; chấp nhận 20 bài thật nếu ghi rõ trong báo cáo; không dùng ảnh không rõ quyền sử dụng.
-- Khảo sát chưa xong nên chưa chọn được tính năng → dùng mặc định A và B ở Phụ lục A.
-- Đăng nhập Google mất thời gian cấu hình (SHA-1, client ID) → tách thành "nếu kịp", cắt vào T5 theo quy tắc đóng băng.
-- Hai tính năng khác biệt kéo theo thay đổi schema muộn → mọi thay đổi `API.md`/`DATABASE.md` phải xong trước T4.
-- Demo lỗi vì mất mạng hoặc cổng bị chiếm → script `start-demo.ps1`, video dự phòng, và thử demo trên đúng máy sẽ dùng trước ngày nộp.
