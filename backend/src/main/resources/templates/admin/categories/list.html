@@ -10,16 +10,16 @@
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
-                <h1 class="h2">Quản lý Nhóm cơ</h1>
+                <h1 class="h2"><i class="bi bi-diagram-3-fill text-primary me-2"></i>Quản lý Nhóm cơ & Danh mục</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
-                    <a th:href="@{/admin/categories/create}" class="btn btn-sm btn-primary">
-                        <i class="bi bi-plus-lg"></i> Thêm nhóm cơ
+                    <a th:href="@{/admin/categories/new}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-plus-lg"></i> Thêm nhóm cơ mới
                     </a>
                 </div>
             </div>
 
-            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
-                <span th:text="${successMessage}"></span>
+            <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${message}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
@@ -39,7 +39,7 @@
                             </thead>
                             <tbody>
                             <tr th:if="${categories == null or categories.isEmpty()}">
-                                <td colspan="6" class="text-center py-4 text-muted">Chưa có dữ liệu</td>
+                                <td colspan="6" class="text-center py-4 text-muted">Chưa có dữ liệu nhóm cơ</td>
                             </tr>
                             <tr th:each="cat : ${categories}">
                                 <td class="ps-4" th:text="${cat.id}">1</td>
@@ -47,13 +47,18 @@
                                 <td th:text="${cat.slug}">abs</td>
                                 <td th:text="${cat.sortOrder}">1</td>
                                 <td>
-                                            <span class="badge" th:classappend="${cat.isActive} ? 'bg-success' : 'bg-secondary'"
-                                                  th:text="${cat.isActive} ? 'Hoạt động' : 'Đã ẩn'">Hoạt động</span>
+                                    <span class="badge" th:classappend="${cat.active} ? 'bg-success' : 'bg-secondary'"
+                                          th:text="${cat.active} ? 'Hoạt động' : 'Đã ẩn'">Hoạt động</span>
                                 </td>
                                 <td class="pe-4 text-end">
                                     <a th:href="@{/admin/categories/{id}/edit(id=${cat.id})}" class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-pencil"></i> Sửa
                                     </a>
+                                    <form th:action="@{/admin/categories/{id}/toggle(id=${cat.id})}" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm" th:classappend="${cat.active ? 'btn-outline-warning' : 'btn-outline-success'}">
+                                            <i class="bi" th:classappend="${cat.active ? 'bi-eye-slash' : 'bi-eye'}"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                             </tbody>

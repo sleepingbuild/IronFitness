@@ -24,12 +24,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-/** Quản lý bài tập trên trang quản trị. Xóa là xóa mềm (ẩn) để không làm hỏng lịch sử. */
+/** Quản lý bài tập trên trang quản trị. */
 @Service
 public class AdminExerciseService {
 
     public record Row(Long id, String categoryName, String name, String modeText, int restSec,
-                      String mediaType, boolean active, String updatedAtText) {
+                      String mediaType, boolean active, int sortOrder, String updatedAtText) {
     }
 
     public record Option(Long id, String name) {
@@ -47,16 +47,33 @@ public class AdminExerciseService {
     }
 
     @Transactional(readOnly = true)
-    public List<Row> listRows(Long categoryId) {
+    public List<Row> listRows(Long categoryId, String sortBy, String sortDir) {
         Map<Long, String> names = categories.findAll().stream()
                 .collect(Collectors.toMap(Category::getId, Category::getName));
         List<Exercise> list = categoryId == null
                 ? exercises.findAllByOrderByCategoryIdAscSortOrderAscIdAsc()
                 : exercises.findByCategoryIdOrderBySortOrderAscIdAsc(categoryId);
-        return list.stream().map(e -> new Row(e.getId(),
+
+        List<Row> rows = list.stream().map(e -> new Row(e.getId(),
                 names.getOrDefault(e.getCategoryId(), "?"), e.getName(), modeText(e), e.getRestSec(),
-                e.getMediaType().name(), e.isActive(),
-                e.getUpdatedAt() == null ? "" : DISPLAY.format(e.getUpdatedAt()))).toList();
+                e.getMediaType().name(), e.isActive(), e.getSortOrder(),
+                e.getUpdatedAt() == null ? "" : DISPLAY.format(e.getUpdatedAt()))).collect(Collectors.toList());
+
+        boolean isDesc = "desc".equalsIgnoreCase(sortDir);
+
+        if ("name".equalsIgnoreCase(sortBy)) {
+            rows.sort((r1, r2) -> isDesc ? r2.name().compareToIgnoreCase(r1.name()) : r1.name().compareToIgnoreCase(r2.name()));
+        } else if ("id".equalsIgnoreCase(sortBy)) {
+            rows.sort((r1, r2) -> isDesc ? Long.compare(r2.id(), r1.id()) : Long.compare(r1.id(), r2.id()));
+        } else if ("category".equalsIgnoreCase(sortBy)) {
+            rows.sort((r1, r2) -> isDesc ? r2.categoryName().compareToIgnoreCase(r1.categoryName()) : r1.categoryName().compareToIgnoreCase(r2.categoryName()));
+        } else if ("status".equalsIgnoreCase(sortBy)) {
+            rows.sort((r1, r2) -> isDesc ? Boolean.compare(r2.active(), r1.active()) : Boolean.compare(r1.active(), r2.active()));
+        } else { // sortOrder default
+            rows.sort((r1, r2) -> isDesc ? Integer.compare(r2.sortOrder(), r1.sortOrder()) : Integer.compare(r1.sortOrder(), r2.sortOrder()));
+        }
+
+        return rows;
     }
 
     @Transactional(readOnly = true)
@@ -90,7 +107,6 @@ public class AdminExerciseService {
         exercises.save(exercise);
     }
 
-    /** Ẩn hoặc hiện lại. updatedAt đổi nên app xóa hoặc thêm bài ở lần đồng bộ sau. */
     @Transactional
     public void toggle(Long id) {
         Exercise exercise = find(id);
@@ -107,7 +123,7 @@ public class AdminExerciseService {
             while ((line = reader.readLine()) != null) {
                 if (firstLine) {
                     firstLine = false;
-                    continue; // Skip header
+                    continue;
                 }
                 if (line.trim().isEmpty()) continue;
                 String[] parts = line.split(",");
@@ -117,7 +133,6 @@ public class AdminExerciseService {
                 ex.setCategoryId(Long.parseLong(parts[0].trim()));
                 ex.setName(parts[1].trim());
                 
-                // Nối phần mô tả nếu có dấu phẩy
                 StringBuilder desc = new StringBuilder(parts[2]);
                 for (int j = 3; j < parts.length - 6; j++) {
                     desc.append(",").append(parts[j]);
@@ -179,7 +194,6 @@ public class AdminExerciseService {
         return e.getDurationSec() != null ? e.getDurationSec() + " giây" : e.getReps() + " lần";
     }
 
-    /** Điền đúng một trong durationSec hoặc reps, đúng ràng buộc CHECK của MySQL. */
     private static void apply(Exercise exercise, ExerciseForm form) {
         exercise.setCategoryId(form.getCategoryId());
         exercise.setName(form.getName().trim());

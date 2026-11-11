@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments :: head('Tạo/Sửa Buổi tập')}"></head>
+<body>
+<div th:replace="~{admin/fragments :: navbar}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{admin/fragments :: sidebar}"></nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                <h1 class="h2"><i class="bi bi-pencil-square text-primary me-2"></i>Soạn thảo Buổi tập</h1>
+                <a th:href="@{/admin/workouts}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Quay lại</a>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <form th:action="@{/admin/workouts}" th:object="${workout}" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Tên buổi tập (Tiếng Việt)</label>
+                                    <input type="text" class="form-control" th:field="*{titleVi}" required placeholder="Ví dụ: Đốt cháy mỡ toàn thân">
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold">Phân loại buổi (Type)</label>
+                                        <select class="form-select" th:field="*{type}">
+                                            <option value="body_part">Body Part (Theo nhóm cơ)</option>
+                                            <option value="timed">Timed (Thời lượng)</option>
+                                            <option value="goal">Goal (Theo mục tiêu)</option>
+                                            <option value="tabata">Tabata (6 phút)</option>
+                                            <option value="stretch">Stretch (Kéo giãn)</option>
+                                            <option value="signature">Signature (Đặc biệt)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold">Nhóm cơ chính</label>
+                                        <select class="form-select" th:field="*{primaryMuscle}">
+                                            <option value="Bụng">Bụng</option>
+                                            <option value="Tay">Tay</option>
+                                            <option value="Ngực">Ngực</option>
+                                            <option value="Lưng">Lưng</option>
+                                            <option value="Chân">Chân</option>
+                                            <option value="Toàn thân">Toàn thân</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label fw-bold">Độ khó</label>
+                                        <select class="form-select" th:field="*{level}">
+                                            <option value="easy">Dễ (Easy)</option>
+                                            <option value="medium">Trung bình (Medium)</option>
+                                            <option value="hard">Khó (Hard)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label fw-bold">Thời gian làm (giây)</label>
+                                        <input type="number" class="form-control" th:field="*{workSec}" value="30" required>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label fw-bold">Thời gian nghỉ (giây)</label>
+                                        <input type="number" class="form-control" th:field="*{restSec}" value="15" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Lưu buổi tập</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{admin/fragments :: scripts}"></div>
+</body>
+</html>

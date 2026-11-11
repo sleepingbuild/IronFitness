@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    repair-on-migrate: true
+
+homefit:
+  jwt:
+    secret: ${JWT_SECRET:HomeFitProductionJwtSecretKeyMustBeAtLeast32BytesLong!}
+    access-token-minutes: 60
+    refresh-token-days: 30
+  admin:
+    email: ${ADMIN_EMAIL:admin@homefit.com}
+    password: ${ADMIN_PASSWORD:admin123456}
+
+server:
+  port: ${PORT:8080}

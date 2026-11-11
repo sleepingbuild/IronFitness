@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments :: head('Quản lý Phát hành')}"></head>
+<body>
+<div th:replace="~{admin/fragments :: navbar}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{admin/fragments :: sidebar}"></nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                <h1 class="h2"><i class="bi bi-cloud-arrow-up-fill text-primary me-2"></i>Quản lý Phát hành (Content Release)</h1>
+            </div>
+
+            <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div class="card mb-4 border-primary">
+                <div class="card-header bg-primary text-white fw-bold">
+                    <i class="bi bi-rocket-takeoff me-2"></i>Tạo Release Manifest mới cho Mobile App
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Khi xuất bản Release mới, ứng dụng di động sẽ tự động nạp delta sync nội dung (bài tập, buổi tập, thử thách) mà không cần phát hành lại bản build trên CH Play / App Store.</p>
+                    <form th:action="@{/admin/releases/create}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Ghi chú phát hành (Release Notes)</label>
+                            <input type="text" name="notes" class="form-control" required placeholder="Ví dụ: Cập nhật 15 bài tập bụng và tối ưu thử thách 28 ngày tuần 2">
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-cloud-upload me-1"></i>Xuất bản Content Release v<span th:text="${latestRelease != null ? latestRelease.version + 1 : 1}">1</span></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-white fw-bold">Lịch sử các bản phát hành Content Release</div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Phiên bản (Version)</th>
+                                    <th>Ghi chú</th>
+                                    <th>Người tạo</th>
+                                    <th>Thời gian xuất bản</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="r : ${releases}">
+                                    <td><span class="badge bg-primary fs-6" th:text="${'v' + r.version}">v1</span></td>
+                                    <td class="fw-bold" th:text="${r.notes}">Bản khởi tạo</td>
+                                    <td th:text="${r.createdBy}">Admin</td>
+                                    <td th:text="${#temporals.format(r.publishedAt, 'dd/MM/yyyy HH:mm')}">10/11/2026 17:30</td>
+                                    <td><span class="badge bg-success" th:text="${r.status}">PUBLISHED</span></td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(releases)}">
+                                    <td colspan="5" class="text-center py-4 text-muted">Chưa có Content Release nào. Bấm nút phía trên để tạo bản xuất bản đầu tiên.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{admin/fragments :: scripts}"></div>
+</body>
+</html>

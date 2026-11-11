@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
 
-/** Quản lý bài tập: danh sách (lọc theo nhóm cơ), thêm, sửa, ẩn/hiện. */
+/** Quản lý bài tập: danh sách (lọc theo nhóm cơ, sắp xếp), thêm, sửa, ẩn/hiện. */
 @Controller
 @RequestMapping("/admin/exercises")
 public class AdminExerciseController {
@@ -34,14 +34,23 @@ public class AdminExerciseController {
     }
 
     @GetMapping
-    public String list(@RequestParam(required = false) Long categoryId, Model model) {
-        model.addAttribute("rows", service.listRows(categoryId));
+    public String list(@RequestParam(required = false) Long categoryId,
+                       @RequestParam(required = false, defaultValue = "sortOrder") String sortBy,
+                       @RequestParam(required = false, defaultValue = "asc") String sortDir,
+                       Model model) {
+        var list = service.listRows(categoryId, sortBy, sortDir);
+        model.addAttribute("exercises", list);
+        model.addAttribute("rows", list);
+        model.addAttribute("categories", service.categoryOptions());
         model.addAttribute("categoryOptions", service.categoryOptions());
         model.addAttribute("selectedCategoryId", categoryId);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("sortDir", sortDir);
+        model.addAttribute("totalCount", list.size());
         return "admin/exercises/list";
     }
 
-    @GetMapping("/new")
+    @GetMapping({"/new", "/create"})
     public String newForm(@RequestParam(required = false) Long categoryId, Model model) {
         ExerciseForm form = new ExerciseForm();
         form.setCategoryId(categoryId);
@@ -120,7 +129,6 @@ public class AdminExerciseController {
         model.addAttribute("categoryOptions", service.categoryOptions());
     }
 
-    /** Các kiểm tra không diễn đạt được bằng chú thích: giới hạn theo chế độ và nhóm cơ có tồn tại. */
     private void checkExtra(ExerciseForm form, BindingResult result) {
         String problem = form.amountProblem();
         if (problem != null && !result.hasFieldErrors("amount")) {

@@ -1,10 +1,6 @@
--- V3: DỮ LIỆU THỬ để dựng giao diện (Agent 6) và kiểm thử API. KHÔNG phải nội dung thật.
--- Ảnh minh họa là ảnh giữ chỗ (placeholder) từ dịch vụ ngoài, không có quyền sử dụng riêng.
--- Nội dung thật do Agent 5 cung cấp (docs/seed/exercises.csv); migration V4 sẽ ẩn các bài này
--- (is_active = FALSE) rồi thêm bài thật. KHÔNG sửa file này sau khi đã chạy.
--- Mỗi bài đúng một trong duration_sec hoặc reps.
+-- V3: DỮ LIỆU THỬ để dựng giao diện và kiểm thử API. Sử dụng INSERT IGNORE tránh lỗi trùng lặp.
 
-INSERT INTO exercises
+INSERT IGNORE INTO exercises
     (category_id, name, description, media_url, media_type, duration_sec, reps, rest_sec, sort_order, is_active, updated_at)
 VALUES
     -- Bụng

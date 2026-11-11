@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments :: head('Quản lý Buổi tập')}"></head>
+<body>
+<div th:replace="~{admin/fragments :: navbar}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{admin/fragments :: sidebar}"></nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                <h1 class="h2"><i class="bi bi-calendar-check-fill text-primary me-2"></i>Quản lý Buổi tập</h1>
+                <a th:href="@{/admin/workouts/new}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Tạo buổi tập mới</a>
+            </div>
+
+            <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tên buổi tập (VI)</th>
+                                    <th>Loại (Type)</th>
+                                    <th>Nhóm cơ</th>
+                                    <th>Độ khó</th>
+                                    <th>Thời lượng</th>
+                                    <th>Trạng thái</th>
+                                    <th class="text-end">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="w : ${workouts}">
+                                    <td th:text="${w.id}">1</td>
+                                    <td class="fw-bold" th:text="${w.titleVi}">Cơ Bụng Cấp Dễ</td>
+                                    <td><span class="badge bg-secondary" th:text="${w.type}">body_part</span></td>
+                                    <td th:text="${w.primaryMuscle}">Bụng</td>
+                                    <td>
+                                        <span class="badge" th:classappend="${w.level == 'easy' ? 'bg-success' : (w.level == 'medium' ? 'bg-warning text-dark' : 'bg-danger')}" th:text="${w.level}">easy</span>
+                                    </td>
+                                    <td th:text="${w.workSec + 's làm / ' + w.restSec + 's nghỉ'}">30s làm / 15s nghỉ</td>
+                                    <td>
+                                        <span class="badge bg-success" th:text="${w.status}">PUBLISHED</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <form th:action="@{/admin/workouts/{id}/delete(id=${w.id})}" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xoá buổi tập này?')">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(workouts)}">
+                                    <td colspan="8" class="text-center py-4 text-muted">Chưa có buổi tập nào được tạo.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{admin/fragments :: scripts}"></div>
+</body>
+</html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{admin/fragments :: head(${exercise.id == null ? 'Thêm Bài tập' : 'Sửa Bài tập'})}"></head>
+<head th:replace="~{admin/fragments :: head(${title})}"></head>
 <body>
 <div th:replace="~{admin/fragments :: navbar}"></div>
 
@@ -9,46 +9,48 @@
         <nav th:replace="~{admin/fragments :: sidebar}"></nav>
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
-            <div class="pt-3 pb-2 mb-4 border-bottom">
-                <h1 class="h2" th:text="${exercise.id == null ? 'Thêm mới Bài tập' : 'Cập nhật Bài tập'}"></h1>
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                <h1 class="h2"><i class="bi bi-pencil-square text-primary me-2"></i><span th:text="${title}">Soạn thảo Bài tập</span></h1>
+                <a th:href="@{/admin/exercises}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Quay lại</a>
             </div>
 
-            <div class="card" style="max-width: 800px;">
+            <div class="card style-card" style="max-width: 800px;">
                 <div class="card-body">
-                    <form th:action="@{${exercise.id == null ? '/admin/exercises/create' : '/admin/exercises/' + exercise.id + '/edit'}}"
-                          th:object="${exercise}" method="post" id="exerciseForm">
+                    <form th:action="@{${formAction}}" th:object="${form}" method="post" id="exerciseForm">
 
-                        <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger">
-                            Vui lòng kiểm tra lại thông tin. Đảm bảo nhập đúng Thời gian HOẶC Số lần.
+                        <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger alert-dismissible fade show">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>Vui lòng kiểm tra lại các trường dữ liệu bị lỗi bên dưới.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-8">
                                 <label for="name" class="form-label fw-bold">Tên bài tập <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                                <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="Ví dụ: Plank khuỷu tay" required>
                                 <div class="text-danger small mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
                             </div>
                             <div class="col-md-4">
-                                <label for="category" class="form-label fw-bold">Nhóm cơ <span class="text-danger">*</span></label>
-                                <select class="form-select" id="category" th:field="*{categoryId}" required>
+                                <label for="categoryId" class="form-label fw-bold">Nhóm cơ <span class="text-danger">*</span></label>
+                                <select class="form-select" id="categoryId" th:field="*{categoryId}" required>
                                     <option value="">-- Chọn nhóm cơ --</option>
-                                    <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+                                    <option th:each="cat : ${categoryOptions}" th:value="${cat.id}" th:text="${cat.name}"></option>
                                 </select>
                                 <div class="text-danger small mt-1" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></div>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="description" class="form-label fw-bold">Mô tả hướng dẫn</label>
-                            <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
+                            <label for="description" class="form-label fw-bold">Mô tả / Hướng dẫn thực hiện</label>
+                            <textarea class="form-control" id="description" th:field="*{description}" rows="3" placeholder="Mô tả các bước thực hiện động tác..."></textarea>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-9">
-                                <label for="mediaUrl" class="form-label fw-bold">Media URL (Video/GIF) <span class="text-danger">*</span></label>
+                                <label for="mediaUrl" class="form-label fw-bold">Media URL (Video / GIF) <span class="text-danger">*</span></label>
                                 <div class="input-group">
-                                    <input type="url" class="form-control" id="mediaUrl" th:field="*{mediaUrl}" required>
-                                    <button class="btn btn-outline-secondary" type="button" onclick="previewMedia()">Xem trước</button>
+                                    <input type="url" class="form-control" id="mediaUrl" th:field="*{mediaUrl}" placeholder="https://images.unsplash.com/... hoặc .mp4" required>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="previewMedia()"><i class="bi bi-eye me-1"></i>Xem trước</button>
                                 </div>
                                 <div class="text-danger small mt-1" th:if="${#fields.hasErrors('mediaUrl')}" th:errors="*{mediaUrl}"></div>
                             </div>
@@ -63,21 +65,24 @@
 
                         <div class="card bg-light border-0 mb-3">
                             <div class="card-body">
-                                <p class="fw-bold mb-2">Thông số tập luyện (Nhập Thời gian HOẶC Số lần) <span class="text-danger">*</span></p>
+                                <p class="fw-bold mb-2">Thông số tập luyện (Chế độ tập & Giá trị) <span class="text-danger">*</span></p>
                                 <div class="row g-3">
                                     <div class="col-md-4">
-                                        <label for="durationSec" class="form-label small">Thời gian (giây)</label>
-                                        <input type="number" class="form-control" id="durationSec" th:field="*{durationSec}" min="1" placeholder="Ví dụ: 30">
-                                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('durationSec')}" th:errors="*{durationSec}"></div>
+                                        <label for="mode" class="form-label small fw-bold">Cách tính</label>
+                                        <select class="form-select" id="mode" th:field="*{mode}" required>
+                                            <option value="DURATION">Theo thời gian (Giây)</option>
+                                            <option value="REPS">Theo số lần (Reps)</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-4">
-                                        <label for="reps" class="form-label small">Số lần (reps)</label>
-                                        <input type="number" class="form-control" id="reps" th:field="*{reps}" min="1" placeholder="Ví dụ: 12">
-                                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('reps')}" th:errors="*{reps}"></div>
+                                        <label for="amount" class="form-label small fw-bold">Giá trị (Số giây / Số lần)</label>
+                                        <input type="number" class="form-control" id="amount" th:field="*{amount}" min="1" max="3600" required placeholder="Ví dụ: 30 hoặc 12">
+                                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label for="restSec" class="form-label fw-bold">Thời gian nghỉ (giây) <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control border-primary" id="restSec" th:field="*{restSec}" min="0" required>
+                                        <label for="restSec" class="form-label small fw-bold">Thời gian nghỉ (giây)</label>
+                                        <input type="number" class="form-control border-primary" id="restSec" th:field="*{restSec}" min="0" max="600" required>
+                                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('restSec')}" th:errors="*{restSec}"></div>
                                     </div>
                                 </div>
                             </div>
@@ -90,15 +95,15 @@
                             </div>
                             <div class="col-md-8 d-flex align-items-end pb-2">
                                 <div class="form-check form-switch ms-3">
-                                    <input class="form-check-input" type="checkbox" id="isActive" th:field="*{isActive}">
-                                    <label class="form-check-label fw-bold" for="isActive">Hoạt động (Hiển thị trên App)</label>
+                                    <input class="form-check-input" type="checkbox" id="active" th:field="*{active}">
+                                    <label class="form-check-label fw-bold" for="active">Kích hoạt (Hiển thị trên Mobile App)</label>
                                 </div>
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-end gap-2">
                             <a th:href="@{/admin/exercises}" class="btn btn-light border">Hủy</a>
-                            <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Lưu lại</button>
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Lưu thông tin</button>
                         </div>
                     </form>
                 </div>
@@ -117,27 +122,6 @@
             alert("Vui lòng nhập Media URL trước khi xem.");
         }
     }
-
-    // Tự động vô hiệu hóa trường còn lại để đảm bảo chỉ nhập Duration HOẶC Reps
-    document.addEventListener('DOMContentLoaded', function() {
-        const durationInput = document.getElementById('durationSec');
-        const repsInput = document.getElementById('reps');
-
-        function toggleInputs() {
-            if (durationInput.value) {
-                repsInput.disabled = true;
-            } else if (repsInput.value) {
-                durationInput.disabled = true;
-            } else {
-                repsInput.disabled = false;
-                durationInput.disabled = false;
-            }
-        }
-
-        durationInput.addEventListener('input', toggleInputs);
-        repsInput.addEventListener('input', toggleInputs);
-        toggleInputs();
-    });
 </script>
 </body>
 </html>
