@@ -4,7 +4,7 @@ COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 COPY src src
-RUN ./mvnw install -DskipTests
+RUN chmod +x mvnw && ./mvnw install -DskipTests
 
 FROM eclipse-temurin:17-jre-alpine
 VOLUME /tmp
