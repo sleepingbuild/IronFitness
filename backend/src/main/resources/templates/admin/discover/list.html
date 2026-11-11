@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments :: head('Quản lý Mục Khám phá')}"></head>
+<body>
+<div th:replace="~{admin/fragments :: navbar}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{admin/fragments :: sidebar}"></nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                <h1 class="h2"><i class="bi bi-compass-fill text-primary me-2"></i>Quản lý Mục Khám phá (Discover)</h1>
+                <a th:href="@{/admin/discover/new}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Thêm bài Khám phá mới</a>
+            </div>
+
+            <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tiêu đề (VI)</th>
+                                    <th>Thể loại</th>
+                                    <th>Ảnh bìa</th>
+                                    <th>Thứ tự</th>
+                                    <th>Trạng thái</th>
+                                    <th class="text-end">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="item : ${items}">
+                                    <td th:text="${item.id}">1</td>
+                                    <td class="fw-bold" th:text="${item.titleVi}">5 Mẹo khởi động chuẩn</td>
+                                    <td><span class="badge bg-info text-dark" th:text="${item.category}">Mẹo tập luyện</span></td>
+                                    <td>
+                                        <img th:src="${item.coverUrl}" style="height: 40px; width: 60px; object-fit: cover; border-radius: 4px;" alt="cover">
+                                    </td>
+                                    <td th:text="${item.sortOrder}">1</td>
+                                    <td>
+                                        <span class="badge" th:classappend="${item.active ? 'bg-success' : 'bg-secondary'}" th:text="${item.active ? 'HIỂN THỊ' : 'ẨN'}">HIỂN THỊ</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a th:href="@{/admin/discover/{id}/edit(id=${item.id})}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i> Sửa</a>
+                                        <form th:action="@{/admin/discover/{id}/toggle(id=${item.id})}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm" th:classappend="${item.active ? 'btn-outline-warning' : 'btn-outline-success'}">
+                                                <i class="bi" th:classappend="${item.active ? 'bi-eye-slash' : 'bi-eye'}"></i>
+                                            </button>
+                                        </form>
+                                        <form th:action="@{/admin/discover/{id}/delete(id=${item.id})}" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xoá mục này?')">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(items)}">
+                                    <td colspan="7" class="text-center py-4 text-muted">Chưa có mục Khám phá nào. Bấm "Thêm bài Khám phá mới" để tạo bài viết đầu tiên.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{admin/fragments :: scripts}"></div>
+</body>
+</html>

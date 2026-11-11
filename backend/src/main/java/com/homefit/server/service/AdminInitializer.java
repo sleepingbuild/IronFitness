@@ -15,8 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /**
- * Tạo tài khoản admin đầu tiên từ cấu hình homefit.admin.* khi khởi động,
- * chỉ khi chưa có admin nào. Mật khẩu không nằm trong migration hay Git.
+ * Khởi tạo hoặc cập nhật tài khoản admin từ cấu hình homefit.admin.* khi ứng dụng khởi động.
  */
 @Component
 public class AdminInitializer implements ApplicationRunner {
@@ -35,28 +34,22 @@ public class AdminInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        if (users.existsByRole(Role.ADMIN)) {
-            return;
-        }
         String email = props.email();
         String password = props.password();
-        if (email == null || email.isBlank() || password == null || password.length() < 8
-                || password.startsWith("CHANGE_ME")) {
-            log.warn("Chưa tạo tài khoản admin: đặt homefit.admin.email và homefit.admin.password "
-                    + "(từ 8 ký tự, không dùng giá trị mẫu) trong application-local.yml.");
+        if (email == null || email.isBlank() || password == null || password.isBlank()) {
+            log.warn("Chưa cấu hình tài khoản admin (homefit.admin.email / password).");
             return;
         }
         String normalized = email.trim().toLowerCase(Locale.ROOT);
-        if (users.existsByEmail(normalized)) {
-            log.warn("Email admin {} đã tồn tại với vai trò thường, bỏ qua việc tạo admin.", normalized);
-            return;
-        }
-        User admin = new User();
-        admin.setEmail(normalized);
+        User admin = users.findByEmail(normalized).orElseGet(() -> {
+            User u = new User();
+            u.setEmail(normalized);
+            u.setDisplayName("Quản trị viên");
+            return u;
+        });
         admin.setPasswordHash(passwordEncoder.encode(password));
-        admin.setDisplayName("Quản trị viên");
         admin.setRole(Role.ADMIN);
         users.save(admin);
-        log.info("Đã tạo tài khoản admin đầu tiên: {}", normalized);
+        log.info("Đã đồng bộ tài khoản admin thành công: {}", normalized);
     }
 }

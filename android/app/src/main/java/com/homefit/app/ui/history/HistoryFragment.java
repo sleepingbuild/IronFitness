@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.homefit.app.R;
 import com.homefit.app.data.local.entity.CategoryEntity;
 import com.homefit.app.databinding.FragmentHistoryBinding;
-import com.homefit.app.ui.common.BannerAdHelper;
 import com.homefit.app.ui.common.SnackbarHelper;
 
 import java.time.format.DateTimeFormatter;
@@ -34,7 +33,6 @@ public class HistoryFragment extends Fragment {
     private HistoryViewModel viewModel;
     private CalendarAdapter calendarAdapter;
     private WorkoutLogAdapter logAdapter;
-    private final BannerAdHelper bannerAdHelper = new BannerAdHelper();
 
     @Nullable
     @Override
@@ -74,7 +72,6 @@ public class HistoryFragment extends Fragment {
         });
 
         observeViewModel();
-        bannerAdHelper.attach(binding.adContainer);
     }
 
     private void observeViewModel() {
@@ -89,6 +86,23 @@ public class HistoryFragment extends Fragment {
             if (binding != null) {
                 int totalMinutes = (seconds != null ? seconds : 0) / 60;
                 binding.tvTotalMinutesValue.setText(getString(R.string.stats_minutes_format, totalMinutes));
+            }
+        });
+
+        viewModel.getApiStats().observe(getViewLifecycleOwner(), resource -> {
+            if (binding != null && resource.isSuccess() && resource.data != null) {
+                binding.tvCurrentStreakValue.setText(getString(R.string.stats_streak_format, resource.data.currentStreakDays));
+                binding.tvLast7DaysValue.setText(String.valueOf(resource.data.sessionsLast7Days));
+                binding.tvLast30DaysValue.setText(String.valueOf(resource.data.sessionsLast30Days));
+                
+                int t = resource.data.totalSessions;
+                String badge;
+                if (t >= 30) badge = "🏅 Tinh anh";
+                else if (t >= 10) badge = "🥇 Chiến binh";
+                else if (t >= 5) badge = "🥈 Người quen";
+                else badge = "🏆 Tân binh";
+                
+                binding.tvBadgeValue.setText(badge);
             }
         });
 
@@ -134,20 +148,7 @@ public class HistoryFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        bannerAdHelper.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        bannerAdHelper.onPause();
-        super.onPause();
-    }
-
-    @Override
     public void onDestroyView() {
-        bannerAdHelper.destroy();
         binding = null;
         super.onDestroyView();
     }

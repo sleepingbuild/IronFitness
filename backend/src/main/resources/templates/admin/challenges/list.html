@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments :: head('Thử thách 28 ngày')}"></head>
+<body>
+<div th:replace="~{admin/fragments :: navbar}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{admin/fragments :: sidebar}"></nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                <h1 class="h2"><i class="bi bi-trophy-fill text-warning me-2"></i>Quản lý Thử thách 28 ngày</h1>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-start border-success border-4">
+                        <div class="card-body text-center py-4">
+                            <i class="bi bi-reception-2 text-success fs-1 mb-2"></i>
+                            <h4 class="fw-bold">Cấp độ DỄ (Easy)</h4>
+                            <p class="text-muted">Lịch tập 28 ngày dành cho người mới</p>
+                            <span class="badge bg-success mb-3">24 Buổi tập + 4 Ngày nghỉ</span>
+                            <div>
+                                <a th:href="@{/admin/challenges/easy}" class="btn btn-outline-success"><i class="bi bi-grid-3x3-gap-fill me-1"></i>Xem Lưới 28 Ngày</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card h-100 border-start border-warning border-4">
+                        <div class="card-body text-center py-4">
+                            <i class="bi bi-reception-3 text-warning fs-1 mb-2"></i>
+                            <h4 class="fw-bold">Cấp độ TRUNG BÌNH</h4>
+                            <p class="text-muted">Lịch tập 28 ngày sức bền trung bình</p>
+                            <span class="badge bg-warning text-dark mb-3">24 Buổi tập + 4 Ngày nghỉ</span>
+                            <div>
+                                <a th:href="@{/admin/challenges/medium}" class="btn btn-outline-warning"><i class="bi bi-grid-3x3-gap-fill me-1"></i>Xem Lưới 28 Ngày</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card h-100 border-start border-danger border-4">
+                        <div class="card-body text-center py-4">
+                            <i class="bi bi-reception-4 text-danger fs-1 mb-2"></i>
+                            <h4 class="fw-bold">Cấp độ KHÓ (Hard)</h4>
+                            <p class="text-muted">Lịch tập 28 ngày cường độ cao</p>
+                            <span class="badge bg-danger mb-3">24 Buổi tập + 4 Ngày nghỉ</span>
+                            <div>
+                                <a th:href="@{/admin/challenges/hard}" class="btn btn-outline-danger"><i class="bi bi-grid-3x3-gap-fill me-1"></i>Xem Lưới 28 Ngày</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{admin/fragments :: scripts}"></div>
+</body>
+</html>

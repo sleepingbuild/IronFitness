@@ -9,22 +9,22 @@
         <item name="colorOnPrimary">@color/hf_on_primary</item>
         <item name="colorPrimaryContainer">@color/hf_primary_container</item>
         <item name="colorOnPrimaryContainer">@color/hf_on_primary_container</item>
-        <item name="colorPrimaryInverse">@color/hf_inverse_primary</item>
+        <item name="colorPrimaryInverse">@color/hf_primary_container</item>
 
-        <item name="colorSecondary">@color/hf_secondary</item>
-        <item name="colorOnSecondary">@color/hf_on_secondary</item>
-        <item name="colorSecondaryContainer">@color/hf_secondary_container</item>
-        <item name="colorOnSecondaryContainer">@color/hf_on_secondary_container</item>
+        <item name="colorSecondary">@color/hf_navy</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/hf_primary_container</item>
+        <item name="colorOnSecondaryContainer">@color/hf_primary</item>
 
-        <item name="colorTertiary">@color/hf_tertiary</item>
-        <item name="colorOnTertiary">@color/hf_on_tertiary</item>
-        <item name="colorTertiaryContainer">@color/hf_tertiary_container</item>
-        <item name="colorOnTertiaryContainer">@color/hf_on_tertiary_container</item>
+        <item name="colorTertiary">@color/hf_navy</item>
+        <item name="colorOnTertiary">@color/white</item>
+        <item name="colorTertiaryContainer">@color/hf_surface_variant</item>
+        <item name="colorOnTertiaryContainer">@color/hf_on_surface_variant</item>
 
-        <item name="colorError">@color/hf_error</item>
-        <item name="colorOnError">@color/hf_on_error</item>
-        <item name="colorErrorContainer">@color/hf_error_container</item>
-        <item name="colorOnErrorContainer">@color/hf_on_error_container</item>
+        <item name="colorError">@color/hf_danger</item>
+        <item name="colorOnError">@color/white</item>
+        <item name="colorErrorContainer">@color/hf_danger</item>
+        <item name="colorOnErrorContainer">@color/white</item>
 
         <!-- Nền và bề mặt -->
         <item name="android:colorBackground">@color/hf_background</item>
@@ -33,17 +33,17 @@
         <item name="colorOnSurface">@color/hf_on_surface</item>
         <item name="colorSurfaceVariant">@color/hf_surface_variant</item>
         <item name="colorOnSurfaceVariant">@color/hf_on_surface_variant</item>
-        <item name="colorSurfaceContainerLowest">@color/hf_surface_container_lowest</item>
-        <item name="colorSurfaceContainerLow">@color/hf_surface_container_low</item>
-        <item name="colorSurfaceContainer">@color/hf_surface_container</item>
-        <item name="colorSurfaceContainerHigh">@color/hf_surface_container_high</item>
-        <item name="colorSurfaceContainerHighest">@color/hf_surface_container_highest</item>
-        <item name="colorSurfaceDim">@color/hf_surface_dim</item>
-        <item name="colorSurfaceBright">@color/hf_surface_bright</item>
+        <item name="colorSurfaceContainerLowest">@color/hf_surface</item>
+        <item name="colorSurfaceContainerLow">@color/hf_surface</item>
+        <item name="colorSurfaceContainer">@color/hf_surface_variant</item>
+        <item name="colorSurfaceContainerHigh">@color/hf_surface_variant</item>
+        <item name="colorSurfaceContainerHighest">@color/hf_surface_variant</item>
+        <item name="colorSurfaceDim">@color/hf_surface</item>
+        <item name="colorSurfaceBright">@color/hf_surface</item>
         <item name="colorOutline">@color/hf_outline</item>
-        <item name="colorOutlineVariant">@color/hf_outline_variant</item>
-        <item name="colorSurfaceInverse">@color/hf_inverse_surface</item>
-        <item name="colorOnSurfaceInverse">@color/hf_inverse_on_surface</item>
+        <item name="colorOutlineVariant">@color/hf_outline</item>
+        <item name="colorSurfaceInverse">@color/hf_on_surface</item>
+        <item name="colorOnSurfaceInverse">@color/hf_surface</item>
 
         <!-- Hình dạng -->
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.HomeFit.Small</item>

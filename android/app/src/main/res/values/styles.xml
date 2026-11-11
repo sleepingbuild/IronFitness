@@ -106,7 +106,7 @@
 
     <!-- Thẻ -->
     <style name="Widget.HomeFit.Card" parent="Widget.Material3.CardView.Filled">
-        <item name="cardBackgroundColor">@color/hf_surface_container</item>
+        <item name="cardBackgroundColor">?attr/colorSurfaceVariant</item>
         <item name="cardCornerRadius">@dimen/corner_medium</item>
         <item name="cardElevation">@dimen/card_elevation</item>
     </style>
@@ -124,5 +124,12 @@
         <item name="labelVisibilityMode">labeled</item>
         <item name="itemTextAppearanceActive">@style/TextAppearance.HomeFit.Caption</item>
         <item name="itemTextAppearanceInactive">@style/TextAppearance.HomeFit.Caption</item>
+        <item name="itemIconTint">@color/bottom_nav_color</item>
+        <item name="itemTextColor">@color/bottom_nav_color</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.HomeFit.BottomNavigationView.ActiveIndicator</item>
+    </style>
+
+    <style name="Widget.HomeFit.BottomNavigationView.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">?attr/colorPrimaryContainer</item>
     </style>
 </resources>

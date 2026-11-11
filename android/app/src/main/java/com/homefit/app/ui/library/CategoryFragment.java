@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.homefit.app.R;
 import com.homefit.app.data.local.entity.CategoryEntity;
 import com.homefit.app.databinding.FragmentCategoryBinding;
-import com.homefit.app.ui.common.BannerAdHelper;
 import com.homefit.app.util.ErrorMessages;
 
 /**
@@ -28,7 +27,6 @@ public class CategoryFragment extends Fragment {
     private FragmentCategoryBinding binding;
     private CategoryViewModel viewModel;
     private CategoryAdapter adapter;
-    private final BannerAdHelper banner = new BannerAdHelper();
 
     @Nullable
     @Override
@@ -51,7 +49,6 @@ public class CategoryFragment extends Fragment {
 
         viewModel.getCategories().observe(getViewLifecycleOwner(), adapter::submitList);
         viewModel.getState().observe(getViewLifecycleOwner(), this::render);
-        banner.attach(binding.adContainer);
     }
 
     private void render(@Nullable LibraryState state) {
@@ -77,20 +74,7 @@ public class CategoryFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        banner.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        banner.onPause();
-        super.onPause();
-    }
-
-    @Override
     public void onDestroyView() {
-        banner.destroy();
         binding.rvCategories.setAdapter(null);
         binding = null;
         super.onDestroyView();

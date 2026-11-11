@@ -56,9 +56,4 @@
             android:visibility="gone" />
     </FrameLayout>
 
-    <!-- Banner AdMob (docs/ADS.md mục 2 và 5): cuối màn, không che thanh điều hướng -->
-    <FrameLayout
-        android:id="@+id/adContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 </LinearLayout>

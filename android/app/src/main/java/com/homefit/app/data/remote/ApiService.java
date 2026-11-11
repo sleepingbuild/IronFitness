@@ -4,12 +4,14 @@ import com.homefit.app.data.remote.dto.AuthResponse;
 import com.homefit.app.data.remote.dto.BatchSessionsRequest;
 import com.homefit.app.data.remote.dto.BatchSessionsResponse;
 import com.homefit.app.data.remote.dto.CategoryDto;
+import com.homefit.app.data.remote.dto.DiscoverDto;
 import com.homefit.app.data.remote.dto.ExerciseDto;
 import com.homefit.app.data.remote.dto.GoogleLoginRequest;
 import com.homefit.app.data.remote.dto.LoginRequest;
 import com.homefit.app.data.remote.dto.RefreshRequest;
 import com.homefit.app.data.remote.dto.RefreshResponse;
 import com.homefit.app.data.remote.dto.RegisterRequest;
+import com.homefit.app.data.remote.dto.StatsResponse;
 import com.homefit.app.data.remote.dto.UpdateProfileRequest;
 import com.homefit.app.data.remote.dto.UserDto;
 import com.homefit.app.data.remote.dto.WorkoutSessionDto;
@@ -45,6 +47,9 @@ public interface ApiService {
     @GET("me")
     Call<UserDto> getMe();
 
+    @GET("me/stats")
+    Call<StatsResponse> getStats();
+
     @PUT("me/profile")
     Call<UserDto> updateProfile(@Body UpdateProfileRequest body);
 
@@ -55,6 +60,10 @@ public interface ApiService {
     @GET("exercises")
     Call<List<ExerciseDto>> getExercises(@Query("categoryId") Long categoryId,
                                          @Query("updatedAfter") String updatedAfter);
+
+    // ---- Khám phá ----
+    @GET("discover")
+    Call<List<DiscoverDto>> getDiscoverItems();
 
     // ---- Lịch sử tập ----
     @POST("workout-sessions")

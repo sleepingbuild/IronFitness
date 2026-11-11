@@ -13,9 +13,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/** Quản lý bài tập: danh sách (lọc theo nhóm cơ), thêm, sửa, ẩn/hiện. */
+import java.util.Map;
+
+/** Quản lý bài tập: danh sách (lọc theo nhóm cơ, sắp xếp), thêm, sửa, ẩn/hiện. */
 @Controller
 @RequestMapping("/admin/exercises")
 public class AdminExerciseController {
@@ -30,14 +34,23 @@ public class AdminExerciseController {
     }
 
     @GetMapping
-    public String list(@RequestParam(required = false) Long categoryId, Model model) {
-        model.addAttribute("rows", service.listRows(categoryId));
+    public String list(@RequestParam(required = false) Long categoryId,
+                       @RequestParam(required = false, defaultValue = "sortOrder") String sortBy,
+                       @RequestParam(required = false, defaultValue = "asc") String sortDir,
+                       Model model) {
+        var list = service.listRows(categoryId, sortBy, sortDir);
+        model.addAttribute("exercises", list);
+        model.addAttribute("rows", list);
+        model.addAttribute("categories", service.categoryOptions());
         model.addAttribute("categoryOptions", service.categoryOptions());
         model.addAttribute("selectedCategoryId", categoryId);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("sortDir", sortDir);
+        model.addAttribute("totalCount", list.size());
         return "admin/exercises/list";
     }
 
-    @GetMapping("/new")
+    @GetMapping({"/new", "/create"})
     public String newForm(@RequestParam(required = false) Long categoryId, Model model) {
         ExerciseForm form = new ExerciseForm();
         form.setCategoryId(categoryId);
@@ -84,6 +97,27 @@ public class AdminExerciseController {
         return LIST_URL;
     }
 
+    @PostMapping("/import")
+    public String importCsv(@RequestParam("file") MultipartFile file, RedirectAttributes redirect) {
+        if (file.isEmpty()) {
+            redirect.addFlashAttribute("errorMessage", "Vui lòng chọn file CSV.");
+            return LIST_URL;
+        }
+        try {
+            int imported = service.importCsv(file);
+            redirect.addFlashAttribute("message", "Nhập thành công " + imported + " bài tập.");
+        } catch (Exception e) {
+            redirect.addFlashAttribute("errorMessage", "Lỗi nhập CSV: " + e.getMessage());
+        }
+        return LIST_URL;
+    }
+    
+    @GetMapping("/check-link")
+    @ResponseBody
+    public Map<String, String> checkLink(@RequestParam String url) {
+        return service.checkMediaLink(url);
+    }
+
     private void prepare(Model model, ExerciseForm form, String title, String action) {
         model.addAttribute("form", form);
         fillView(model, title, action);
@@ -95,7 +129,6 @@ public class AdminExerciseController {
         model.addAttribute("categoryOptions", service.categoryOptions());
     }
 
-    /** Các kiểm tra không diễn đạt được bằng chú thích: giới hạn theo chế độ và nhóm cơ có tồn tại. */
     private void checkExtra(ExerciseForm form, BindingResult result) {
         String problem = form.amountProblem();
         if (problem != null && !result.hasFieldErrors("amount")) {

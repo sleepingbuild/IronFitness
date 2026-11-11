@@ -13,7 +13,10 @@ import com.homefit.app.data.local.entity.CategoryEntity;
 import com.homefit.app.data.local.entity.WorkoutLogEntity;
 import com.homefit.app.data.repository.ExerciseRepository;
 import com.homefit.app.data.repository.WorkoutLogRepository;
+import com.homefit.app.data.remote.dto.StatsResponse;
+import com.homefit.app.data.repository.AuthRepository;
 import com.homefit.app.util.DateUtils;
+import com.homefit.app.util.Resource;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -31,9 +34,12 @@ public class HistoryViewModel extends AndroidViewModel {
 
     private final WorkoutLogRepository workoutLogRepository;
     private final ExerciseRepository exerciseRepository;
+    private final AuthRepository authRepository;
 
     private final MutableLiveData<YearMonth> currentMonth = new MutableLiveData<>(YearMonth.now());
     private final MutableLiveData<LocalDate> selectedDate = new MutableLiveData<>(LocalDate.now());
+    
+    private final LiveData<Resource<StatsResponse>> apiStats;
 
     private final LiveData<List<WorkoutLogEntity>> monthLogs;
     private final LiveData<List<Long>> monthWorkoutTimestamps;
@@ -44,6 +50,9 @@ public class HistoryViewModel extends AndroidViewModel {
         super(application);
         this.workoutLogRepository = new WorkoutLogRepository(application);
         this.exerciseRepository = new ExerciseRepository(application);
+        this.authRepository = new AuthRepository(application);
+
+        this.apiStats = authRepository.getStats();
 
         this.monthLogs = Transformations.switchMap(currentMonth, month ->
                 workoutLogRepository.getByMonth(
@@ -87,6 +96,10 @@ public class HistoryViewModel extends AndroidViewModel {
 
     public LiveData<Integer> getTotalSeconds() {
         return workoutLogRepository.getTotalSeconds();
+    }
+
+    public LiveData<Resource<StatsResponse>> getApiStats() {
+        return apiStats;
     }
 
     public LiveData<List<CategoryEntity>> getCategories() {

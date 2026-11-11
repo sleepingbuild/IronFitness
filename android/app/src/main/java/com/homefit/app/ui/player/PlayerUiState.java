@@ -2,13 +2,12 @@ package com.homefit.app.ui.player;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.homefit.app.data.local.entity.ExerciseEntity;
-import java.util.Objects;
+import com.homefit.app.data.local.dto.LocalExerciseGroupDto.LocalWorkoutDto;
 
 public class PlayerUiState {
     public final PlayerState state;
-    @Nullable public final ExerciseEntity currentExercise;
-    @Nullable public final ExerciseEntity nextExercise;
+    @Nullable public final LocalWorkoutDto currentExercise;
+    @Nullable public final LocalWorkoutDto nextExercise;
     public final int currentExerciseIndex;
     public final int totalExercises;
     public final int remainingSeconds; // Remaining seconds for current exercise or rest
@@ -17,8 +16,8 @@ public class PlayerUiState {
 
     public PlayerUiState(
             @NonNull PlayerState state,
-            @Nullable ExerciseEntity currentExercise,
-            @Nullable ExerciseEntity nextExercise,
+            @Nullable LocalWorkoutDto currentExercise,
+            @Nullable LocalWorkoutDto nextExercise,
             int currentExerciseIndex,
             int totalExercises,
             int remainingSeconds,

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/** Quản lý nhóm cơ: danh sách, thêm, sửa, ẩn/hiện. Controller mỏng, logic ở AdminCategoryService. */
+/** Quản lý nhóm cơ: danh sách, thêm, sửa, ẩn/hiện. */
 @Controller
 @RequestMapping("/admin/categories")
 public class AdminCategoryController {
@@ -30,11 +30,13 @@ public class AdminCategoryController {
 
     @GetMapping
     public String list(Model model) {
-        model.addAttribute("rows", service.listAll());
+        var list = service.listAll();
+        model.addAttribute("categories", list);
+        model.addAttribute("rows", list);
         return "admin/categories/list";
     }
 
-    @GetMapping("/new")
+    @GetMapping({"/new", "/create"})
     public String newForm(Model model) {
         prepareForm(model, new CategoryForm(), "Thêm nhóm cơ", "/admin/categories");
         return FORM_VIEW;
