@@ -105,23 +105,25 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /** Trang quáº£n trá»‹: Ä‘Äƒng nháº­p form + phiÃªn + CSRF (máº·c Ä‘á»‹nh báº­t), chá»‰ vai trÃ² ADMIN. */
+    /** Trang quản trị: đăng nhập form + phiên + CSRF (mặc định bật), chỉ vai trò ADMIN. */
     @Bean
     @Order(2)
     public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/", "/admin/**")
                 .authorizeHttpRequests(a -> a
-                        .requestMatchers("/", "/admin/login").permitAll()
+                        .requestMatchers("/", "/admin/login", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
                         .anyRequest().hasRole("ADMIN"))
                 .formLogin(form -> form
                         .loginPage("/admin/login")
                         .loginProcessingUrl("/admin/login")
                         .defaultSuccessUrl("/admin", true)
-                        .failureUrl("/admin/login?error"))
+                        .failureUrl("/admin/login?error")
+                        .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/admin/logout")
-                        .logoutSuccessUrl("/admin/login?logout"));
+                        .logoutSuccessUrl("/admin/login?logout")
+                        .permitAll());
         return http.build();
     }
 
@@ -130,7 +132,7 @@ public class SecurityConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(a -> a
-                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/", "/admin/login", "/error", "/favicon.ico", "/css/**", "/js/**", "/images/**").permitAll()
                         .anyRequest().denyAll())
                 .httpBasic(Customizer.withDefaults());
         return http.build();
