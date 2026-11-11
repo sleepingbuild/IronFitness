@@ -77,13 +77,6 @@ public class ReportFragment extends Fragment {
         AppDatabase db = AppDatabase.getInstance(requireContext());
         AppExecutors.diskIO().execute(() -> {
             userProfile = db.userProfileDao().getNow();
-            if (userProfile == null) {
-                userProfile = new UserProfileEntity();
-                userProfile.email = "qua@gmail.com";
-                userProfile.displayName = "Member Test";
-                userProfile.isPremium = true;
-                db.userProfileDao().upsert(userProfile);
-            }
 
             final int count = db.workoutLogDao().getCountNow();
             final int totalSec = db.workoutLogDao().getTotalSecondsNow();
@@ -95,20 +88,19 @@ public class ReportFragment extends Fragment {
     }
 
     private void updateUi(int workoutCount, int totalSeconds) {
-        if (userProfile == null || !isAdded()) return;
+        if (!isAdded()) return;
 
-        int displayCount = Math.max(workoutCount, 2); // default demo 2
-        int totalMinutes = Math.max(totalSeconds / 60, displayCount * 8);
+        int totalMinutes = totalSeconds / 60;
         int totalKcal = totalMinutes * 6;
 
-        tvWorkoutCount.setText(String.valueOf(displayCount));
+        tvWorkoutCount.setText(String.valueOf(workoutCount));
         tvKcalCount.setText(String.valueOf(totalKcal));
         tvMinutesCount.setText(String.valueOf(totalMinutes));
 
-        tvStreak.setText("1");
-        tvBestStreak.setText("1 ngày");
+        tvStreak.setText(workoutCount > 0 ? "1" : "0");
+        tvBestStreak.setText(workoutCount > 0 ? "1 ngày" : "0 ngày");
 
-        if (userProfile.weightKg != null && userProfile.weightKg > 0) {
+        if (userProfile != null && userProfile.weightKg != null && userProfile.weightKg > 0) {
             String wStr = String.format(java.util.Locale.US, "%.1f kg", userProfile.weightKg);
             tvCurrentWeight.setText(wStr);
             tvMaxWeight.setText("Nặng nhất  " + wStr);

@@ -30,10 +30,18 @@ public class WorkoutSummaryFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         int totalExercises = getArguments() != null ? getArguments().getInt("totalExercises", 1) : 1;
+        int totalSeconds = getArguments() != null ? getArguments().getInt("totalSeconds", 0) : 0;
         String groupKey = getArguments() != null ? getArguments().getString("groupKey", "") : "";
         String difficulty = getArguments() != null ? getArguments().getString("difficulty", "") : "";
         String groupName = getArguments() != null ? getArguments().getString("groupName", "") : "";
         String customWorkoutId = getArguments() != null ? getArguments().getString("customWorkoutId", null) : null;
+
+        // Lưu buổi tập vào CSDL Room & đồng bộ lên Server Render
+        long now = System.currentTimeMillis();
+        long startedAt = now - (Math.max(totalSeconds, 1) * 1000L);
+        com.homefit.app.data.repository.WorkoutLogRepository logRepo =
+                new com.homefit.app.data.repository.WorkoutLogRepository(requireContext());
+        logRepo.saveWorkout(null, startedAt, now, totalSeconds, totalExercises);
 
         binding.tvCompletedText.setText(totalExercises + " bài tập đã được hoàn thành.");
 
