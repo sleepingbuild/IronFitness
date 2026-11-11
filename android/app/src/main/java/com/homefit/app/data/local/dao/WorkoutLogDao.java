@@ -14,11 +14,9 @@ import java.util.List;
 @Dao
 public interface WorkoutLogDao {
 
-    /** Trả về -1 nếu clientUuid đã tồn tại (bỏ qua). */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(WorkoutLogEntity log);
 
-    /** Dùng khi khôi phục lịch sử từ server trên máy mới. */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertAll(List<WorkoutLogEntity> logs);
 
@@ -39,7 +37,15 @@ public interface WorkoutLogDao {
     @Query("SELECT COALESCE(SUM(totalSeconds), 0) FROM workout_logs WHERE userId = :userId")
     LiveData<Integer> sumSeconds(long userId);
 
-    /** Danh sách thời điểm hoàn thành (epoch millis); app đổi sang ngày theo múi giờ máy để đánh dấu Calendar. */
+    @Query("SELECT COUNT(*) FROM workout_logs")
+    int getCountNow();
+
+    @Query("SELECT COALESCE(SUM(totalSeconds), 0) FROM workout_logs")
+    int getTotalSecondsNow();
+
+    @Query("SELECT completedAt FROM workout_logs ORDER BY completedAt DESC")
+    List<Long> getAllCompletedTimesNow();
+
     @Query("SELECT completedAt FROM workout_logs WHERE userId = :userId "
             + "AND completedAt BETWEEN :from AND :to ORDER BY completedAt")
     LiveData<List<Long>> getDatesWithWorkout(long userId, long from, long to);
