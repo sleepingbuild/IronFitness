@@ -11,6 +11,14 @@
         app:popUpTo="@id/nav_graph"
         app:popUpToInclusive="true" />
 
+    <action
+        android:id="@+id/action_global_proPaywall"
+        app:destination="@id/proPaywallFragment" />
+
+    <action
+        android:id="@+id/action_global_lockedWorkout"
+        app:destination="@id/lockedWorkoutFragment" />
+
     <fragment
         android:id="@+id/splashFragment"
         android:name="com.homefit.app.ui.auth.SplashFragment"
@@ -22,7 +30,7 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_splash_to_workout"
-            app:destination="@id/workoutFragment"
+            app:destination="@id/homeWorkoutFragment"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
@@ -37,7 +45,7 @@
             app:destination="@id/registerFragment" />
         <action
             android:id="@+id/action_login_to_workout"
-            app:destination="@id/workoutFragment"
+            app:destination="@id/homeWorkoutFragment"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
@@ -49,20 +57,92 @@
         tools:layout="@layout/fragment_register">
         <action
             android:id="@+id/action_register_to_workout"
-            app:destination="@id/workoutFragment"
+            app:destination="@id/homeWorkoutFragment"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
 
     <!-- Tab Tập luyện -->
     <fragment
-        android:id="@+id/workoutFragment"
-        android:name="com.homefit.app.ui.library.CategoryFragment"
+        android:id="@+id/homeWorkoutFragment"
+        android:name="com.homefit.app.ui.workout.HomeWorkoutFragment"
         android:label="@string/nav_workout"
-        tools:layout="@layout/fragment_category">
+        tools:layout="@layout/fragment_home_workout">
         <action
             android:id="@+id/action_category_to_exerciseList"
             app:destination="@id/exerciseListFragment" />
+        <action
+            android:id="@+id/action_home_to_filteredGroups"
+            app:destination="@id/filteredGroupsFragment" />
+        <action
+            android:id="@+id/action_home_to_customWorkout"
+            app:destination="@id/customWorkoutFragment" />
+        <action
+            android:id="@+id/action_home_to_challengeWeek"
+            app:destination="@id/challengeWeekFragment" />
+        <action
+            android:id="@+id/action_home_to_challengeDay"
+            app:destination="@id/challengeDayFragment" />
+    </fragment>
+
+    <!-- Màn hình Tuần Thử thách bản thân (Screen 1) -->
+    <fragment
+        android:id="@+id/challengeWeekFragment"
+        android:name="com.homefit.app.ui.workout.ChallengeWeekFragment"
+        android:label="Thử thách bản thân"
+        tools:layout="@layout/fragment_challenge_week">
+        <action
+            android:id="@+id/action_challengeWeek_to_challengeDay"
+            app:destination="@id/challengeDayFragment" />
+    </fragment>
+
+    <!-- Màn hình Ngày Thử thách bản thân (Screen 2) -->
+    <fragment
+        android:id="@+id/challengeDayFragment"
+        android:name="com.homefit.app.ui.workout.ChallengeDayFragment"
+        android:label="Chi tiết ngày tập"
+        tools:layout="@layout/fragment_challenge_day">
+        <argument
+            android:name="level"
+            android:defaultValue="easy"
+            app:argType="string" />
+        <argument
+            android:name="dayIndex"
+            android:defaultValue="1"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_challengeDay_to_player"
+            app:destination="@id/playerFragment" />
+    </fragment>
+
+    <!-- Tùy chỉnh bài tập (Màn 1) -->
+    <fragment
+        android:id="@+id/customWorkoutFragment"
+        android:name="com.homefit.app.ui.workout.CustomWorkoutFragment"
+        android:label="Tùy chỉnh bài tập"
+        tools:layout="@layout/fragment_custom_workout">
+        <action
+            android:id="@+id/action_customWorkout_to_editCustom"
+            app:destination="@id/editCustomWorkoutFragment" />
+        <action
+            android:id="@+id/action_customWorkout_to_player"
+            app:destination="@id/playerFragment" />
+    </fragment>
+
+    <!-- Soạn buổi tập (Màn 3) -->
+    <fragment
+        android:id="@+id/editCustomWorkoutFragment"
+        android:name="com.homefit.app.ui.workout.EditCustomWorkoutFragment"
+        android:label="Soạn buổi tập"
+        tools:layout="@layout/fragment_edit_custom_workout">
+        <argument
+            android:name="workoutId"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_editCustom_to_player"
+            app:destination="@id/playerFragment" />
     </fragment>
 
     <fragment
@@ -71,10 +151,10 @@
         android:label="@string/nav_exercise_list"
         tools:layout="@layout/fragment_exercise_list">
         <argument
-            android:name="categoryId"
-            app:argType="long" />
+            android:name="groupKey"
+            app:argType="string" />
         <argument
-            android:name="categoryName"
+            android:name="difficulty"
             app:argType="string" />
         <action
             android:id="@+id/action_exerciseList_to_detail"
@@ -102,12 +182,20 @@
 
     <fragment
         android:id="@+id/playerFragment"
-        android:name="com.homefit.app.ui.player.WorkoutPlayerFragment"
+        android:name="com.homefit.app.ui.player.PlayerFragment"
         android:label="@string/nav_player"
         tools:layout="@layout/fragment_player">
         <argument
-            android:name="categoryId"
-            app:argType="long" />
+            android:name="groupKey"
+            app:argType="string" />
+        <argument
+            android:name="difficulty"
+            app:argType="string" />
+        <argument
+            android:name="customWorkoutId"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
         <action
             android:id="@+id/action_player_to_summary"
             app:destination="@id/workoutSummaryFragment"
@@ -121,19 +209,73 @@
         android:label="@string/nav_player"
         tools:layout="@layout/fragment_workout_summary" />
 
-    <!-- Tab Lịch sử & Thống kê -->
+    <!-- Tab Báo cáo -->
     <fragment
-        android:id="@+id/historyFragment"
-        android:name="com.homefit.app.ui.history.HistoryFragment"
-        android:label="@string/nav_history"
-        tools:layout="@layout/fragment_history" />
+        android:id="@+id/reportFragment"
+        android:name="com.homefit.app.ui.report.ReportFragment"
+        android:label="@string/nav_report"
+        tools:layout="@layout/fragment_report" />
 
-    <!-- Tab Hồ sơ -->
+    <!-- Tab Khám phá -->
     <fragment
-        android:id="@+id/profileFragment"
-        android:name="com.homefit.app.ui.profile.ProfileFragment"
-        android:label="@string/nav_profile"
-        tools:layout="@layout/fragment_profile" />
+        android:id="@+id/discoverFragment"
+        android:name="com.homefit.app.ui.discover.DiscoverFragment"
+        android:label="@string/nav_discover"
+        tools:layout="@layout/fragment_discover">
+        <action
+            android:id="@+id/action_discover_to_filteredGroups"
+            app:destination="@id/filteredGroupsFragment" />
+        <action
+            android:id="@+id/action_discover_to_exerciseList"
+            app:destination="@id/exerciseListFragment" />
+    </fragment>
+
+    <!-- Lọc bài tập -->
+    <fragment
+        android:id="@+id/filteredGroupsFragment"
+        android:name="com.homefit.app.ui.workout.FilteredGroupsFragment"
+        android:label="Filtered Groups"
+        tools:layout="@layout/fragment_filtered_groups">
+        <argument
+            android:name="filterType"
+            app:argType="string" />
+        <argument
+            android:name="title"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_filteredGroups_to_exerciseList"
+            app:destination="@id/exerciseListFragment" />
+    </fragment>
+
+    <!-- Màn hình Khóa bài tập (Image 5) -->
+    <fragment
+        android:id="@+id/lockedWorkoutFragment"
+        android:name="com.homefit.app.ui.workout.LockedWorkoutFragment"
+        android:label="Mở khóa bài tập"
+        tools:layout="@layout/fragment_locked_workout">
+        <argument
+            android:name="title"
+            android:defaultValue="Bài tập PRO"
+            app:argType="string" />
+        <argument
+            android:name="duration"
+            android:defaultValue="17 phút"
+            app:argType="string" />
+        <argument
+            android:name="count"
+            android:defaultValue="13 Bài tập"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_lockedWorkout_to_proPaywall"
+            app:destination="@id/proPaywallFragment" />
+    </fragment>
+
+    <!-- Màn hình Thanh toán / Mua gói PRO (Image 3 & 4) -->
+    <fragment
+        android:id="@+id/proPaywallFragment"
+        android:name="com.homefit.app.ui.workout.ProPaywallFragment"
+        android:label="Gói PRO"
+        tools:layout="@layout/fragment_pro_paywall" />
 
     <!-- Tab Cài đặt -->
     <fragment

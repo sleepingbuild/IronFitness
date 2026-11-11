@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- id của từng mục phải trùng id điểm đến trong navigation/nav_graph.xml -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/workoutFragment"
+        android:id="@+id/homeWorkoutFragment"
         android:icon="@drawable/ic_nav_workout"
         android:title="@string/nav_workout" />
     <item
-        android:id="@+id/historyFragment"
-        android:icon="@drawable/ic_nav_history"
-        android:title="@string/nav_history" />
+        android:id="@+id/discoverFragment"
+        android:icon="@drawable/ic_compass"
+        android:title="@string/nav_discover" />
     <item
-        android:id="@+id/profileFragment"
-        android:icon="@drawable/ic_nav_profile"
-        android:title="@string/nav_profile" />
+        android:id="@+id/reportFragment"
+        android:icon="@drawable/ic_bar_chart"
+        android:title="@string/nav_report" />
     <item
         android:id="@+id/settingsFragment"
         android:icon="@drawable/ic_nav_settings"

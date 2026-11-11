@@ -4,28 +4,44 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
+import androidx.media3.exoplayer.ExoPlayer;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+
 import com.bumptech.glide.Glide;
 import com.homefit.app.R;
+import com.homefit.app.ads.AdsManager;
+import com.homefit.app.data.local.dto.LocalExerciseGroupDto.LocalWorkoutDto;
+import com.homefit.app.data.prefs.WorkoutProgressStore;
+import com.homefit.app.data.repository.ChallengeRepository;
 import com.homefit.app.databinding.FragmentPlayerBinding;
-import com.homefit.app.data.local.entity.ExerciseEntity;
-
-import androidx.media3.common.MediaItem;
-import androidx.media3.exoplayer.ExoPlayer;
-import com.bumptech.glide.Glide;
+import com.homefit.app.ui.common.BannerAdHelper;
+import com.homefit.app.ui.common.MediaLoader;
 
 public class PlayerFragment extends Fragment {
 
     private FragmentPlayerBinding binding;
     private PlayerViewModel viewModel;
     private ExoPlayer exoPlayer;
-    private String currentMediaUrl = null;
+    private final BannerAdHelper restBannerAdHelper = new BannerAdHelper();
+
+    private String groupKey;
+    private String difficulty;
+    private String groupName;
+    private String customWorkoutId;
+    private String workoutKey;
+    private String workoutTitle;
+    private int resumeIndex = 0;
 
     @Nullable
     @Override
@@ -42,34 +58,125 @@ public class PlayerFragment extends Fragment {
         exoPlayer = new ExoPlayer.Builder(requireContext()).build();
         binding.videoPlayerView.setPlayer(exoPlayer);
         exoPlayer.setRepeatMode(ExoPlayer.REPEAT_MODE_ALL);
-        
-        long categoryId = getArguments() != null ? getArguments().getLong("categoryId", -1) : -1;
-        if (categoryId != -1) {
-            viewModel.loadExercises(categoryId);
+
+        Bundle args = getArguments();
+        if (args != null) {
+            customWorkoutId = args.getString("customWorkoutId", null);
+            groupKey = args.getString("groupKey", "");
+            difficulty = args.getString("difficulty", "");
+            groupName = args.getString("groupName", "");
+            resumeIndex = args.getInt("resumeIndex", 0);
+
+            if (customWorkoutId != null && !customWorkoutId.isEmpty()) {
+                workoutKey = customWorkoutId;
+                workoutTitle = "Tùy chỉnh";
+                viewModel.loadCustomWorkout(customWorkoutId, resumeIndex);
+            } else {
+                workoutKey = groupKey + "_" + difficulty;
+                workoutTitle = groupName + " " + difficulty;
+                if (!groupKey.isEmpty() && !difficulty.isEmpty()) {
+                    viewModel.loadExercises(groupKey, difficulty, groupName, resumeIndex);
+                }
+            }
         }
 
         setupButtons();
+        setupBackPressHandler();
         observeViewModel();
     }
 
     private void setupButtons() {
+        binding.btnBackExit.setOnClickListener(v -> handleBackExit());
         binding.btnPlayPause.setOnClickListener(v -> viewModel.onPlayPauseClicked());
         binding.btnNext.setOnClickListener(v -> viewModel.onNextClicked());
         binding.btnPrevious.setOnClickListener(v -> viewModel.onPreviousClicked());
         binding.btnDoneReps.setOnClickListener(v -> viewModel.onRepsDoneClicked());
+
+        // Rest screen controls (Image 1)
+        binding.btnAddRest20s.setOnClickListener(v -> viewModel.addRestSeconds(20));
+        binding.btnSkipRest.setOnClickListener(v -> viewModel.skipRest());
+        binding.btnEditRestTime.setOnClickListener(v -> showEditRestTimeDialog());
+    }
+
+    private void setupBackPressHandler() {
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                handleBackExit();
+            }
+        });
+    }
+
+    private void handleBackExit() {
+        viewModel.pauseWorkout();
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Thoát buổi tập?")
+                .setMessage("Bạn có chắc chắn muốn thoát buổi tập này không?")
+                .setPositiveButton("Có", (dialog, which) -> showSaveProgressOptionsDialog())
+                .setNegativeButton("Không", (dialog, which) -> viewModel.onPlayPauseClicked())
+                .show();
+    }
+
+    private void showSaveProgressOptionsDialog() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Thoát buổi tập")
+                .setMessage("Bạn có muốn lưu tiến độ để lần sau tập tiếp không?")
+                .setPositiveButton("Lưu tiến độ", (dialog, which) -> {
+                    saveWorkoutProgress();
+                    NavHostFragment.findNavController(this).navigateUp();
+                })
+                .setNegativeButton("Khởi động lại", (dialog, which) -> {
+                    clearWorkoutProgress();
+                    NavHostFragment.findNavController(this).navigateUp();
+                })
+                .setNeutralButton("Hủy", null)
+                .show();
+    }
+
+    private void saveWorkoutProgress() {
+        PlayerUiState state = viewModel.getUiState().getValue();
+        if (state != null && state.totalExercises > 0 && workoutKey != null) {
+            WorkoutProgressStore store = new WorkoutProgressStore(requireContext());
+            store.saveProgress(workoutKey, workoutTitle, state.currentExerciseIndex, state.totalExercises);
+        }
+    }
+
+    private void clearWorkoutProgress() {
+        if (workoutKey != null) {
+            WorkoutProgressStore store = new WorkoutProgressStore(requireContext());
+            store.clearProgress(workoutKey);
+        }
+    }
+
+    private void showEditRestTimeDialog() {
+        final android.widget.EditText etRest = new android.widget.EditText(requireContext());
+        etRest.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        etRest.setText("20");
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Chỉnh sửa thời gian nghỉ")
+                .setMessage("Nhập số giây muốn cộng thêm:")
+                .setView(etRest)
+                .setPositiveButton("Cộng thêm", (dialog, which) -> {
+                    try {
+                        int seconds = Integer.parseInt(etRest.getText().toString().trim());
+                        if (seconds > 0) {
+                            viewModel.addRestSeconds(seconds);
+                        }
+                    } catch (Exception ignored) {}
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 
     private void observeViewModel() {
         viewModel.getUiState().observe(getViewLifecycleOwner(), state -> {
             if (state.state == PlayerState.FINISHED) {
-                // Navigate to summary
-                NavController navController = Navigation.findNavController(requireView());
-                Bundle args = new Bundle();
-                args.putInt("totalExercises", state.totalExercises);
-                args.putInt("totalSeconds", state.totalWorkoutSeconds);
-                args.putLong("categoryId", getArguments() != null ? getArguments().getLong("categoryId", -1) : -1);
-                // Táº¡o action tá»›i Workout Summary (cáº§n update nav_graph.xml)
-                navController.navigate(R.id.workoutSummaryFragment, args);
+                clearWorkoutProgress();
+                markChallengeCompletedIfAny();
+                // Show Interstitial Ad before navigating to Summary Screen
+                AdsManager.showInterstitial(requireActivity(), () -> navigateToSummary(state), true);
                 return;
             }
 
@@ -77,73 +184,90 @@ public class PlayerFragment extends Fragment {
         });
     }
 
+    private void markChallengeCompletedIfAny() {
+        if (groupKey != null && groupKey.startsWith("challenge_")) {
+            try {
+                String level = groupKey.replace("challenge_", "");
+                int dayIndex = Integer.parseInt(difficulty);
+                ChallengeRepository challengeRepo = new ChallengeRepository(requireContext());
+                challengeRepo.markDayCompleted(level, dayIndex);
+            } catch (Exception ignored) {}
+        }
+    }
+
+    private void navigateToSummary(PlayerUiState state) {
+        if (!isAdded()) return;
+        NavController navController = Navigation.findNavController(requireView());
+        Bundle args = new Bundle();
+        args.putInt("totalExercises", state.totalExercises);
+        args.putInt("totalSeconds", state.totalWorkoutSeconds);
+        args.putString("groupKey", groupKey);
+        args.putString("difficulty", difficulty);
+        args.putString("groupName", groupName);
+        if (customWorkoutId != null) {
+            args.putString("customWorkoutId", customWorkoutId);
+        }
+        navController.navigate(R.id.workoutSummaryFragment, args);
+    }
+
     private void updateUi(PlayerUiState state) {
-        ExerciseEntity current = state.currentExercise;
-        
-        binding.tvProgress.setText("BÃ i " + (state.currentExerciseIndex + 1) + " / " + state.totalExercises);
+        LocalWorkoutDto current = state.currentExercise;
 
-        switch (state.state) {
-            case PREPARING:
-                binding.tvStateHeader.setText("Chuáº©n bá»‹");
-                binding.tvExerciseName.setText(current != null ? current.name : "");
-                binding.tvCounter.setText(formatTime(state.remainingSeconds));
-                showControls(false);
-                break;
-            case RESTING:
-                binding.tvStateHeader.setText("Nghá»‰ ngÆ¡i");
-                binding.tvExerciseName.setText("Tiáº¿p theo: " + (current != null ? current.name : ""));
-                binding.tvCounter.setText(formatTime(state.remainingSeconds));
-                showControls(false);
-                break;
-            case EXERCISING:
-                binding.tvStateHeader.setText("Táº­p luyá»‡n");
-                binding.tvExerciseName.setText(current != null ? current.name : "");
-                if (state.isRepsBased) {
-                    binding.tvCounter.setText(current != null ? "x" + current.reps : "");
-                } else {
-                    binding.tvCounter.setText(formatTime(state.remainingSeconds));
-                }
-                showControls(state.isRepsBased);
-                break;
-            case PAUSED:
-                binding.tvStateHeader.setText("Táº¡m dá»«ng");
-                binding.btnPlayPause.setImageResource(R.drawable.ic_pause_24); // Thay Ä‘á»•i icon thÃ nh Play
-                break;
-            default:
-                break;
-        }
+        if (state.state == PlayerState.RESTING) {
+            binding.clExercisingLayout.setVisibility(View.GONE);
+            binding.llRestingLayout.setVisibility(View.VISIBLE);
 
-        if (state.state != PlayerState.PAUSED) {
-            binding.btnPlayPause.setImageResource(R.drawable.ic_pause_24);
-            if (exoPlayer != null && !exoPlayer.isPlaying()) exoPlayer.play();
-        } else {
-            if (exoPlayer != null && exoPlayer.isPlaying()) exoPlayer.pause();
-        }
+            binding.tvNextProgress.setText("TIẾP THEO " + (state.currentExerciseIndex + 1) + "/" + state.totalExercises);
+            binding.tvNextExerciseName.setText(current != null ? current.name : "");
+            binding.tvNextRepsSubtitle.setText(current != null ? current.reps_sets : "");
+            binding.tvRestCounter.setText(formatTime(state.remainingSeconds));
 
-        if (current != null && current.mediaUrl != null && (state.state == PlayerState.EXERCISING || state.state == PlayerState.PREPARING)) {
-            // Check if fallback needed when media URL is invalid
-            String url = current.mediaUrl;
-            
-            if (url.endsWith(".mp4") || url.endsWith(".webm") || "VIDEO".equals(current.mediaType)) {
-                binding.ivMedia.setVisibility(View.GONE);
-                binding.videoPlayerView.setVisibility(View.VISIBLE);
-                
-                if (!url.equals(currentMediaUrl)) {
-                    currentMediaUrl = url;
-                    MediaItem mediaItem = MediaItem.fromUri(url);
-                    exoPlayer.setMediaItem(mediaItem);
-                    exoPlayer.prepare();
-                    exoPlayer.play();
-                }
-            } else {
-                binding.videoPlayerView.setVisibility(View.GONE);
-                binding.ivMedia.setVisibility(View.VISIBLE);
-                
-                Glide.with(this)
-                    .load(url)
-                    .error(R.drawable.bg_media_placeholder) // Add placeholder icon if loading fails
-                    .into(binding.ivMedia);
+            if (current != null && current.id != null) {
+                MediaLoader.loadThumbnail(binding.ivNextThumb, "", "IMAGE");
             }
+
+            // Attach Banner Ad to bottom resting container
+            restBannerAdHelper.attach(binding.adContainerResting);
+            restBannerAdHelper.onResume();
+
+        } else {
+            binding.clExercisingLayout.setVisibility(View.VISIBLE);
+            binding.llRestingLayout.setVisibility(View.GONE);
+
+            binding.tvProgress.setText("Bài " + (state.currentExerciseIndex + 1) + " / " + state.totalExercises);
+
+            switch (state.state) {
+                case PREPARING:
+                    binding.tvStateHeader.setText("Chuẩn bị");
+                    binding.tvExerciseName.setText(current != null ? current.name : "");
+                    binding.tvCounter.setText(formatTime(state.remainingSeconds));
+                    showControls(false);
+                    break;
+                case EXERCISING:
+                    binding.tvStateHeader.setText("Tập luyện");
+                    binding.tvExerciseName.setText(current != null ? current.name : "");
+                    if (state.isRepsBased) {
+                        binding.tvCounter.setText(current != null ? current.reps_sets : "");
+                    } else {
+                        binding.tvCounter.setText(formatTime(state.remainingSeconds));
+                    }
+                    showControls(state.isRepsBased);
+                    break;
+                case PAUSED:
+                    binding.tvStateHeader.setText("Tạm dừng");
+                    binding.btnPlayPause.setImageResource(R.drawable.ic_play_arrow_24);
+                    break;
+                default:
+                    break;
+            }
+
+            if (state.state != PlayerState.PAUSED) {
+                binding.btnPlayPause.setImageResource(R.drawable.ic_pause_24);
+            }
+
+            binding.videoPlayerView.setVisibility(View.GONE);
+            binding.ivMedia.setVisibility(View.VISIBLE);
+            binding.ivMedia.setImageResource(R.drawable.bg_media_placeholder);
         }
     }
 
@@ -160,49 +284,29 @@ public class PlayerFragment extends Fragment {
     private String formatTime(int seconds) {
         int min = seconds / 60;
         int sec = seconds % 60;
-        return String.format("%02d:%02d", min, sec);
+        return String.format(java.util.Locale.US, "%02d:%02d", min, sec);
     }
 
-    private void loadExerciseMedia(String mediaUrl, String mediaType) {
-        if ("VIDEO".equalsIgnoreCase(mediaType)) {
-            // Ẩn ảnh GIF, hiện Video Player
-            binding.ivMedia.setVisibility(View.GONE);
-            binding.videoPlayerView.setVisibility(View.VISIBLE);
+    @Override
+    public void onResume() {
+        super.onResume();
+        restBannerAdHelper.onResume();
+    }
 
-            if (exoPlayer == null) {
-                exoPlayer = new ExoPlayer.Builder(requireContext()).build();
-                binding.videoPlayerView.setPlayer(exoPlayer);
-                exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL); // Tự động lặp lại video liên tục
-            }
-
-            MediaItem mediaItem = MediaItem.fromUri(mediaUrl);
-            exoPlayer.setMediaItem(mediaItem);
-            exoPlayer.prepare();
-            exoPlayer.play();
-        } else {
-            // Định dạng GIF tĩnh: Ẩn Video, hiện ImageView
-            binding.videoPlayerView.setVisibility(View.GONE);
-            binding.ivMedia.setVisibility(View.VISIBLE);
-
-            // Dừng player nếu đang chạy để tiết kiệm tài nguyên
-            if (exoPlayer != null) {
-                exoPlayer.stop();
-            }
-
-            // Tải GIF bằng Glide (hoặc bạn có thể dùng MediaLoader có sẵn trong ui.common)
-            Glide.with(this).load(mediaUrl).into(binding.ivMedia);
-        }
+    @Override
+    public void onPause() {
+        super.onPause();
+        restBannerAdHelper.onPause();
     }
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
+        restBannerAdHelper.destroy();
         if (exoPlayer != null) {
             exoPlayer.release();
             exoPlayer = null;
         }
         binding = null;
+        super.onDestroyView();
     }
 }
-
-

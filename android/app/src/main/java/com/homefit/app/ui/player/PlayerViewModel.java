@@ -7,90 +7,186 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import com.homefit.app.data.local.entity.ExerciseEntity;
-import com.homefit.app.data.repository.ExerciseRepository;
-import com.homefit.app.data.repository.WorkoutLogRepository;
+
+import com.homefit.app.data.local.AssetExerciseRepository;
+import com.homefit.app.data.local.dto.LocalExerciseGroupDto;
+import com.homefit.app.data.local.dto.LocalExerciseGroupDto.LocalWorkoutDto;
+import com.homefit.app.data.local.model.CustomWorkout;
+import com.homefit.app.data.repository.CustomWorkoutRepository;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PlayerViewModel extends AndroidViewModel {
 
-    private final ExerciseRepository exerciseRepository;
-    private final WorkoutLogRepository workoutLogRepository;
+    private final AssetExerciseRepository exerciseRepository;
     private final MutableLiveData<PlayerUiState> _uiState = new MutableLiveData<>(PlayerUiState.initial());
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable timerRunnable;
 
-    private List<ExerciseEntity> exercises = new ArrayList<>();
+    private List<LocalWorkoutDto> exercises = new ArrayList<>();
     private int currentIndex = 0;
     private PlayerState currentState = PlayerState.IDLE;
     private int remainingSeconds = 0;
     private int totalWorkoutSeconds = 0;
-    
-    private long currentCategoryId = -1;
+
+    private String currentGroupKey = null;
+    private String currentDifficulty = null;
 
     public PlayerViewModel(@NonNull Application application) {
         super(application);
-        // FIXME: Thay bÃ¡ÂºÂ±ng DI hoÃ¡ÂºÂ·c Service Locator Ã„â€˜ÃƒÂºng chuÃ¡ÂºÂ©n cÃ¡Â»Â§a dÃ¡Â»Â± ÃƒÂ¡n. 
-        // HiÃ¡Â»â€¡n tÃ¡ÂºÂ¡i khÃ¡Â»Å¸i tÃ¡ÂºÂ¡o cÃ¡Â»Â©ng Ã„â€˜Ã¡Â»Æ’ code chÃ¡ÂºÂ¡y. SÃ¡ÂºÂ½ sÃ¡Â»Â­a lÃ¡ÂºÂ¡i sau nÃ¡ÂºÂ¿u dÃ¡Â»Â± ÃƒÂ¡n cÃƒÂ³ Dependency Injection.
-        exerciseRepository = new ExerciseRepository(application);
-        workoutLogRepository = new WorkoutLogRepository(application);
+        exerciseRepository = new AssetExerciseRepository(application);
     }
 
     public LiveData<PlayerUiState> getUiState() {
         return _uiState;
     }
 
-    public void loadExercises(long categoryId) {
-        if (this.currentCategoryId == categoryId && !exercises.isEmpty()) {
-            return; // Ã„ÂÃƒÂ£ load
+    public void loadCustomWorkout(String customWorkoutId, int resumeIndex) {
+        if (customWorkoutId == null) return;
+        CustomWorkoutRepository customRepo = new CustomWorkoutRepository(getApplication());
+        CustomWorkout customWorkout = customRepo.getWorkoutById(customWorkoutId);
+        if (customWorkout != null && customWorkout.items != null && !customWorkout.items.isEmpty()) {
+            this.currentGroupKey = "custom";
+            this.currentDifficulty = customWorkoutId;
+            this.exercises = customWorkout.toLocalWorkoutDtos();
+            startWorkout(resumeIndex);
         }
-        this.currentCategoryId = categoryId;
-        // Theo Ã„â€˜ÃƒÂºng kiÃ¡ÂºÂ¿n trÃƒÂºc, nÃƒÂªn trÃ¡ÂºÂ£ vÃ¡Â»Â LiveData, nhÃ†Â°ng Ã„â€˜Ã¡Â»Æ’ dÃ¡Â»â€¦ viÃ¡ÂºÂ¿t timer, 
-        // ta sÃ¡ÂºÂ½ observe mÃ¡Â»â„¢t lÃ¡ÂºÂ§n rÃ¡Â»â€œi lÃ†Â°u vÃƒÂ o list local.
-        exerciseRepository.getExercises(categoryId).observeForever(exercisesList -> {
-            if (exercisesList != null && exercises.isEmpty()) {
-                this.exercises = exercisesList;
-                startWorkout();
-            }
-        });
     }
 
-    private void startWorkout() {
+    public void loadExercises(String groupKey, String difficulty, String groupName, int resumeIndex) {
+        if (groupKey.equals(currentGroupKey) && difficulty.equals(currentDifficulty) && !exercises.isEmpty()) {
+            return; 
+        }
+        this.currentGroupKey = groupKey;
+        this.currentDifficulty = difficulty;
+
+        List<LocalExerciseGroupDto> all = exerciseRepository.getAllGroups();
+        LocalExerciseGroupDto targetGroup = null;
+        for (LocalExerciseGroupDto g : all) {
+            if (g.group.equalsIgnoreCase(groupKey) && g.difficulty.equalsIgnoreCase(difficulty)) {
+                targetGroup = g;
+                break;
+            }
+        }
+
+        // Handle generated goals dynamically
+        if (targetGroup == null) {
+            if ("muscle".equals(groupKey)) {
+                if ("Chân & Mông".equals(groupName)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createMuscleMedium2();
+                else if ("Thân trên + Lõi".equals(groupName)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createMuscleMedium3();
+                else targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createMuscleMedium1();
+            } else if ("fatloss".equals(groupKey)) {
+                if ("Easy".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createFatLossEasy();
+                else if ("Medium".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createFatLossMedium();
+                else if ("Hard".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createFatLossHard();
+            } else if ("keepfit".equals(groupKey)) {
+                if ("Easy".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createKeepFitEasy();
+                else if ("Medium".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createKeepFitMedium();
+                else if ("Hard".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createKeepFitHard();
+            }
+        }
+
+        if (targetGroup != null && targetGroup.workouts != null) {
+            this.exercises = targetGroup.workouts;
+            startWorkout(resumeIndex);
+        }
+    }
+
+    public void startWorkout(int resumeIndex) {
         if (exercises.isEmpty()) return;
-        currentIndex = 0;
+        if (resumeIndex >= 0 && resumeIndex < exercises.size()) {
+            currentIndex = resumeIndex;
+        } else {
+            currentIndex = 0;
+        }
         totalWorkoutSeconds = 0;
         startPreparing();
     }
 
+    public void addRestSeconds(int seconds) {
+        if (currentState == PlayerState.RESTING) {
+            remainingSeconds += seconds;
+            updateUi();
+        }
+    }
+
+    public void skipRest() {
+        if (currentState == PlayerState.RESTING) {
+            stopTimer();
+            startExercising();
+        }
+    }
+
+    public void pauseWorkout() {
+        if (currentState != PlayerState.PAUSED && currentState != PlayerState.FINISHED) {
+            currentState = PlayerState.PAUSED;
+            stopTimer();
+            updateUi();
+        }
+    }
+
     private void startPreparing() {
         currentState = PlayerState.PREPARING;
-        remainingSeconds = 5; // 5s chuÃ¡ÂºÂ©n bÃ¡Â»â€¹
+        remainingSeconds = 5; 
         updateUi();
         startTimer();
     }
 
     private void startResting() {
-        ExerciseEntity prevExercise = exercises.get(currentIndex);
         currentState = PlayerState.RESTING;
-        remainingSeconds = prevExercise.restSec > 0 ? prevExercise.restSec : 15;
+        remainingSeconds = 25; // 25s rest
         currentIndex++;
         updateUi();
         startTimer();
     }
 
+    private int parseDurationInSeconds(String repsSets) {
+        if (repsSets == null || repsSets.isEmpty()) return 0;
+
+        String text = repsSets.toLowerCase(Locale.US);
+
+        Matcher mSec = Pattern.compile("(\\d+)\\s*(s(?!ets)|giây|giay|sec)").matcher(text);
+        if (mSec.find()) {
+            try {
+                String matchGroup = mSec.group(1);
+                if (matchGroup != null) {
+                    return Integer.parseInt(matchGroup);
+                }
+            } catch (Exception ignored) {}
+        }
+
+        Matcher mMmSs = Pattern.compile("(\\d{1,2}):(\\d{2})").matcher(text);
+        if (mMmSs.find()) {
+            try {
+                String minGroup = mMmSs.group(1);
+                String secGroup = mMmSs.group(2);
+                if (minGroup != null && secGroup != null) {
+                    int mins = Integer.parseInt(minGroup);
+                    int secs = Integer.parseInt(secGroup);
+                    return mins * 60 + secs;
+                }
+            } catch (Exception ignored) {}
+        }
+
+        return 0;
+    }
+
     private void startExercising() {
         currentState = PlayerState.EXERCISING;
-        ExerciseEntity currentExercise = exercises.get(currentIndex);
-        if (currentExercise.durationSec != null && currentExercise.durationSec > 0) {
-            remainingSeconds = currentExercise.durationSec;
+        LocalWorkoutDto currentExercise = exercises.get(currentIndex);
+
+        int duration = parseDurationInSeconds(currentExercise.reps_sets);
+
+        if (duration > 0) {
+            remainingSeconds = duration;
             startTimer();
         } else {
-            // Reps based, no timer for remaining
             remainingSeconds = 0;
-            stopTimer(); // NgÃ†Â°ng timer Ã„â€˜Ã¡ÂºÂ¿m ngÃ†Â°Ã¡Â»Â£c, nhÃ†Â°ng cÃ¡ÂºÂ§n timer tÃ¡Â»â€¢ng (cÃ¡ÂºÂ£i tiÃ¡ÂºÂ¿n sau)
-            // TÃ¡ÂºÂ¡m thÃ¡Â»Âi Ã„â€˜Ã¡ÂºÂ¿m tÃ¡Â»â€¢ng bÃ¡ÂºÂ±ng tay hoÃ¡ÂºÂ·c startTimer riÃƒÂªng cho tÃ¡Â»â€¢ng.
+            stopTimer(); 
             startTotalTimerOnly();
         }
         updateUi();
@@ -98,13 +194,14 @@ public class PlayerViewModel extends AndroidViewModel {
 
     public void onPlayPauseClicked() {
         if (currentState == PlayerState.PAUSED) {
-            // Resume
-            if (exercises.get(currentIndex).durationSec != null && exercises.get(currentIndex).durationSec > 0) {
+            LocalWorkoutDto currentExercise = exercises.get(currentIndex);
+            int duration = parseDurationInSeconds(currentExercise.reps_sets);
+
+            if (duration > 0) {
                 currentState = PlayerState.EXERCISING;
                 startTimer();
             } else {
-                // Ã„Âang trong bÃƒÂ i reps hoÃ¡ÂºÂ·c nghÃ¡Â»â€°, hoÃ¡ÂºÂ·c prepare
-                if (remainingSeconds > 0) { // Ã„â€˜ang nghÃ¡Â»â€° hoÃ¡ÂºÂ·c chuÃ¡ÂºÂ©n bÃ¡Â»â€¹
+                if (remainingSeconds > 0) { 
                     currentState = currentIndex == 0 ? PlayerState.PREPARING : PlayerState.RESTING;
                     startTimer();
                 } else {
@@ -113,7 +210,6 @@ public class PlayerViewModel extends AndroidViewModel {
                 }
             }
         } else {
-            // Pause
             currentState = PlayerState.PAUSED;
             stopTimer();
         }
@@ -133,7 +229,7 @@ public class PlayerViewModel extends AndroidViewModel {
         if (currentIndex > 0) {
             stopTimer();
             currentIndex--;
-            startPreparing(); // hoÃ¡ÂºÂ·c vÃƒÂ o luÃƒÂ´n startExercising
+            startPreparing();
         }
     }
 
@@ -145,10 +241,6 @@ public class PlayerViewModel extends AndroidViewModel {
         currentState = PlayerState.FINISHED;
         stopTimer();
         updateUi();
-        
-        // LÃ†Â°u vÃƒÂ o Room
-        String clientUuid = UUID.randomUUID().toString();
-        workoutLogRepository.saveWorkout(currentCategoryId, System.currentTimeMillis() - (totalWorkoutSeconds * 1000L), System.currentTimeMillis(), totalWorkoutSeconds, exercises.size());
     }
 
     private void startTimer() {
@@ -168,7 +260,7 @@ public class PlayerViewModel extends AndroidViewModel {
         };
         handler.postDelayed(timerRunnable, 1000);
     }
-    
+
     private void startTotalTimerOnly() {
         stopTimer();
         timerRunnable = new Runnable() {
@@ -202,13 +294,14 @@ public class PlayerViewModel extends AndroidViewModel {
     }
 
     private void updateUi() {
-        ExerciseEntity current = null;
-        ExerciseEntity next = null;
+        LocalWorkoutDto current = null;
+        LocalWorkoutDto next = null;
         boolean isRepsBased = false;
 
         if (currentIndex >= 0 && currentIndex < exercises.size()) {
             current = exercises.get(currentIndex);
-            isRepsBased = (current.durationSec == null || current.durationSec == 0) && (current.reps != null && current.reps > 0);
+            int duration = parseDurationInSeconds(current.reps_sets);
+            isRepsBased = (duration == 0);
             if (currentIndex + 1 < exercises.size()) {
                 next = exercises.get(currentIndex + 1);
             }
@@ -232,5 +325,3 @@ public class PlayerViewModel extends AndroidViewModel {
         stopTimer();
     }
 }
-
-

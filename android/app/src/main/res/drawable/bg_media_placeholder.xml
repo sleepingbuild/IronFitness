@@ -5,7 +5,7 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path
-        android:fillColor="@color/hf_surface_container_high"
+        android:fillColor="#1E2A44"
         android:pathData="M0,0h24v24h-24z" />
     <group
         android:pivotX="12"

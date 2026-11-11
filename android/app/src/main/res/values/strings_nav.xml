@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="nav_workout">Tập luyện</string>
-    <string name="nav_history">Lịch sử</string>
-    <string name="nav_profile">Hồ sơ</string>
+    <string name="nav_discover">Khám phá</string>
+    <string name="nav_report">Cá nhân</string>
     <string name="nav_settings">Cài đặt</string>
 
     <!-- Màn tạm (PlaceholderFragment): xóa khi màn thật thay thế -->

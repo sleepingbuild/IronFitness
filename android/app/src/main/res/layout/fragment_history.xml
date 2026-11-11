@@ -437,10 +437,4 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Vùng đặt Banner AdMob (docs/ADS.md mục 2 & 5) -->
-    <FrameLayout
-        android:id="@+id/adContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorSurface" />
 </LinearLayout>

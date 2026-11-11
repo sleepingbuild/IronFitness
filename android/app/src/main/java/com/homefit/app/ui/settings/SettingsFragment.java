@@ -89,6 +89,8 @@ public class SettingsFragment extends Fragment {
         });
 
         binding.btnChangeTime.setOnClickListener(v -> showTimePicker());
+        binding.btnUpgradePro.setOnClickListener(v ->
+                NavHostFragment.findNavController(this).navigate(R.id.action_global_proPaywall));
         binding.btnLogout.setOnClickListener(v -> confirmLogout());
 
         observeViewModel();
@@ -122,10 +124,23 @@ public class SettingsFragment extends Fragment {
                 binding.tvAccountPlan.setText(profile.isPremium
                         ? R.string.settings_account_plan_premium
                         : R.string.settings_account_plan_standard);
+
+                if (profile.isPremium) {
+                    binding.ivProIcon.setImageResource(R.drawable.ic_crown);
+                    binding.tvProTitle.setText("Gói PRO");
+                    binding.btnUpgradePro.setText("GIA HẠN GÓI PRO ➔");
+                } else {
+                    binding.ivProIcon.setImageResource(R.drawable.ic_arrow_up);
+                    binding.tvProTitle.setText("Nâng cấp lên PRO");
+                    binding.btnUpgradePro.setText("MUA GÓI PRO ➔");
+                }
             } else {
                 binding.tvAccountName.setText(R.string.settings_account_default_name);
                 binding.tvAccountEmail.setText(R.string.settings_account_email_unknown);
                 binding.tvAccountPlan.setText(R.string.settings_account_plan_standard);
+                binding.ivProIcon.setImageResource(R.drawable.ic_arrow_up);
+                binding.tvProTitle.setText("Nâng cấp lên PRO");
+                binding.btnUpgradePro.setText("MUA GÓI PRO ➔");
             }
         });
     }

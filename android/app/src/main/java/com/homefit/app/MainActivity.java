@@ -21,6 +21,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.homefit.app.ads.AdsManager;
 import com.homefit.app.databinding.ActivityMainBinding;
+import com.homefit.app.ui.common.BannerAdHelper;
 import com.homefit.app.ui.common.Event;
 
 import java.util.Arrays;
@@ -41,9 +42,9 @@ public class MainActivity extends AppCompatActivity {
 
     /** Các điểm đến cấp cao nhất (có thanh điều hướng dưới). */
     private final Set<Integer> topLevelDestinations = new HashSet<>(Arrays.asList(
-            R.id.workoutFragment,
-            R.id.historyFragment,
-            R.id.profileFragment,
+            R.id.homeWorkoutFragment,
+            R.id.discoverFragment,
+            R.id.reportFragment,
             R.id.settingsFragment));
 
     /** Các điểm đến thuộc luồng đăng nhập, không cần kiểm tra phiên. */
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private NavController navController;
     private MainViewModel viewModel;
+    private final BannerAdHelper bannerAdHelper = new BannerAdHelper();
 
     private int systemBarBottom;
     private int imeBottom;
@@ -101,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
         viewModel.getProfile().observe(this, profile ->
                 AdsManager.setAdsEnabled(profile == null || !profile.isPremium));
         viewModel.getSessionExpired().observe(this, this::onSessionExpired);
+
+        binding.adContainer.setVisibility(android.view.View.GONE);
     }
 
     /**
@@ -111,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         NavOptions options = new NavOptions.Builder()
                 .setLaunchSingleTop(true)
                 .setRestoreState(true)
-                .setPopUpTo(R.id.workoutFragment, false, true)
+                .setPopUpTo(R.id.homeWorkoutFragment, false, true)
                 .build();
         try {
             navController.navigate(item.getItemId(), null, options);
@@ -166,12 +170,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        bannerAdHelper.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        bannerAdHelper.onPause();
+        super.onPause();
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         return navController.navigateUp() || super.onSupportNavigateUp();
     }
 
     @Override
     protected void onDestroy() {
+        bannerAdHelper.destroy();
         binding = null;
         super.onDestroy();
     }

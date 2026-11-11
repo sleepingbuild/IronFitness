@@ -32,6 +32,7 @@ public class MainViewModel extends AndroidViewModel {
 
         if (authRepository.isLoggedIn()) {
             new WorkoutLogRepository(application).syncPending();
+            new com.homefit.app.data.repository.ExerciseRepository(application).refresh();
             LiveData<Resource<UserProfileEntity>> refresh = authRepository.refreshProfile();
             sessionExpired.addSource(refresh, resource -> {
                 if (resource == null || resource.isLoading()) {

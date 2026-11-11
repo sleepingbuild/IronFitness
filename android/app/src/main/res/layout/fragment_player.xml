@@ -4,146 +4,325 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:keepScreenOn="true"
-    android:background="?android:attr/windowBackground">
+    android:background="?android:attr/windowBackground"
+    android:keepScreenOn="true">
 
-    <!-- Top info (Exercise / Rest) -->
-    <TextView
-        android:id="@+id/tvStateHeader"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:textAlignment="center"
-        android:textAppearance="?attr/textAppearanceHeadlineSmall"
-        android:textColor="?attr/colorPrimary"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Nghỉ ngơi" />
-
-    <TextView
-        android:id="@+id/tvExerciseName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
+    <!-- Top Left Back Exit Button -->
+    <ImageButton
+        android:id="@+id/btnBackExit"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:textAlignment="center"
-        android:textAppearance="?attr/textAppearanceHeadlineMedium"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:elevation="10dp"
+        android:src="@drawable/ic_arrow_back"
+        app:tint="?attr/colorOnSurface"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvStateHeader"
-        tools:text="Hít đất (Push Up)" />
-        
-    <!-- Media / Image / Video (ExoPlayer) -->
-    <ImageView
-        android:id="@+id/ivMedia"
-        android:layout_width="0dp"
-        android:layout_height="250dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginHorizontal="32dp"
-        android:contentDescription="@null"
-        android:scaleType="centerCrop"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvExerciseName"
-        tools:src="@tools:sample/backgrounds/scenic" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.media3.ui.PlayerView
-        android:id="@+id/videoPlayerView"
-        android:layout_width="0dp"
-        android:layout_height="250dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginHorizontal="32dp"
-        android:visibility="gone"
-        app:use_controller="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvExerciseName" />
+    <!-- EXERCISING CONTAINER -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clExercisingLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
 
-    <!-- Timer / Reps -->
-    <TextView
-        android:id="@+id/tvCounter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:textAlignment="center"
-        android:textSize="64sp"
-        android:textStyle="bold"
-        android:textColor="?attr/colorPrimary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivMedia"
-        tools:text="00:15" />
+        <!-- Top info (Exercise / Rest) -->
+        <TextView
+            android:id="@+id/tvStateHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:textAlignment="center"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+            android:textColor="?attr/colorPrimary"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Tập luyện" />
 
-    <!-- Progress info -->
-    <TextView
-        android:id="@+id/tvProgress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvCounter"
-        tools:text="Bài 3 / 10" />
+        <TextView
+            android:id="@+id/tvExerciseName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="8dp"
+            android:textAlignment="center"
+            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvStateHeader"
+            tools:text="Hít đất (Push Up)" />
 
-    <!-- Controls -->
-    <LinearLayout
-        android:id="@+id/llControls"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvProgress">
+        <!-- Media / Image / Video (ExoPlayer) -->
+        <ImageView
+            android:id="@+id/ivMedia"
+            android:layout_width="0dp"
+            android:layout_height="220dp"
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvExerciseName"
+            tools:src="@tools:sample/backgrounds/scenic" />
 
-        <ImageButton
-            android:id="@+id/btnPrevious"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Quay lại"
-            android:src="@drawable/ic_skip_previous_24"
-            app:tint="?attr/colorOnSurface" />
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/videoPlayerView"
+            android:layout_width="0dp"
+            android:layout_height="220dp"
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvExerciseName"
+            app:use_controller="false" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnPlayPause"
+        <!-- Timer / Reps -->
+        <TextView
+            android:id="@+id/tvCounter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="32dp"
-            android:contentDescription="Play Pause"
-            app:srcCompat="@drawable/ic_pause_24" 
-            app:tint="?attr/colorOnPrimary"
-            app:backgroundTint="?attr/colorPrimary"/>
+            android:layout_marginTop="24dp"
+            android:textAlignment="center"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="56sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivMedia"
+            tools:text="00:15" />
 
-        <ImageButton
-            android:id="@+id/btnNext"
-            android:layout_width="56dp"
+        <!-- Progress info -->
+        <TextView
+            android:id="@+id/tvProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvCounter"
+            tools:text="Bài 3 / 10" />
+
+        <!-- Controls -->
+        <LinearLayout
+            android:id="@+id/llControls"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvProgress">
+
+            <ImageButton
+                android:id="@+id/btnPrevious"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Quay lại"
+                android:src="@drawable/ic_skip_previous_24"
+                app:tint="?attr/colorOnSurface" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btnPlayPause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:contentDescription="Play Pause"
+                app:backgroundTint="?attr/colorPrimary"
+                app:srcCompat="@drawable/ic_pause_24"
+                app:tint="?attr/colorOnPrimary" />
+
+            <ImageButton
+                android:id="@+id/btnNext"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Bỏ qua"
+                android:src="@drawable/ic_skip_next_24"
+                app:tint="?attr/colorOnSurface" />
+
+        </LinearLayout>
+
+        <!-- Nút Hoàn thành dành riêng cho bài tập tính theo số lần (reps) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDoneReps"
+            android:layout_width="0dp"
             android:layout_height="56dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Bỏ qua"
-            android:src="@drawable/ic_skip_next_24"
-            app:tint="?attr/colorOnSurface" />
-            
-    </LinearLayout>
+            android:layout_marginHorizontal="48dp"
+            android:text="Xong"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/llControls"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/llControls"
+            tools:visibility="visible" />
 
-    <!-- Nút Hoàn thành dành riêng cho bài tập tính theo số lần (reps) -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnDoneReps"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_marginHorizontal="48dp"
-        android:text="Xong"
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- RESTING CONTAINER (IMAGE 1 LAYOUT) -->
+    <LinearLayout
+        android:id="@+id/llRestingLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0066FF"
+        android:orientation="vertical"
         android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/llControls"
-        app:layout_constraintBottom_toBottomOf="@id/llControls"
-        tools:visibility="visible"/>
+        tools:visibility="gone">
+
+        <!-- Top exercise preview area -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivNextThumb"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:scaleType="fitCenter"
+                tools:src="@drawable/ic_launcher_background" />
+        </LinearLayout>
+
+        <!-- Blue info area -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="8dp">
+
+            <TextView
+                android:id="@+id/tvNextProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#DCE9FF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="TIẾP THEO 2/16" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvNextExerciseName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="12dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    tools:text="Hip Circles (Xoay hông)" />
+
+                <TextView
+                    android:id="@+id/tvNextRepsSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    tools:text="15s" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Timer area -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingVertical="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NGHỈ NGƠI"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvRestCounter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="60sp"
+                android:textStyle="bold"
+                tools:text="00:23" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEditRestTime"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chỉnh sửa thời gian nghỉ"
+                android:textColor="@color/white"
+                app:backgroundTint="#3385FF"
+                app:cornerRadius="24dp" />
+        </LinearLayout>
+
+        <!-- Action buttons "+20s" and "Bỏ qua" -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingHorizontal="24dp"
+            android:paddingBottom="12dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddRest20s"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_marginEnd="12dp"
+                android:layout_weight="1"
+                android:text="+20s"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:backgroundTint="#3385FF"
+                app:cornerRadius="26dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSkipRest"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:text="Bỏ qua"
+                android:textColor="#0066FF"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/white"
+                app:cornerRadius="26dp" />
+        </LinearLayout>
+
+        <!-- Resting Screen Banner Ad Container (Image 1 bottom) -->
+        <FrameLayout
+            android:id="@+id/adContainerResting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
