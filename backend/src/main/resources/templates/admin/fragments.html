@@ -30,7 +30,7 @@
         <a class="navbar-brand fw-bold d-flex align-items-center" th:href="@{/admin/dashboard}">
             <i class="bi bi-lightning-charge-fill text-primary me-2 fs-4"></i>
             <span>IRONFITNESS Admin</span>
-            <span class="ms-2 badge bg-success env-badge">STAGING</span>
+            <span class="ms-2 badge bg-success env-badge">PRODUCTION</span>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -75,7 +75,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" th:classappend="${activeMenu == 'challenges' ? 'active' : ''}" th:href="@{/admin/challenges}">
-                    <i class="bi bi-trophy-fill"></i> Thử thách 28 ngày
+                    <i class="bi bi-trophy-fill"></i> Thử thách bản thân (24 buổi)
                 </a>
             </li>
             <li class="nav-item">
@@ -100,6 +100,11 @@
             <li class="nav-item">
                 <a class="nav-link" th:classappend="${activeMenu == 'users' ? 'active' : ''}" th:href="@{/admin/users}">
                     <i class="bi bi-people-fill"></i> Người dùng & Hồ sơ
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${activeMenu == 'settings' ? 'active' : ''}" th:href="@{/admin/settings}">
+                    <i class="bi bi-gear-fill"></i> Cấu hình App & Gói PRO
                 </a>
             </li>
             <li class="nav-item">

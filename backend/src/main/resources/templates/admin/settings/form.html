@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments :: head('Cấu hình Hệ thống & Gói PRO')}"></head>
+<body>
+<div th:replace="~{admin/fragments :: navbar}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{admin/fragments :: sidebar}"></nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                <h1 class="h2"><i class="bi bi-gear-fill text-primary me-2"></i>Cấu hình Hệ thống & Gói PRO</h1>
+            </div>
+
+            <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <form th:action="@{/admin/settings}" method="post">
+                <div class="row g-4">
+                    <!-- Khối cấu hình Gói PRO -->
+                    <div class="col-lg-7">
+                        <div class="card h-100">
+                            <div class="card-header bg-white fw-bold py-3"><i class="bi bi-star-fill text-warning me-2"></i>Cấu hình Gói PRO (Thanh toán & Quyền lợi)</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Tiêu đề Banner Gói PRO</label>
+                                    <input type="text" class="form-control" name="proTitle" th:value="${proTitle}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Mức giá hiển thị</label>
+                                    <input type="text" class="form-control" name="proPrice" th:value="${proPrice}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Danh sách Quyền lợi PRO (Mỗi quyền lợi cách nhau bằng dấu chấm phẩy ;)</label>
+                                    <textarea class="form-control" name="proBenefits" rows="4" th:text="${proBenefits}"></textarea>
+                                </div>
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="proEnabled" name="proEnabled" th:checked="${proEnabled == 'true'}">
+                                    <label class="form-check-label fw-bold" for="proEnabled">Bật tính năng mua gói PRO trên App</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Khối cấu hình Thông báo Nhắc nhở -->
+                    <div class="col-lg-5">
+                        <div class="card h-100">
+                            <div class="card-header bg-white fw-bold py-3"><i class="bi bi-bell-fill text-info me-2"></i>Cấu hình Thông báo & Nhắc tập</div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Nội dung thông báo nhắc tập mặc định</label>
+                                    <textarea class="form-control" name="reminderMsg" rows="5" th:text="${reminderMsg}"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-primary btn-lg px-4 fw-bold"><i class="bi bi-save me-1"></i>Lưu cấu hình hệ thống</button>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{admin/fragments :: scripts}"></div>
+</body>
+</html>
