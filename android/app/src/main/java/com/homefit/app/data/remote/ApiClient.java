@@ -15,7 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Tạo ApiService dùng chung. Base URL đọc từ string "api_base_url" (res/values/api_config.xml).
- * Timeout theo docs/API.md: connect 10s, read 20s.
+ * Timeout theo docs/API.md: connect 15s, read 25s.
  */
 public final class ApiClient {
 
@@ -36,6 +36,11 @@ public final class ApiClient {
         return instance;
     }
 
+    public static String getBaseUrl(Context context) {
+        return context.getApplicationContext().getString(R.string.api_base_url);
+    }
+
+    @SuppressWarnings("unused")
     public static synchronized void reset() {
         instance = null;
     }
