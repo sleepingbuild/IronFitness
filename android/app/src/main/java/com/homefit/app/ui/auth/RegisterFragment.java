@@ -1,10 +1,12 @@
 package com.homefit.app.ui.auth;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,15 +17,16 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.homefit.app.R;
 import com.homefit.app.data.local.entity.UserProfileEntity;
-import com.homefit.app.data.remote.ErrorCodes;
 import com.homefit.app.databinding.FragmentRegisterBinding;
 import com.homefit.app.ui.common.AfterTextChanged;
+import com.homefit.app.ui.common.SnackbarHelper;
 import com.homefit.app.ui.common.UiUtils;
 import com.homefit.app.util.ErrorMessages;
 import com.homefit.app.util.Resource;
 
 public class RegisterFragment extends Fragment {
 
+    private static final String TAG = "RegisterFragment";
     private FragmentRegisterBinding binding;
     private RegisterViewModel viewModel;
 
@@ -72,10 +75,18 @@ public class RegisterFragment extends Fragment {
         binding.tilEmail.setError(emailError == 0 ? null : getString(emailError));
         binding.tilPassword.setError(passwordError == 0 ? null : getString(passwordError));
         binding.tilConfirm.setError(confirmError == 0 ? null : getString(confirmError));
+
         if (nameError != 0 || emailError != 0 || passwordError != 0 || confirmError != 0) {
+            StringBuilder sb = new StringBuilder("Thông tin nhập chưa đúng: ");
+            if (emailError != 0) sb.append("Email chưa đúng. ");
+            if (passwordError != 0) sb.append("Mật khẩu phải từ 8 ký tự. ");
+            if (confirmError != 0) sb.append("Mật khẩu nhập lại không khớp. ");
+            Toast.makeText(requireContext(), sb.toString().trim(), Toast.LENGTH_LONG).show();
             return;
         }
+
         UiUtils.hideKeyboard(this);
+        Toast.makeText(requireContext(), "Đang gửi đăng ký đến Render server...", Toast.LENGTH_SHORT).show();
         viewModel.register(email, password, name);
     }
 
@@ -88,19 +99,24 @@ public class RegisterFragment extends Fragment {
         switch (resource.status) {
             case LOADING:
                 setLoading(true);
-                showFormError(null);
+                showFormError("Đang gửi yêu cầu đăng ký lên máy chủ...");
                 break;
             case SUCCESS:
                 setLoading(false);
                 showFormError(null);
+                Toast.makeText(requireContext(), "Đăng ký tài khoản thành công!", Toast.LENGTH_SHORT).show();
                 goToWorkout();
                 break;
             case ERROR:
                 setLoading(false);
-                showFormError(ErrorCodes.UNAUTHORIZED.equals(resource.code)
-                        || ErrorCodes.FORBIDDEN.equals(resource.code)
-                        ? getString(R.string.register_error_unavailable)
-                        : ErrorMessages.toText(requireContext(), resource));
+                String errorText = ErrorMessages.toText(requireContext(), resource);
+                String fullMsg = "Lỗi đăng ký [" + (resource.code != null ? resource.code : "HTTP_ERR") + "]: " + errorText;
+                showFormError(fullMsg);
+                Toast.makeText(requireContext(), fullMsg, Toast.LENGTH_LONG).show();
+                if (getView() != null) {
+                    SnackbarHelper.show(this, fullMsg);
+                }
+                Log.e(TAG, fullMsg);
                 break;
             default:
                 break;

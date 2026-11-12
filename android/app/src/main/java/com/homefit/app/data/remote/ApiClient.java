@@ -1,6 +1,7 @@
 package com.homefit.app.data.remote;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.homefit.app.R;
 import com.homefit.app.data.prefs.TokenStore;
@@ -18,6 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public final class ApiClient {
 
+    private static final String TAG = "ApiClient";
     private static volatile ApiService instance;
 
     private ApiClient() {
@@ -34,18 +36,22 @@ public final class ApiClient {
         return instance;
     }
 
+    public static synchronized void reset() {
+        instance = null;
+    }
+
     private static ApiService create(Context app) {
         String baseUrl = app.getString(R.string.api_base_url);
+        Log.i(TAG, "Retrofit initializing with Base URL: " + baseUrl);
         TokenStore tokenStore = new TokenStore(app);
 
-        // BASIC: chỉ log method, URL, mã trạng thái. Không log body để không lộ mật khẩu/token.
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         logging.redactHeader("Authorization");
 
         OkHttpClient plain = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(20, TimeUnit.SECONDS)
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(25, TimeUnit.SECONDS)
                 .addInterceptor(logging)
                 .build();
 

@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -35,6 +36,7 @@ import com.homefit.app.util.Resource;
 
 public class LoginFragment extends Fragment {
 
+    private static final String TAG = "LoginFragment";
     private FragmentLoginBinding binding;
     private LoginViewModel viewModel;
     private GoogleSignInClient mGoogleSignInClient;
@@ -45,7 +47,6 @@ public class LoginFragment extends Fragment {
                 try {
                     GoogleSignInAccount account = task.getResult(ApiException.class);
                     if (account != null && account.getIdToken() != null) {
-                        // Lấy được ID Token thành công, gửi lên Backend
                         handleGoogleLoginToBackend(account.getIdToken());
                     }
                 } catch (ApiException e) {
@@ -68,14 +69,12 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
 
-        // --- CẤU HÌNH GOOGLE SIGN-IN ---
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
 
-        // --- GẮN SỰ KIỆN CLICK (Gộp form cũ và Google) ---
         binding.etEmail.addTextChangedListener(new AfterTextChanged(() -> binding.tilEmail.setError(null)));
         binding.etPassword.addTextChangedListener(new AfterTextChanged(() -> binding.tilPassword.setError(null)));
         binding.etPassword.setOnEditorActionListener((v, actionId, event) -> {
@@ -90,10 +89,8 @@ public class LoginFragment extends Fragment {
         binding.btnGoRegister.setOnClickListener(v ->
                 NavHostFragment.findNavController(this).navigate(R.id.action_login_to_register));
 
-        // Nút Google Login (Đảm bảo id là btnGoogleLogin trong file fragment_login.xml)
         binding.btnGoogleLogin.setOnClickListener(v -> signInWithGoogle());
 
-        // Lắng nghe kết quả login bằng Email
         viewModel.getState().observe(getViewLifecycleOwner(), this::render);
     }
 
@@ -106,9 +103,11 @@ public class LoginFragment extends Fragment {
         binding.tilEmail.setError(emailError == 0 ? null : getString(emailError));
         binding.tilPassword.setError(passwordError == 0 ? null : getString(passwordError));
         if (emailError != 0 || passwordError != 0) {
+            Toast.makeText(requireContext(), "Vui lòng nhập Email và Mật khẩu hợp lệ", Toast.LENGTH_SHORT).show();
             return;
         }
         UiUtils.hideKeyboard(this);
+        Toast.makeText(requireContext(), "Đang đăng nhập...", Toast.LENGTH_SHORT).show();
         viewModel.login(email, password);
     }
 
@@ -121,18 +120,23 @@ public class LoginFragment extends Fragment {
         switch (resource.status) {
             case LOADING:
                 setLoading(true);
-                showFormError(null);
+                showFormError("Đang gửi yêu cầu đăng nhập...");
                 break;
             case SUCCESS:
                 setLoading(false);
                 showFormError(null);
+                Toast.makeText(requireContext(), "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                 goToWorkout();
                 break;
             case ERROR:
                 setLoading(false);
-                showFormError(ErrorCodes.UNAUTHORIZED.equals(resource.code)
+                String errorMsg = ErrorCodes.UNAUTHORIZED.equals(resource.code)
                         ? getString(R.string.login_error_invalid)
-                        : ErrorMessages.toText(requireContext(), resource));
+                        : ErrorMessages.toText(requireContext(), resource);
+                String fullError = "Đăng nhập thất bại [" + (resource.code != null ? resource.code : "ERR") + "]: " + errorMsg;
+                showFormError(fullError);
+                Toast.makeText(requireContext(), fullError, Toast.LENGTH_LONG).show();
+                Log.e(TAG, fullError);
                 break;
             default:
                 break;
@@ -152,7 +156,7 @@ public class LoginFragment extends Fragment {
         binding.btnLogin.setEnabled(!loading);
         binding.btnLogin.setText(loading ? R.string.login_loading : R.string.login_button);
         binding.btnGoRegister.setEnabled(!loading);
-        binding.btnGoogleLogin.setEnabled(!loading); // Khóa nút Google khi đang tải
+        binding.btnGoogleLogin.setEnabled(!loading);
         binding.tilEmail.setEnabled(!loading);
         binding.tilPassword.setEnabled(!loading);
     }
@@ -173,15 +177,19 @@ public class LoginFragment extends Fragment {
             switch (resource.status) {
                 case LOADING:
                     setLoading(true);
-                    showFormError(null);
+                    showFormError("Đang đăng nhập qua Google...");
                     break;
                 case SUCCESS:
                     setLoading(false);
+                    Toast.makeText(requireContext(), "Đăng nhập Google thành công!", Toast.LENGTH_SHORT).show();
                     goToWorkout();
                     break;
                 case ERROR:
                     setLoading(false);
-                    SnackbarHelper.show(this, ErrorMessages.toText(requireContext(), resource));
+                    String msg = ErrorMessages.toText(requireContext(), resource);
+                    showFormError(msg);
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show();
+                    SnackbarHelper.show(this, msg);
                     break;
             }
         });
