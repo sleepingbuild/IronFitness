@@ -31,7 +31,12 @@ public class AdminStatsService {
 
     @Transactional(readOnly = true)
     public Stats stats() {
-        return new Stats(users.countByRole(Role.USER), sessions.count(),
+        return new Stats(users.count(), sessions.count(),
                 categories.countByActiveTrue(), exercises.countByActiveTrue());
+    }
+
+    @Transactional(readOnly = true)
+    public long countPremiumUsers() {
+        return users.countByRoleAndPremiumTrue(Role.USER);
     }
 }

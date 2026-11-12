@@ -31,7 +31,7 @@ public class AdminUserService {
 
     @Transactional(readOnly = true)
     public List<Row> listUsers() {
-        return users.findTop200ByRoleOrderByIdDesc(Role.USER).stream()
+        return users.findTop200ByOrderByIdDesc().stream()
                 .map(u -> new Row(u.getId(), u.getEmail(), u.getDisplayName(), u.isPremium(),
                         u.getCreatedAt() == null ? "" : DISPLAY.format(u.getCreatedAt())))
                 .toList();
@@ -40,7 +40,6 @@ public class AdminUserService {
     @Transactional
     public void togglePremium(Long id) {
         User user = users.findById(id)
-                .filter(u -> u.getRole() == Role.USER)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng"));
         user.setPremium(!user.isPremium());
         users.save(user);

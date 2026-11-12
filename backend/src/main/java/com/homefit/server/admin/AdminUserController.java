@@ -23,11 +23,13 @@ public class AdminUserController {
 
     @GetMapping
     public String list(Model model) {
-        model.addAttribute("rows", service.listUsers());
+        var list = service.listUsers();
+        model.addAttribute("users", list);
+        model.addAttribute("rows", list);
         return "admin/users/list";
     }
 
-    @PostMapping("/{id}/premium")
+    @PostMapping({"/{id}/premium", "/{id}/toggle-premium", "/{id}/toggle"})
     public String togglePremium(@PathVariable Long id, RedirectAttributes redirect) {
         service.togglePremium(id);
         redirect.addFlashAttribute("message", "Đã đổi trạng thái Premium.");

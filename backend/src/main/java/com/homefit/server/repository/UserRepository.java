@@ -21,6 +21,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     long countByRole(Role role);
 
-    /** Trang quản trị: 200 người dùng thường mới nhất. */
+    long countByRoleAndPremiumTrue(Role role);
+
+    /** Trang quản trị: 200 người dùng mới nhất. */
+    List<User> findTop200ByOrderByIdDesc();
+
     List<User> findTop200ByRoleOrderByIdDesc(Role role);
 }

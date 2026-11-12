@@ -17,7 +17,12 @@ public class AdminDashboardController {
 
     @GetMapping({"/admin", "/admin/", "/admin/dashboard"})
     public String dashboard(Model model) {
-        model.addAttribute("stats", statsService.stats());
+        AdminStatsService.Stats stats = statsService.stats();
+        model.addAttribute("stats", stats);
+        model.addAttribute("totalUsers", stats.users());
+        model.addAttribute("totalPremiumUsers", statsService.countPremiumUsers());
+        model.addAttribute("totalExercises", stats.exercises());
+        model.addAttribute("totalSessions", stats.sessions());
         return "admin/dashboard";
     }
 }
