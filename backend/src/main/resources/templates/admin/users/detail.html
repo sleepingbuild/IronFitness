@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments :: head('Chi tiết Người dùng')}"></head>
+<body>
+<div th:replace="~{admin/fragments :: navbar}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{admin/fragments :: sidebar}"></nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                <h1 class="h2"><i class="bi bi-person-badge text-primary me-2"></i>Chi tiết Hồ sơ Người dùng</h1>
+                <a th:href="@{/admin/users}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Quay lại</a>
+            </div>
+
+            <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div class="row g-4 mb-4" th:object="${detail}">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="fs-1 text-primary mb-2"><i class="bi bi-person-circle"></i></div>
+                            <h4 class="fw-bold mb-1" th:text="*{displayName ?: 'Hội viên'}">Tên</h4>
+                            <p class="text-muted small mb-3" th:text="*{email}">email@example.com</p>
+                            <span class="badge fs-6 mb-3" th:classappend="*{premium} ? 'bg-warning text-dark' : 'bg-secondary'"
+                                  th:text="*{premium} ? 'Tài khoản PRO ⚡' : 'Tài khoản Tiêu chuẩn'">Standard</span>
+                            <div class="border-top pt-3 text-start small">
+                                <p class="mb-1"><strong>Mã ID:</strong> #<span th:text="*{id}">1</span></p>
+                                <p class="mb-0"><strong>Ngày tham gia:</strong> <span th:text="*{createdAtText}">01/01/2026</span></p>
+                            </div>
+                            <form th:action="@{/admin/users/{id}/toggle-premium(id=*{id})}" method="post" class="mt-4">
+                                <button type="submit" class="btn btn-sm w-100" th:classappend="*{premium} ? 'btn-outline-danger' : 'btn-warning fw-bold'">
+                                    <i class="bi" th:classappend="*{premium} ? 'bi-star' : 'bi-star-fill'"></i>
+                                    <span th:text="*{premium} ? 'Gỡ gói PRO' : 'Nâng cấp lên PRO'"></span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="card h-100">
+                        <div class="card-header bg-white fw-bold py-3"><i class="bi bi-heart-pulse-fill text-danger me-2"></i>Chỉ số Sức khỏe & Tiến độ Tập luyện</div>
+                        <div class="card-body">
+                            <div class="row g-3 text-center mb-4">
+                                <div class="col-4">
+                                    <div class="p-3 bg-light rounded">
+                                        <div class="text-muted small">Chiều cao</div>
+                                        <div class="fs-5 fw-bold text-dark" th:text="*{heightCm != null ? heightCm + ' cm' : '--'}">--</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-3 bg-light rounded">
+                                        <div class="text-muted small">Cân nặng</div>
+                                        <div class="fs-5 fw-bold text-dark" th:text="*{weightKg != null ? weightKg + ' kg' : '--'}">--</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-3 bg-light rounded">
+                                        <div class="text-muted small">Chỉ số BMI</div>
+                                        <div class="fs-5 fw-bold text-primary" th:text="*{bmi != null ? bmi : '--'}">--</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 text-center">
+                                <div class="col-4">
+                                    <div class="p-3 bg-primary bg-opacity-10 rounded">
+                                        <div class="text-primary small fw-bold">Tổng lượt tập</div>
+                                        <div class="fs-4 fw-bold text-primary" th:text="*{totalSessions}">0</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-3 bg-success bg-opacity-10 rounded">
+                                        <div class="text-success small fw-bold">Tổng số phút</div>
+                                        <div class="fs-4 fw-bold text-success" th:text="*{totalMinutes}">0</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-3 bg-info bg-opacity-10 rounded">
+                                        <div class="text-info small fw-bold">Tổng bài hoàn thành</div>
+                                        <div class="fs-4 fw-bold text-info" th:text="*{totalExercisesDone}">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bảng Lịch sử buổi tập gần nhất -->
+            <div class="card" th:object="${detail}">
+                <div class="card-header bg-white fw-bold py-3"><i class="bi bi-clock-history me-2 text-primary"></i>Lịch sử các buổi tập gần đây</div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Mã buổi</th>
+                                    <th>Nhóm cơ / Buổi tập</th>
+                                    <th>Số bài hoàn thành</th>
+                                    <th>Thời lượng</th>
+                                    <th class="pe-4">Thời gian hoàn thành</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="*{recentSessions == null or recentSessions.isEmpty()}">
+                                    <td colspan="5" class="text-center py-4 text-muted">Người dùng chưa có lịch sử buổi tập nào.</td>
+                                </tr>
+                                <tr th:each="s : *{recentSessions}">
+                                    <td class="ps-4" th:text="${s.id}">1</td>
+                                    <td class="fw-bold" th:text="${s.categoryName}">Nhóm cơ Bụng</td>
+                                    <td><span class="badge bg-primary" th:text="${s.exercisesDone + ' bài'}">12 bài</span></td>
+                                    <td th:text="${s.totalSeconds / 60 + ' phút (' + s.totalSeconds + 's)'}">15 phút</td>
+                                    <td class="pe-4" th:text="${s.completedAtText}">12/11/2026 15:30</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+<div th:replace="~{admin/fragments :: scripts}"></div>
+</body>
+</html>

@@ -12,6 +12,8 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
 
     Optional<WorkoutSession> findByUserIdAndClientUuid(Long userId, String clientUuid);
 
+    List<WorkoutSession> findByUserIdOrderByCompletedAtDesc(Long userId);
+
     /** Lịch sử của một người dùng trong khoảng thời gian hoàn thành, mới nhất trước. */
     List<WorkoutSession> findByUserIdAndCompletedAtBetweenOrderByCompletedAtDesc(
             Long userId, Instant from, Instant to);

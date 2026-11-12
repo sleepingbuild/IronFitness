@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/** Danh sách người dùng và nút bật/tắt Premium. */
+/** Danh sách người dùng, xem chi tiết và nút bật/tắt Premium. */
 @Controller
 @RequestMapping("/admin/users")
 public class AdminUserController {
@@ -27,6 +27,12 @@ public class AdminUserController {
         model.addAttribute("users", list);
         model.addAttribute("rows", list);
         return "admin/users/list";
+    }
+
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id, Model model) {
+        model.addAttribute("detail", service.getUserDetail(id));
+        return "admin/users/detail";
     }
 
     @PostMapping({"/{id}/premium", "/{id}/toggle-premium", "/{id}/toggle"})
