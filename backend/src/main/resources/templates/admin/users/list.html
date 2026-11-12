@@ -10,11 +10,11 @@
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
-                <h1 class="h2">Quản lý Người dùng</h1>
+                <h1 class="h2"><i class="bi bi-people-fill text-primary me-2"></i>Quản lý Người dùng</h1>
             </div>
 
-            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
-                <span th:text="${successMessage}"></span>
+            <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${message}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
@@ -34,23 +34,22 @@
                             </thead>
                             <tbody>
                             <tr th:if="${users == null or users.isEmpty()}">
-                                <td colspan="6" class="text-center py-4 text-muted">Chưa có dữ liệu</td>
+                                <td colspan="6" class="text-center py-4 text-muted">Chưa có dữ liệu người dùng</td>
                             </tr>
                             <tr th:each="user : ${users}">
                                 <td class="ps-4" th:text="${user.id}">1</td>
                                 <td class="fw-bold" th:text="${user.email}">user@example.com</td>
-                                <td th:text="${user.displayName ?: '(Chưa cập nhật)'}">Tên</td>
+                                <td th:text="${user.displayName != null and !user.displayName.isEmpty() ? user.displayName : '(Chưa cập nhật)'}">Tên</td>
                                 <td>
-                                            <span class="badge" th:classappend="${user.isPremium} ? 'bg-warning text-dark' : 'bg-secondary'"
-                                                  th:text="${user.isPremium} ? 'Premium' : 'Tiêu chuẩn'"></span>
+                                    <span class="badge" th:classappend="${user.premium} ? 'bg-warning text-dark' : 'bg-secondary'"
+                                          th:text="${user.premium} ? 'Premium' : 'Tiêu chuẩn'"></span>
                                 </td>
-                                <td th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy')}">01/01/2026</td>
+                                <td th:text="${user.createdAtText != null and !user.createdAtText.isEmpty() ? user.createdAtText : 'Mới tham gia'}">01/01/2026</td>
                                 <td class="pe-4 text-end">
-                                    <!-- Form POST để toggle Premium -->
                                     <form th:action="@{/admin/users/{id}/toggle-premium(id=${user.id})}" method="post" class="m-0">
-                                        <button type="submit" class="btn btn-sm" th:classappend="${user.isPremium} ? 'btn-outline-danger' : 'btn-outline-warning'">
-                                            <i class="bi" th:classappend="${user.isPremium} ? 'bi-star' : 'bi-star-fill'"></i>
-                                            <span th:text="${user.isPremium} ? 'Gỡ Premium' : 'Cấp Premium'"></span>
+                                        <button type="submit" class="btn btn-sm" th:classappend="${user.premium} ? 'btn-outline-danger' : 'btn-outline-warning'">
+                                            <i class="bi" th:classappend="${user.premium} ? 'bi-star' : 'bi-star-fill'"></i>
+                                            <span th:text="${user.premium} ? 'Gỡ Premium' : 'Cấp Premium'"></span>
                                         </button>
                                     </form>
                                 </td>
