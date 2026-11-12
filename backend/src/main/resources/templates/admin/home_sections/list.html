@@ -42,12 +42,48 @@
                                         <span class="badge" th:classappend="${s.enabled ? 'bg-success' : 'bg-secondary'}" th:text="${s.enabled ? 'HIỂN THỊ' : 'ẨN'}">HIỂN THỊ</span>
                                     </td>
                                     <td class="text-end">
+                                        <button type="button" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" th:data-bs-target="${'#editModal' + s.id}">
+                                            <i class="bi bi-pencil"></i> Sửa
+                                        </button>
                                         <form th:action="@{/admin/home-sections/{id}/toggle(id=${s.id})}" method="post" class="d-inline">
                                             <button type="submit" class="btn btn-sm" th:classappend="${s.enabled ? 'btn-outline-warning' : 'btn-outline-success'}">
                                                 <i class="bi" th:classappend="${s.enabled ? 'bi-eye-slash' : 'bi-eye'}"></i>
                                                 <span th:text="${s.enabled ? 'Ẩn' : 'Bật'}">Bật</span>
                                             </button>
                                         </form>
+
+                                        <!-- Modal Sửa Section -->
+                                        <div class="modal fade text-start" th:id="${'editModal' + s.id}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <form th:action="@{/admin/home-sections/{id}(id=${s.id})}" method="post">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title fw-bold">Chỉnh sửa Mục Trang chủ</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <label class="form-label fw-bold">Mã Key</label>
+                                                                <input type="text" class="form-control bg-light" th:value="${s.sectionKey}" readonly>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label fw-bold">Tên hiển thị (Tiếng Việt)</label>
+                                                                <input type="text" class="form-control" name="titleVi" th:value="${s.titleVi}" required>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label fw-bold">Thứ tự sắp xếp (Sort Order)</label>
+                                                                <input type="number" class="form-control" name="sortOrder" th:value="${s.sortOrder}" min="0" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                                            <button type="submit" class="btn btn-primary fw-bold">Lưu thay đổi</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+
                                     </td>
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(sections)}">

@@ -1,6 +1,7 @@
 package com.homefit.server.admin;
 
 import com.homefit.server.service.AdminUserService;
+import com.homefit.server.service.AuditLoggerService;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,9 +17,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AdminUserController {
 
     private final AdminUserService service;
+    private final AuditLoggerService auditLoggerService;
 
-    public AdminUserController(AdminUserService service) {
+    public AdminUserController(AdminUserService service, AuditLoggerService auditLoggerService) {
         this.service = service;
+        this.auditLoggerService = auditLoggerService;
     }
 
     @GetMapping
@@ -38,7 +41,8 @@ public class AdminUserController {
     @PostMapping({"/{id}/premium", "/{id}/toggle-premium", "/{id}/toggle"})
     public String togglePremium(@PathVariable Long id, RedirectAttributes redirect) {
         service.togglePremium(id);
-        redirect.addFlashAttribute("message", "Đã đổi trạng thái Premium.");
+        auditLoggerService.log("admin@homefit.com", "GRANT_PRO", "User", String.valueOf(id), "Đã chuyển đổi trạng thái gói PRO cho người dùng #" + id);
+        redirect.addFlashAttribute("message", "Đã đổi trạng thái Premium thành công.");
         return "redirect:/admin/users";
     }
 }

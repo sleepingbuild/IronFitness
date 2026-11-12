@@ -49,13 +49,14 @@
                                         <span class="badge bg-success" th:text="${w.status}">PUBLISHED</span>
                                     </td>
                                     <td class="text-end">
+                                        <a th:href="@{/admin/workouts/{id}/edit(id=${w.id})}" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i> Sửa</a>
                                         <form th:action="@{/admin/workouts/{id}/delete(id=${w.id})}" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xoá buổi tập này?')">
                                             <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
                                         </form>
                                     </td>
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(workouts)}">
-                                    <td colspan="8" class="text-center py-4 text-muted">Chưa có buổi tập nào được tạo.</td>
+                                    <td colspan="8" class="text-center py-4 text-muted">Chưa có buổi tập nào được tạo. Bấm "Tạo buổi tập mới" để thêm.</td>
                                 </tr>
                             </tbody>
                         </table>

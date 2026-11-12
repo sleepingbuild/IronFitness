@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/fragments :: head('Chỉnh sửa Ngày tập Thử thách')}"></head>
+<body>
+<div th:replace="~{admin/fragments :: navbar}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{admin/fragments :: sidebar}"></nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                <h1 class="h2">
+                    <i class="bi bi-calendar-event text-warning me-2"></i>
+                    Thử thách <span class="text-uppercase fw-bold" th:text="${level}">easy</span> - Ngày <span th:text="${dayIndex}">1</span>
+                </h1>
+                <a th:href="@{/admin/challenges/{level}(level=${level})}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Quay lại Lưới 28 Ngày</a>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="card">
+                        <div class="card-header bg-white fw-bold py-3"><i class="bi bi-pencil-square text-primary me-2"></i>Cấu hình Bài tập cho Ngày <span th:text="${dayIndex}">1</span></div>
+                        <div class="card-body">
+                            <form th:action="@{/admin/challenges/{level}/day/{dayIndex}(level=${level}, dayIndex=${dayIndex})}" method="post">
+
+                                <div class="mb-4 form-check form-switch bg-light p-3 rounded">
+                                    <input class="form-check-input ms-0 me-2" type="checkbox" id="isRestDay" name="isRestDay" th:checked="${session != null and session.isRestDay}">
+                                    <label class="form-check-label fw-bold" for="isRestDay">Đặt là NGÀY NGHỈ (Thả lỏng cơ bắp, không tập)</label>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Gán Buổi tập từ Thư viện Buổi tập</label>
+                                    <select class="form-select" name="workoutId">
+                                        <option value="">-- Chọn buổi tập gán cho ngày này --</option>
+                                        <option th:each="w : ${workouts}" th:value="${w.id}"
+                                                th:text="${w.titleVi + ' (' + w.primaryMuscle + ' - ' + w.level + ')'}"
+                                                th:selected="${session != null and session.workoutId == w.id}"></option>
+                                    </select>
+                                </div>
+
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary fw-bold"><i class="bi bi-save me-1"></i>Lưu cấu hình Ngày <span th:text="${dayIndex}">1</span></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div th:replace="~{admin/fragments :: scripts}"></div>
+</body>
+</html>

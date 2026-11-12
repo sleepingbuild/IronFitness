@@ -19,10 +19,13 @@
                     <div class="card">
                         <div class="card-body">
                             <form th:action="@{/admin/workouts}" th:object="${workout}" method="post">
+                                <input type="hidden" th:field="*{id}">
+
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold">Tên buổi tập (Tiếng Việt)</label>
+                                    <label class="form-label fw-bold">Tên buổi tập (Tiếng Việt) <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" th:field="*{titleVi}" required placeholder="Ví dụ: Đốt cháy mỡ toàn thân">
                                 </div>
+
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label fw-bold">Phân loại buổi (Type)</label>
@@ -47,6 +50,7 @@
                                         </select>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-md-4 mb-3">
                                         <label class="form-label fw-bold">Độ khó</label>
@@ -57,15 +61,40 @@
                                         </select>
                                     </div>
                                     <div class="col-md-4 mb-3">
-                                        <label class="form-label fw-bold">Thời gian làm (giây)</label>
-                                        <input type="number" class="form-control" th:field="*{workSec}" value="30" required>
+                                        <label class="form-label fw-bold">Thẻ Mục tiêu (Goal tag)</label>
+                                        <select class="form-select" th:field="*{goal}">
+                                            <option value="abs">Cơ bụng (Abs)</option>
+                                            <option value="chest">Ngực & Tay (Chest)</option>
+                                            <option value="legs">Chân & Mông (Legs)</option>
+                                            <option value="full_body">Toàn thân (Full Body)</option>
+                                            <option value="fatloss">Đốt cháy mỡ (Fat Loss)</option>
+                                            <option value="muscle">Xây dựng cơ bắp (Muscle)</option>
+                                            <option value="keepfit">Giữ dáng (Keep Fit)</option>
+                                            <option value="tabata">Tabata</option>
+                                            <option value="stretch">Kéo giãn (Stretch)</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-4 mb-3">
-                                        <label class="form-label fw-bold">Thời gian nghỉ (giây)</label>
-                                        <input type="number" class="form-control" th:field="*{restSec}" value="15" required>
+                                        <label class="form-label fw-bold">Trạng thái</label>
+                                        <select class="form-select" th:field="*{status}">
+                                            <option value="PUBLISHED">Phát hành (PUBLISHED)</option>
+                                            <option value="DRAFT">Bản nháp (DRAFT)</option>
+                                        </select>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Lưu buổi tập</button>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold">Thời gian làm mỗi bài (giây)</label>
+                                        <input type="number" class="form-control" th:field="*{workSec}" min="5" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold">Thời gian nghỉ (giây)</label>
+                                        <input type="number" class="form-control" th:field="*{restSec}" min="0" required>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg fw-bold"><i class="bi bi-save me-1"></i>Lưu buổi tập</button>
                             </form>
                         </div>
                     </div>
