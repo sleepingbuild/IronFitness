@@ -12,7 +12,7 @@
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
                 <h1 class="h2">
                     <i class="bi bi-calendar-event text-warning me-2"></i>
-                    Thử thách <span class="text-uppercase fw-bold" th:text="${level}">easy</span> - Ngày <span th:text="${dayIndex}">1</span>
+                    Thử thách <span class="text-uppercase fw-bold text-primary" th:text="${level}">easy</span> - Ngày <span th:text="${dayIndex}">1</span>
                 </h1>
                 <a th:href="@{/admin/challenges/{level}(level=${level})}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Quay lại Lưới 28 Ngày</a>
             </div>
@@ -25,7 +25,7 @@
                             <form th:action="@{/admin/challenges/{level}/day/{dayIndex}(level=${level}, dayIndex=${dayIndex})}" method="post">
 
                                 <div class="mb-4 form-check form-switch bg-light p-3 rounded">
-                                    <input class="form-check-input ms-0 me-2" type="checkbox" id="isRestDay" name="isRestDay" th:checked="${session != null and session.isRestDay}">
+                                    <input class="form-check-input ms-0 me-2" type="checkbox" id="isRestDay" name="isRestDay" th:checked="${session != null and session.restDay}">
                                     <label class="form-check-label fw-bold" for="isRestDay">Đặt là NGÀY NGHỈ (Thả lỏng cơ bắp, không tập)</label>
                                 </div>
 
