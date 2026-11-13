@@ -11,4 +11,5 @@ public interface WorkoutRepository extends JpaRepository<Workout, Long> {
     List<Workout> findByTypeOrderBySortOrderAsc(String type);
     List<Workout> findByLevelOrderBySortOrderAsc(String level);
     List<Workout> findAllByOrderBySortOrderAsc();
+    java.util.Optional<Workout> findFirstByTitleVi(String titleVi);
 }

@@ -17,6 +17,8 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
 
     List<Exercise> findByCategoryIdAndUpdatedAtAfterOrderBySortOrderAscIdAsc(Long categoryId, Instant updatedAfter);
 
+    java.util.Optional<Exercise> findFirstByName(String name);
+
     long countByActiveTrue();
 
     /** Trang quản trị: tất cả bài tập kể cả đã ẩn. */

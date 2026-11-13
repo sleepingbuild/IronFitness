@@ -18,6 +18,8 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     /** Tất cả danh mục (kể cả đã ẩn) cho trang quản trị. */
     List<Category> findAllByOrderBySortOrderAscIdAsc();
 
+    java.util.Optional<Category> findBySlug(String slug);
+
     boolean existsBySlug(String slug);
 
     boolean existsBySlugAndIdNot(String slug, Long id);
