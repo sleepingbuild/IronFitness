@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -34,8 +33,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
 /**
- * Ba chuá»—i báº£o máº­t: /api/** (JWT, khÃ´ng phiÃªn), /admin/** (Ä‘Äƒng nháº­p báº±ng form, phiÃªn, CSRF, chá»‰ ADMIN)
- * vÃ  pháº§n cÃ²n láº¡i (tá»« chá»‘i háº¿t).
+ * Cấu hình bảo mật:
+ * 1. /api/**: JWT stateless cho App Mobile.
+ * 2. Mọi trang web còn lại (/admin/**, /admin/login...): Form login + Session cho Web Admin.
  */
 @Configuration
 @EnableConfigurationProperties({JwtProperties.class, AdminProperties.class})
@@ -53,11 +53,10 @@ public class SecurityConfig {
         String secret = props.secret();
         if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
             throw new IllegalStateException(
-                    "homefit.jwt.secret pháº£i cÃ³ Ã­t nháº¥t 32 kÃ½ tá»±. Khai bÃ¡o trong application-local.yml "
-                            + "(xem application-example.yml). Náº¿u chuá»—i cÃ³ kÃ½ tá»± # hoáº·c :, Ä‘áº·t trong nhÃ¡y kÃ©p.");
+                    "homefit.jwt.secret phải có ít nhất 32 ký tự.");
         }
         if (secret.startsWith("CHANGE_ME")) {
-            log.warn("homefit.jwt.secret váº«n lÃ  giÃ¡ trá»‹ máº«u. HÃ£y Ä‘á»•i sang chuá»—i ngáº«u nhiÃªn riÃªng.");
+            log.warn("homefit.jwt.secret vẫn là giá trị mẫu. Hãy đổi sang chuỗi ngẫu nhiên riêng.");
         }
         return new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
     }
@@ -76,6 +75,7 @@ public class SecurityConfig {
         return decoder;
     }
 
+    /** Chuỗi bảo mật cho REST API di động: /api/** */
     @Bean
     @Order(1)
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -87,7 +87,8 @@ public class SecurityConfig {
 
         http
                 .securityMatcher("/api/**")
-                .cors(cors -> cors.configure(http)).csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configure(http))
+                .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(a -> a
                         .requestMatchers("/api/v1/auth/**").permitAll()
@@ -97,23 +98,23 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, ex) -> {
                             response.setHeader("WWW-Authenticate", "Bearer");
                             JsonErrorWriter.write(response, HttpStatus.UNAUTHORIZED.value(), "UNAUTHORIZED",
-                                    "PhiÃªn Ä‘Äƒng nháº­p khÃ´ng há»£p lá»‡ hoáº·c Ä‘Ã£ háº¿t háº¡n.");
+                                    "Phiên đăng nhập không hợp lệ hoặc đã hết hạn.");
                         })
                         .accessDeniedHandler((request, response, ex) ->
                                 JsonErrorWriter.write(response, HttpStatus.FORBIDDEN.value(), "FORBIDDEN",
-                                        "Báº¡n khÃ´ng cÃ³ quyá»n thá»±c hiá»‡n thao tÃ¡c nÃ y.")));
+                                        "Bạn không có quyền thực hiện thao tác này.")));
         return http.build();
     }
 
-    /** Trang quản trị: đăng nhập form + phiên + CSRF (mặc định bật), chỉ vai trò ADMIN. */
+    /** Chuỗi bảo mật cho Web Admin và trang web công khai: form login + session */
     @Bean
     @Order(2)
-    public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/", "/admin/**")
                 .authorizeHttpRequests(a -> a
-                        .requestMatchers("/", "/admin/login", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
-                        .anyRequest().hasRole("ADMIN"))
+                        .requestMatchers("/", "/admin/login", "/error", "/favicon.ico", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().permitAll())
                 .formLogin(form -> form
                         .loginPage("/admin/login")
                         .loginProcessingUrl("/admin/login")
@@ -126,16 +127,4 @@ public class SecurityConfig {
                         .permitAll());
         return http.build();
     }
-
-    @Bean
-    @Order(3)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(a -> a
-                        .requestMatchers("/", "/admin/login", "/error", "/favicon.ico", "/css/**", "/js/**", "/images/**").permitAll()
-                        .anyRequest().denyAll())
-                .httpBasic(Customizer.withDefaults());
-        return http.build();
-    }
 }
-
