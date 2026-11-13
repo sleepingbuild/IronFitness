@@ -17,5 +17,6 @@ public class LocalExerciseGroupDto {
         public String reps_sets;
         public List<String> instructions;
         public String tips;
+        public String mediaUrl;
     }
 }

@@ -20,6 +20,14 @@ public final class MediaLoader {
         return "VIDEO".equalsIgnoreCase(mediaType);
     }
 
+    public static String resolveUrl(@NonNull String url) {
+        String trimmed = url.trim();
+        if (trimmed.startsWith("/")) {
+            return "https://ironfitness-et3g.onrender.com" + trimmed;
+        }
+        return trimmed;
+    }
+
     /** Ảnh nhỏ cho danh sách: chỉ lấy khung đầu của GIF để cuộn mượt. */
     public static void loadThumbnail(@NonNull ImageView target, @NonNull String url, @NonNull String mediaType) {
         Glide.with(target).clear(target);
@@ -27,13 +35,14 @@ public final class MediaLoader {
             target.setImageResource(R.drawable.ic_media_video);
             return;
         }
-        if (url.trim().isEmpty()) {
+        String fullUrl = resolveUrl(url);
+        if (fullUrl.isEmpty()) {
             target.setImageResource(R.drawable.bg_media_placeholder);
             return;
         }
         Glide.with(target)
                 .asBitmap()
-                .load(url)
+                .load(fullUrl)
                 .placeholder(R.drawable.bg_media_placeholder)
                 .error(R.drawable.bg_media_placeholder)
                 .centerCrop()
@@ -47,12 +56,13 @@ public final class MediaLoader {
             target.setImageResource(R.drawable.ic_media_video);
             return;
         }
-        if (url.trim().isEmpty()) {
+        String fullUrl = resolveUrl(url);
+        if (fullUrl.isEmpty()) {
             target.setImageResource(R.drawable.bg_media_placeholder);
             return;
         }
         Glide.with(target)
-                .load(url)
+                .load(fullUrl)
                 .placeholder(R.drawable.bg_media_placeholder)
                 .error(R.drawable.bg_media_placeholder)
                 .fitCenter()

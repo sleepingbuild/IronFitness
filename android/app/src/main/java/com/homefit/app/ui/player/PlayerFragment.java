@@ -222,11 +222,12 @@ public class PlayerFragment extends Fragment {
             binding.tvNextRepsSubtitle.setText(current != null ? current.reps_sets : "");
             binding.tvRestCounter.setText(formatTime(state.remainingSeconds));
 
-            if (current != null && current.id != null) {
-                MediaLoader.loadThumbnail(binding.ivNextThumb, "", "IMAGE");
+            if (current != null && current.mediaUrl != null && !current.mediaUrl.isEmpty()) {
+                MediaLoader.loadThumbnail(binding.ivNextThumb, current.mediaUrl, "GIF");
+            } else {
+                binding.ivNextThumb.setImageResource(R.drawable.bg_media_placeholder);
             }
 
-            // Attach Banner Ad to bottom resting container
             restBannerAdHelper.attach(binding.adContainerResting);
             restBannerAdHelper.onResume();
 
@@ -267,7 +268,60 @@ public class PlayerFragment extends Fragment {
 
             binding.videoPlayerView.setVisibility(View.GONE);
             binding.ivMedia.setVisibility(View.VISIBLE);
+
+            loadExerciseDetailsAndMedia(current);
+        }
+    }
+
+    private void loadExerciseDetailsAndMedia(LocalWorkoutDto current) {
+        if (current == null) {
+            binding.tvExerciseDescription.setText("Giữ tư thế chuẩn, siết chặt cơ và thở đều.");
             binding.ivMedia.setImageResource(R.drawable.bg_media_placeholder);
+            return;
+        }
+
+        StringBuilder initialDesc = new StringBuilder();
+        if (current.instructions != null && !current.instructions.isEmpty()) {
+            for (String step : current.instructions) {
+                if (initialDesc.length() > 0) initialDesc.append("\n");
+                initialDesc.append("• ").append(step);
+            }
+        } else if (current.target != null && !current.target.isBlank()) {
+            initialDesc.append(current.target);
+        }
+
+        String initialText = initialDesc.toString().trim();
+        binding.tvExerciseDescription.setText(initialText.isEmpty() ? "Giữ tư thế chuẩn, siết chặt cơ và thở đều." : initialText);
+
+        if (current.mediaUrl != null && !current.mediaUrl.isBlank()) {
+            MediaLoader.loadFull(binding.ivMedia, current.mediaUrl, "GIF");
+        } else {
+            binding.ivMedia.setImageResource(R.drawable.bg_media_placeholder);
+        }
+
+        if (current.name != null) {
+            com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
+                var list = com.homefit.app.data.local.AppDatabase.getInstance(requireContext()).exerciseDao().getAllNow();
+                com.homefit.app.data.local.entity.ExerciseEntity match = null;
+                for (var e : list) {
+                    if (e.name != null && e.name.equalsIgnoreCase(current.name)) {
+                        match = e;
+                        break;
+                    }
+                }
+                final var finalMatch = match;
+                com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
+                    if (binding == null || !isAdded()) return;
+                    if (finalMatch != null) {
+                        if (finalMatch.description != null && !finalMatch.description.isBlank()) {
+                            binding.tvExerciseDescription.setText(finalMatch.description);
+                        }
+                        if (finalMatch.mediaUrl != null && !finalMatch.mediaUrl.isBlank()) {
+                            MediaLoader.loadFull(binding.ivMedia, finalMatch.mediaUrl, finalMatch.mediaType != null ? finalMatch.mediaType : "GIF");
+                        }
+                    }
+                });
+            });
         }
     }
 

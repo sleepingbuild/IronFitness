@@ -21,19 +21,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- EXERCISING CONTAINER -->
+    <!-- EXERCISING CONTAINER (Requirement 1: Vertical Layout) -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clExercisingLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible">
 
-        <!-- Top info (Exercise / Rest) -->
+        <!-- 1. TOP: Title & Exercise Name -->
         <TextView
             android:id="@+id/tvStateHeader"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:textAlignment="center"
             android:textAppearance="?attr/textAppearanceHeadlineSmall"
             android:textColor="?attr/colorPrimary"
@@ -48,87 +48,139 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:textAlignment="center"
-            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvStateHeader"
-            tools:text="Hít đất (Push Up)" />
+            tools:text="Plank(Test)" />
 
-        <!-- Media / Image / Video (ExoPlayer) -->
-        <ImageView
-            android:id="@+id/ivMedia"
+        <!-- 1. TOP: Image / GIF Illustration Frame -->
+        <FrameLayout
+            android:id="@+id/flMediaContainer"
             android:layout_width="0dp"
-            android:layout_height="220dp"
-            android:layout_marginHorizontal="32dp"
-            android:layout_marginTop="16dp"
-            android:contentDescription="@null"
-            android:scaleType="centerCrop"
+            android:layout_height="180dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_search_box"
+            android:clipToOutline="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvExerciseName"
-            tools:src="@tools:sample/backgrounds/scenic" />
+            app:layout_constraintTop_toBottomOf="@id/tvExerciseName">
 
-        <androidx.media3.ui.PlayerView
-            android:id="@+id/videoPlayerView"
+            <ImageView
+                android:id="@+id/ivMedia"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="Minh họa động tác"
+                android:scaleType="fitCenter"
+                tools:src="@drawable/bg_media_placeholder" />
+
+            <androidx.media3.ui.PlayerView
+                android:id="@+id/videoPlayerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:use_controller="false" />
+        </FrameLayout>
+
+        <!-- 2. MIDDLE: Description / Instructions Frame (Requirement 1.2) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvDescriptionCard"
             android:layout_width="0dp"
-            android:layout_height="220dp"
-            android:layout_marginHorizontal="32dp"
-            android:layout_marginTop="16dp"
-            android:visibility="gone"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorOutlineVariant"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+            app:layout_constraintBottom_toTopOf="@id/tvCounter"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvExerciseName"
-            app:use_controller="false" />
+            app:layout_constraintTop_toBottomOf="@id/flMediaContainer">
 
-        <!-- Timer / Reps -->
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hướng dẫn thực hiện:"
+                        android:textAppearance="?attr/textAppearanceLabelLarge"
+                        android:textColor="?attr/colorPrimary"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvExerciseDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:lineSpacingExtra="3dp"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="?attr/colorOnSurface"
+                        tools:text="Chống khuỷu tay và mũi chân xuống sàn, giữ thân người thẳng từ đầu đến gót, siết bụng và không võng lưng." />
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 3. BOTTOM: Timer / Reps (Requirement 1.3 - Pinned at bottom) -->
         <TextView
             android:id="@+id/tvCounter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginBottom="4dp"
             android:textAlignment="center"
             android:textColor="?attr/colorPrimary"
-            android:textSize="56sp"
+            android:textSize="44sp"
             android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/tvProgress"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ivMedia"
-            tools:text="00:15" />
+            tools:text="00:20" />
 
         <!-- Progress info -->
         <TextView
             android:id="@+id/tvProgress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintBottom_toTopOf="@id/llControls"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvCounter"
-            tools:text="Bài 3 / 10" />
+            tools:text="Bài 3 / 14" />
 
-        <!-- Controls -->
+        <!-- Controls Row -->
         <LinearLayout
             android:id="@+id/llControls"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvProgress">
+            app:layout_constraintStart_toStartOf="parent">
 
             <ImageButton
                 android:id="@+id/btnPrevious"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Quay lại"
+                android:contentDescription="Quay lại bài trước"
                 android:src="@drawable/ic_skip_previous_24"
                 app:tint="?attr/colorOnSurface" />
 
@@ -136,8 +188,8 @@
                 android:id="@+id/btnPlayPause"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="32dp"
-                android:contentDescription="Play Pause"
+                android:layout_marginHorizontal="24dp"
+                android:contentDescription="Tạm dừng hoặc Tiếp tục"
                 app:backgroundTint="?attr/colorPrimary"
                 app:srcCompat="@drawable/ic_pause_24"
                 app:tint="?attr/colorOnPrimary" />
@@ -153,7 +205,7 @@
 
         </LinearLayout>
 
-        <!-- Nút Hoàn thành dành riêng cho bài tập tính theo số lần (reps) -->
+        <!-- Nút Hoàn thành dành riêng cho bài reps -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDoneReps"
             android:layout_width="0dp"
@@ -169,7 +221,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- RESTING CONTAINER (IMAGE 1 LAYOUT) -->
+    <!-- RESTING CONTAINER -->
     <LinearLayout
         android:id="@+id/llRestingLayout"
         android:layout_width="match_parent"
@@ -193,7 +245,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
                 android:scaleType="fitCenter"
-                tools:src="@drawable/ic_launcher_background" />
+                tools:src="@drawable/bg_media_placeholder" />
         </LinearLayout>
 
         <!-- Blue info area -->
@@ -316,7 +368,7 @@
                 app:cornerRadius="26dp" />
         </LinearLayout>
 
-        <!-- Resting Screen Banner Ad Container (Image 1 bottom) -->
+        <!-- Resting Screen Banner Ad Container -->
         <FrameLayout
             android:id="@+id/adContainerResting"
             android:layout_width="match_parent"

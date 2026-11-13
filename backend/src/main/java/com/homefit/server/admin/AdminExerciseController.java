@@ -118,6 +118,38 @@ public class AdminExerciseController {
         return service.checkMediaLink(url);
     }
 
+    @PostMapping("/upload-media")
+    @ResponseBody
+    public Map<String, String> uploadMedia(@RequestParam("file") MultipartFile file) {
+        Map<String, String> result = new java.util.HashMap<>();
+        if (file.isEmpty()) {
+            result.put("status", "ERROR");
+            result.put("message", "Tệp tin rỗng.");
+            return result;
+        }
+        try {
+            java.io.File uploadsDir = new java.io.File("uploads/exercises");
+            if (!uploadsDir.exists()) {
+                uploadsDir.mkdirs();
+            }
+            String originalName = file.getOriginalFilename();
+            String ext = originalName != null && originalName.contains(".")
+                    ? originalName.substring(originalName.lastIndexOf("."))
+                    : ".gif";
+            String filename = "ex_" + System.currentTimeMillis() + ext;
+            java.io.File dest = new java.io.File(uploadsDir, filename);
+            file.transferTo(dest);
+
+            String fileUrl = "/uploads/exercises/" + filename;
+            result.put("status", "OK");
+            result.put("url", fileUrl);
+        } catch (Exception e) {
+            result.put("status", "ERROR");
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
     private void prepare(Model model, ExerciseForm form, String title, String action) {
         model.addAttribute("form", form);
         fillView(model, title, action);

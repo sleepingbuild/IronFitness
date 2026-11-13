@@ -31,7 +31,7 @@ public class ExerciseForm {
 
     @NotBlank(message = "Vui lòng nhập địa chỉ ảnh hoặc video")
     @Size(max = 500, message = "Địa chỉ tối đa 500 ký tự")
-    @Pattern(regexp = "^$|^https?://\\S+$", message = "Địa chỉ phải bắt đầu bằng http:// hoặc https://")
+    @Pattern(regexp = "^$|^/\\S+|^https?://\\S+$", message = "Địa chỉ phải bắt đầu bằng /, http:// hoặc https://")
     private String mediaUrl = "";
 
     @NotNull(message = "Vui lòng chọn loại")
