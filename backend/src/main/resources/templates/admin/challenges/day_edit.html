@@ -25,7 +25,7 @@
                             <form th:action="@{/admin/challenges/{level}/day/{dayIndex}(level=${level}, dayIndex=${dayIndex})}" method="post">
 
                                 <div class="mb-4 form-check form-switch bg-light p-3 rounded">
-                                    <input class="form-check-input ms-0 me-2" type="checkbox" id="isRestDay" name="isRestDay" th:checked="${session != null and session.restDay}">
+                                    <input class="form-check-input ms-0 me-2" type="checkbox" id="isRestDay" name="isRestDay" th:checked="${challengeSession != null and challengeSession.restDay}">
                                     <label class="form-check-label fw-bold" for="isRestDay">Đặt là NGÀY NGHỈ (Thả lỏng cơ bắp, không tập)</label>
                                 </div>
 
@@ -35,7 +35,7 @@
                                         <option value="">-- Chọn buổi tập gán cho ngày này --</option>
                                         <option th:each="w : ${workouts}" th:value="${w.id}"
                                                 th:text="${w.titleVi + ' (' + w.primaryMuscle + ' - ' + w.level + ')'}"
-                                                th:selected="${session != null and session.workoutId == w.id}"></option>
+                                                th:selected="${challengeSession != null and challengeSession.workoutId == w.id}"></option>
                                     </select>
                                 </div>
 

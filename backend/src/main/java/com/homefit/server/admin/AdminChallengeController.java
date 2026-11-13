@@ -64,7 +64,7 @@ public class AdminChallengeController {
                 }
             }
         }
-        model.addAttribute("session", session);
+        model.addAttribute("challengeSession", session);
         return "admin/challenges/day_edit";
     }
 
