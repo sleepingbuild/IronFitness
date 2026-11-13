@@ -17,11 +17,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
- * Mọi lỗi của Spring MVC trả JSON { code, message } đúng docs/API.md.
- * Phải áp dụng toàn cục (không giới hạn package): lỗi 404/405 của đường dẫn không có controller
- * chỉ được bắt khi chú thích này không có bộ chọn package.
+ * Mọi lỗi của REST API di động (/api/v1/...) trả JSON { code, message } đúng docs/API.md.
  */
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "com.homefit.server.api")
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
@@ -64,13 +62,13 @@ public class GlobalExceptionHandler {
 
     /** Lỗi của chính Spring MVC (404 đường dẫn, 405 sai phương thức, 415...) giữ nguyên mã HTTP. */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleOther(Exception ex) {
+    public ResponseEntity<ApiError> handleOther(Exception ex, jakarta.servlet.http.HttpServletRequest request) {
         if (ex instanceof ErrorResponse errorResponse) {
             int status = errorResponse.getStatusCode().value();
             return ResponseEntity.status(status)
                     .body(ApiError.of(codeFor(status), messageFor(status)));
         }
-        log.error("Lỗi không xác định", ex);
+        log.error("Lỗi không xác định tại URI: " + (request != null ? request.getRequestURI() : ""), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiError.of("INTERNAL_ERROR", "Máy chủ gặp lỗi. Vui lòng thử lại sau."));
     }

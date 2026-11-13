@@ -57,4 +57,27 @@ class AdminWebIntegrationTest extends ApiTestSupport {
         int status = get("/khong-ton-tai", null).statusCode();
         assertTrue(status == 302 || status == 401 || status == 403, "status = " + status);
     }
+
+    @Test
+    void adminChallengeDaysRenderSuccessfully() throws Exception {
+        java.net.http.HttpRequest loginRequest = java.net.http.HttpRequest.newBuilder(java.net.URI.create(baseUrl() + "/admin/login"))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(java.net.http.HttpRequest.BodyPublishers.ofString("username=admin@homefit.com&password=admin123"))
+                .build();
+        HttpResponse<String> loginResp = client.send(loginRequest, HttpResponse.BodyHandlers.ofString());
+
+        String sessionCookie = loginResp.headers().firstValue("Set-Cookie").orElse("");
+        assertTrue(sessionCookie.contains("JSESSIONID"), "Không tìm thấy JSESSIONID cookie sau khi đăng nhập admin");
+
+        for (String level : new String[]{"easy", "medium", "hard", "EASY"}) {
+            java.net.http.HttpRequest dayRequest = java.net.http.HttpRequest.newBuilder(java.net.URI.create(baseUrl() + "/admin/challenges/" + level + "/day/1"))
+                    .header("Cookie", sessionCookie)
+                    .GET()
+                    .build();
+            HttpResponse<String> dayResp = client.send(dayRequest, HttpResponse.BodyHandlers.ofString(java.nio.charset.StandardCharsets.UTF_8));
+
+            assertEquals(200, dayResp.statusCode(), "Lỗi khi render /admin/challenges/" + level + "/day/1: " + dayResp.body());
+            assertTrue(dayResp.body().contains("Ngày 1"), "Template day_edit không render đúng nội dung cho cấp độ: " + level);
+        }
+    }
 }

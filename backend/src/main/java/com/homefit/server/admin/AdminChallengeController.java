@@ -5,7 +5,13 @@ import com.homefit.server.domain.ChallengeSession;
 import com.homefit.server.repository.ChallengeProgramRepository;
 import com.homefit.server.repository.WorkoutRepository;
 import com.homefit.server.service.AuditLoggerService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +37,7 @@ public class AdminChallengeController {
     }
 
     @GetMapping
+    @Transactional(readOnly = true)
     public String list(Model model) {
         model.addAttribute("activeMenu", "challenges");
         model.addAttribute("easyProgram", challengeProgramRepository.findTopByLevelAndStatusOrderByVersionDesc("easy", "PUBLISHED").orElse(null));
@@ -40,21 +47,27 @@ public class AdminChallengeController {
     }
 
     @GetMapping("/{level}")
+    @Transactional(readOnly = true)
     public String viewLevel(@PathVariable String level, Model model) {
+        String lvl = normalizeLevel(level);
         model.addAttribute("activeMenu", "challenges");
-        model.addAttribute("level", level);
-        model.addAttribute("program", challengeProgramRepository.findTopByLevelAndStatusOrderByVersionDesc(level, "PUBLISHED").orElse(null));
+        model.addAttribute("level", lvl);
+        model.addAttribute("program", challengeProgramRepository.findTopByLevelAndStatusOrderByVersionDesc(lvl, "PUBLISHED").orElse(null));
         return "admin/challenges/detail";
     }
 
     @GetMapping("/{level}/day/{dayIndex}")
+    @Transactional(readOnly = true)
     public String editDay(@PathVariable String level, @PathVariable int dayIndex, Model model) {
+        String lvl = normalizeLevel(level);
         model.addAttribute("activeMenu", "challenges");
-        model.addAttribute("level", level);
+        model.addAttribute("level", lvl);
         model.addAttribute("dayIndex", dayIndex);
-        model.addAttribute("workouts", workoutRepository.findAll());
 
-        ChallengeProgram program = challengeProgramRepository.findTopByLevelAndStatusOrderByVersionDesc(level, "PUBLISHED").orElse(null);
+        var workouts = workoutRepository.findAllByOrderBySortOrderAsc();
+        model.addAttribute("workouts", workouts != null ? workouts : List.of());
+
+        ChallengeProgram program = challengeProgramRepository.findTopByLevelAndStatusOrderByVersionDesc(lvl, "PUBLISHED").orElse(null);
         ChallengeSession session = null;
         if (program != null && program.getSessions() != null) {
             for (ChallengeSession s : program.getSessions()) {
@@ -69,18 +82,24 @@ public class AdminChallengeController {
     }
 
     @PostMapping("/{level}/day/{dayIndex}")
+    @Transactional
     public String saveDay(@PathVariable String level,
                           @PathVariable int dayIndex,
                           @RequestParam(required = false, defaultValue = "false") boolean isRestDay,
                           @RequestParam(required = false) Long workoutId,
                           RedirectAttributes redirect) {
-        ChallengeProgram program = challengeProgramRepository.findTopByLevelAndStatusOrderByVersionDesc(level, "PUBLISHED").orElseGet(() -> {
+        String lvl = normalizeLevel(level);
+        ChallengeProgram program = challengeProgramRepository.findTopByLevelAndStatusOrderByVersionDesc(lvl, "PUBLISHED").orElseGet(() -> {
             ChallengeProgram p = new ChallengeProgram();
-            p.setLevel(level);
+            p.setLevel(lvl);
             p.setStatus("PUBLISHED");
             p.setVersion(1);
             return challengeProgramRepository.save(p);
         });
+
+        if (program.getSessions() == null) {
+            program.setSessions(new ArrayList<>());
+        }
 
         ChallengeSession session = null;
         for (ChallengeSession s : program.getSessions()) {
@@ -101,9 +120,13 @@ public class AdminChallengeController {
         session.setWorkoutId(workoutId);
         challengeProgramRepository.save(program);
 
-        auditLoggerService.log("admin@homefit.com", "UPDATE", "ChallengeDay", level + "-day" + dayIndex, "Cập nhật Thử thách " + level + " Ngày " + dayIndex);
-        redirect.addFlashAttribute("message", "Đã lưu thành công Ngày " + dayIndex + " cho Thử thách " + level + "!");
+        auditLoggerService.log("admin@homefit.com", "UPDATE", "ChallengeDay", lvl + "-day" + dayIndex, "Cập nhật Thử thách " + lvl + " Ngày " + dayIndex);
+        redirect.addFlashAttribute("message", "Đã lưu thành công Ngày " + dayIndex + " cho Thử thách " + lvl + "!");
 
-        return "redirect:/admin/challenges/" + level;
+        return "redirect:/admin/challenges/" + lvl;
+    }
+
+    private static String normalizeLevel(String level) {
+        return level != null ? level.trim().toLowerCase(Locale.ROOT) : "easy";
     }
 }
