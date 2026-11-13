@@ -194,30 +194,55 @@ public class AddExerciseBottomSheetDialogFragment extends BottomSheetDialogFragm
 
     private void loadExerciseLibrary() {
         allExerciseItems.clear();
-        List<LocalWorkoutDto> dtos = repository.getAllUniqueWorkouts();
-        for (LocalWorkoutDto dto : dtos) {
-            CustomWorkoutItem item = new CustomWorkoutItem();
-            item.exerciseId = dto.id;
-            item.exerciseName = dto.name;
-            item.target = dto.target;
-            item.instructions = dto.instructions;
-            item.tips = dto.tips;
+        com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
+            List<com.homefit.app.data.local.entity.ExerciseEntity> entities = com.homefit.app.data.local.AppDatabase.getInstance(requireContext()).exerciseDao().getAllNow();
+            List<CustomWorkoutItem> items = new ArrayList<>();
+            if (entities != null && !entities.isEmpty()) {
+                for (com.homefit.app.data.local.entity.ExerciseEntity e : entities) {
+                    CustomWorkoutItem item = new CustomWorkoutItem();
+                    item.exerciseId = String.valueOf(e.id);
+                    item.exerciseName = e.name;
+                    item.target = e.description != null ? e.description : "";
+                    item.instructions = new ArrayList<>();
+                    if (e.description != null) item.instructions.add(e.description);
+                    item.tips = "Giữ nhịp thở đều.";
 
-            item.reps = null;
-            item.sets = null;
-            item.timeSec = null;
+                    item.reps = e.reps;
+                    item.timeSec = e.durationSec;
+                    item.sets = null;
 
-            allExerciseItems.add(item);
-        }
+                    items.add(item);
+                }
+            } else {
+                List<LocalWorkoutDto> dtos = repository.getAllUniqueWorkouts();
+                for (LocalWorkoutDto dto : dtos) {
+                    CustomWorkoutItem item = new CustomWorkoutItem();
+                    item.exerciseId = dto.id;
+                    item.exerciseName = dto.name;
+                    item.target = dto.target;
+                    item.instructions = dto.instructions;
+                    item.tips = dto.tips;
 
-        // Sắp xếp A-Z theo tiếng Việt
-        Collator collator = Collator.getInstance(new Locale("vi", "VN"));
-        Collections.sort(allExerciseItems, (item1, item2) ->
-                collator.compare(item1.exerciseName != null ? item1.exerciseName : "",
-                                 item2.exerciseName != null ? item2.exerciseName : ""));
+                    item.reps = null;
+                    item.sets = null;
+                    item.timeSec = null;
 
-        updateFilterChipText(allExerciseItems.size());
-        adapter.setItems(allExerciseItems);
+                    items.add(item);
+                }
+            }
+
+            Collator collator = Collator.getInstance(new Locale("vi", "VN"));
+            Collections.sort(items, (item1, item2) ->
+                    collator.compare(item1.exerciseName != null ? item1.exerciseName : "",
+                                     item2.exerciseName != null ? item2.exerciseName : ""));
+
+            com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
+                allExerciseItems.clear();
+                allExerciseItems.addAll(items);
+                updateFilterChipText(allExerciseItems.size());
+                adapter.setItems(allExerciseItems);
+            });
+        });
     }
 
     private void showAreaFilterDialog() {

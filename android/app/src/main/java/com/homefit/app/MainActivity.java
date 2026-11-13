@@ -173,6 +173,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         bannerAdHelper.onResume();
+        // Tự động đồng bộ bài tập & danh mục mới nhất từ Server vào Room DB mỗi khi mở/quay lại App
+        new com.homefit.app.data.repository.ExerciseRepository(this).refresh();
     }
 
     @Override

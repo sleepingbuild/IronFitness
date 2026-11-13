@@ -20,6 +20,12 @@ public interface ExerciseDao {
     @Query("SELECT * FROM exercises WHERE categoryId = :categoryId ORDER BY sortOrder, id")
     List<ExerciseEntity> getByCategoryNow(long categoryId);
 
+    @Query("SELECT * FROM exercises ORDER BY sortOrder, id")
+    List<ExerciseEntity> getAllNow();
+
+    @Query("SELECT * FROM exercises ORDER BY sortOrder, id")
+    LiveData<List<ExerciseEntity>> getAllLiveData();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void upsertAll(List<ExerciseEntity> list);
 

@@ -69,37 +69,38 @@ public class ExerciseRepository {
     }
 
     private void syncCategories(MutableLiveData<Resource<Boolean>> result) {
-        final String since = syncStore.getCategoriesSince();
-        api.getCategories(since).enqueue(new ApiCallback<List<CategoryDto>>() {
+        api.getCategories(null).enqueue(new ApiCallback<List<CategoryDto>>() {
             @Override
             protected void onSuccess(@NonNull List<CategoryDto> body) {
                 AppExecutors.diskIO().execute(() -> {
-                    applyCategories(body, since);
+                    applyCategories(body, null);
                     syncExercises(result);
                 });
             }
 
             @Override
             protected void onError(@NonNull String code, @Nullable String message) {
-                result.setValue(Resource.error(code, message));
+                android.util.Log.e("ExerciseRepository", "Lỗi đồng bộ danh mục từ Server: " + code + " - " + message);
+                result.postValue(Resource.error(code, message));
             }
         });
     }
 
     private void syncExercises(MutableLiveData<Resource<Boolean>> result) {
-        final String since = syncStore.getExercisesSince();
-        api.getExercises(null, since).enqueue(new ApiCallback<List<ExerciseDto>>() {
+        api.getExercises(null, null).enqueue(new ApiCallback<List<ExerciseDto>>() {
             @Override
             protected void onSuccess(@NonNull List<ExerciseDto> body) {
                 AppExecutors.diskIO().execute(() -> {
-                    applyExercises(body, since);
+                    applyExercises(body, null);
+                    android.util.Log.i("ExerciseRepository", "Đã đồng bộ thành công " + body.size() + " bài tập từ Server vào Room DB");
                     result.postValue(Resource.success(true));
                 });
             }
 
             @Override
             protected void onError(@NonNull String code, @Nullable String message) {
-                result.setValue(Resource.error(code, message));
+                android.util.Log.e("ExerciseRepository", "Lỗi đồng bộ bài tập từ Server: " + code + " - " + message);
+                result.postValue(Resource.error(code, message));
             }
         });
     }
