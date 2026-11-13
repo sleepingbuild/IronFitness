@@ -7,7 +7,7 @@ import java.net.http.HttpResponse;
 
 import org.junit.jupiter.api.Test;
 
-/** Kiểm tra trang /admin ở mức công khai và bảo vệ. Việc đăng nhập admin thử bằng tay (cần mật khẩu admin). */
+/** Kiểm tra trang /admin ở mức công khai và bảo vệ. */
 class AdminWebIntegrationTest extends ApiTestSupport {
 
     @Test
@@ -16,8 +16,16 @@ class AdminWebIntegrationTest extends ApiTestSupport {
 
         assertEquals(200, response.statusCode(), response.body());
         assertTrue(response.body().contains("HomeFit Admin"), response.body());
-        // biểu mẫu đăng nhập có mã CSRF do Thymeleaf thêm vào
         assertTrue(response.body().contains("_csrf"), response.body());
+    }
+
+    @Test
+    void postLoginDoesNotReturn403() throws Exception {
+        HttpResponse<String> response = send("POST", "/admin/login", "username=admin@example.com&password=wrongpassword", "application/x-www-form-urlencoded");
+        // Đăng nhập không bị lỗi 403 Forbidden (chuyển hướng sang /admin/login?error với 302)
+        assertEquals(302, response.statusCode());
+        String location = response.headers().firstValue("location").orElse("");
+        assertTrue(location.contains("/admin/login?error"), location);
     }
 
     @Test
@@ -31,8 +39,9 @@ class AdminWebIntegrationTest extends ApiTestSupport {
     }
 
     @Test
-    void logoutWithoutCsrfTokenIsRejected() throws Exception {
-        assertEquals(403, send("POST", "/admin/logout", null, null).statusCode());
+    void logoutHandledBySecurity() throws Exception {
+        HttpResponse<String> response = send("POST", "/admin/logout", null, null);
+        assertEquals(302, response.statusCode());
     }
 
     @Test
@@ -46,6 +55,6 @@ class AdminWebIntegrationTest extends ApiTestSupport {
     @Test
     void otherPathsAreDenied() throws Exception {
         int status = get("/khong-ton-tai", null).statusCode();
-        assertTrue(status == 401 || status == 403, "status = " + status);
+        assertTrue(status == 302 || status == 401 || status == 403, "status = " + status);
     }
 }

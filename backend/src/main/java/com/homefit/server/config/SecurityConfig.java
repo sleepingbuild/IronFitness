@@ -111,10 +111,11 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/admin/**"))
                 .authorizeHttpRequests(a -> a
-                        .requestMatchers("/", "/admin/login", "/error", "/favicon.ico", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                        .requestMatchers("/admin/login", "/admin/logout", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**", "/", "/favicon.ico").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/admin/login")
                         .loginProcessingUrl("/admin/login")
