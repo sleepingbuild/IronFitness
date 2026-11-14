@@ -7,7 +7,8 @@ public class LocalExerciseGroupDto {
     public String group_name;
     public String difficulty;
     public String description;
-    public int duration_min; // Thêm trường duration_min nếu có sẵn
+    public int duration_min;
+    public String coverImageUrl;
     public List<LocalWorkoutDto> workouts;
 
     public static class LocalWorkoutDto {

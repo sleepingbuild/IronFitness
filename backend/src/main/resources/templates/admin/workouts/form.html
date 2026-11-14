@@ -26,6 +26,25 @@
                                     <input type="text" class="form-control" th:field="*{titleVi}" required placeholder="Ví dụ: Đốt cháy mỡ toàn thân">
                                 </div>
 
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Ảnh bìa (Cover Image URL)</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="coverImageUrl" th:field="*{coverImageUrl}" placeholder="https://... hoặc /uploads/workouts/..." onchange="updateCoverPreview()">
+                                        <input type="file" id="coverFileInput" accept="image/*" style="display:none;" onchange="uploadCoverFile(this)">
+                                        <button class="btn btn-outline-primary" type="button" onclick="document.getElementById('coverFileInput').click()"><i class="bi bi-upload me-1"></i>Tải ảnh lên</button>
+                                        <button class="btn btn-outline-secondary" type="button" onclick="previewCover()"><i class="bi bi-eye me-1"></i>Xem trước</button>
+                                    </div>
+                                    <div id="uploadStatus" class="small mt-1"></div>
+
+                                    <!-- Khung xem trước ảnh bìa -->
+                                    <div class="mt-2" id="coverPreviewContainer" style="display: none;">
+                                        <label class="form-label small text-muted">Khung xem trước ảnh bìa:</label>
+                                        <div>
+                                            <img id="coverPreviewImg" src="" alt="Cover Preview" class="rounded border shadow-sm" style="max-height: 180px; width: 100%; object-fit: cover;">
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label fw-bold">Phân loại buổi (Type)</label>
@@ -105,5 +124,63 @@
 </div>
 
 <div th:replace="~{admin/fragments :: scripts}"></div>
+<script>
+    function updateCoverPreview() {
+        const url = document.getElementById('coverImageUrl').value.trim();
+        const container = document.getElementById('coverPreviewContainer');
+        const img = document.getElementById('coverPreviewImg');
+        if (url) {
+            img.src = url;
+            container.style.display = 'block';
+        } else {
+            container.style.display = 'none';
+        }
+    }
+
+    function uploadCoverFile(input) {
+        if (!input.files || input.files.length === 0) return;
+        const file = input.files[0];
+        const statusDiv = document.getElementById('uploadStatus');
+        statusDiv.className = "small text-info mt-1";
+        statusDiv.innerText = "Đang tải ảnh lên server...";
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        fetch('/admin/workouts/upload-cover', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "OK" && data.url) {
+                document.getElementById('coverImageUrl').value = data.url;
+                statusDiv.className = "small text-success mt-1";
+                statusDiv.innerText = "Đã tải ảnh lên thành công: " + data.url;
+                updateCoverPreview();
+            } else {
+                statusDiv.className = "small text-danger mt-1";
+                statusDiv.innerText = "Lỗi tải ảnh: " + (data.message || "Không xác định");
+            }
+        })
+        .catch(err => {
+            statusDiv.className = "small text-danger mt-1";
+            statusDiv.innerText = "Lỗi kết nối: " + err.message;
+        });
+    }
+
+    function previewCover() {
+        const url = document.getElementById('coverImageUrl').value;
+        if (url) {
+            window.open(url, 'Preview', 'width=800,height=500,scrollbars=yes');
+        } else {
+            alert("Vui lòng nhập hoặc tải Ảnh bìa trước khi xem.");
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        updateCoverPreview();
+    });
+</script>
 </body>
 </html>

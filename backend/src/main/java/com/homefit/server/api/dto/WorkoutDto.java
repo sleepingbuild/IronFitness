@@ -17,6 +17,7 @@ public record WorkoutDto(
         int roundRestSec,
         int rounds,
         String equipment,
+        String coverImageUrl,
         int sortOrder,
         String status,
         int version,
@@ -36,6 +37,7 @@ public record WorkoutDto(
                 w.getRoundRestSec(),
                 w.getRounds(),
                 w.getEquipment(),
+                w.getCoverImageUrl(),
                 w.getSortOrder(),
                 w.getStatus(),
                 w.getVersion(),
@@ -43,3 +45,4 @@ public record WorkoutDto(
         );
     }
 }
+

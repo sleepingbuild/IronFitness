@@ -506,6 +506,10 @@ public class DataSeeder implements ApplicationRunner {
         w.setRounds(1);
         w.setRoundRestSec(20);
 
+        if (w.getCoverImageUrl() == null || w.getCoverImageUrl().trim().isEmpty()) {
+            w.setCoverImageUrl(getDefaultCoverImage(type, goal, primaryMuscle));
+        }
+
         List<WorkoutItem> items = w.getItems();
         if (items == null) {
             items = new ArrayList<>();
@@ -535,6 +539,37 @@ public class DataSeeder implements ApplicationRunner {
         }
 
         return workoutRepository.save(w);
+    }
+
+    private String getDefaultCoverImage(String type, String goal, String primaryMuscle) {
+        if ("tabata".equalsIgnoreCase(type) || "tabata".equalsIgnoreCase(goal)) {
+            return "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=800";
+        }
+        if ("stretch".equalsIgnoreCase(type) || "stretch".equalsIgnoreCase(goal)) {
+            return "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800";
+        }
+        if ("fatloss".equalsIgnoreCase(goal)) {
+            return "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800";
+        }
+        if (primaryMuscle != null) {
+            String m = primaryMuscle.toLowerCase();
+            if (m.contains("bụng") || m.contains("abs")) {
+                return "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800";
+            }
+            if (m.contains("ngực") || m.contains("chest")) {
+                return "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800";
+            }
+            if (m.contains("tay") || m.contains("arms")) {
+                return "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800";
+            }
+            if (m.contains("chân") || m.contains("legs")) {
+                return "https://images.unsplash.com/photo-1434596922112-19c563067271?w=800";
+            }
+            if (m.contains("lưng") || m.contains("back")) {
+                return "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=800";
+            }
+        }
+        return "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800";
     }
 
     private Exercise getEx(Map<String, Exercise> map, String name) {

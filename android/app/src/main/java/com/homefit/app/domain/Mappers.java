@@ -2,13 +2,16 @@ package com.homefit.app.domain;
 
 import androidx.annotation.NonNull;
 
+import com.homefit.app.data.local.dto.LocalExerciseGroupDto;
 import com.homefit.app.data.local.entity.CategoryEntity;
 import com.homefit.app.data.local.entity.ExerciseEntity;
 import com.homefit.app.data.local.entity.UserProfileEntity;
+import com.homefit.app.data.local.entity.WorkoutEntity;
 import com.homefit.app.data.local.entity.WorkoutLogEntity;
 import com.homefit.app.data.remote.dto.CategoryDto;
 import com.homefit.app.data.remote.dto.ExerciseDto;
 import com.homefit.app.data.remote.dto.UserDto;
+import com.homefit.app.data.remote.dto.WorkoutDto;
 import com.homefit.app.data.remote.dto.WorkoutSessionDto;
 import com.homefit.app.data.remote.dto.WorkoutSessionRequest;
 import com.homefit.app.util.DateUtils;
@@ -85,5 +88,39 @@ public final class Mappers {
         e.exercisesDone = d.exercisesDone;
         e.synced = true;
         return e;
+    }
+
+    @NonNull
+    public static WorkoutEntity toEntity(@NonNull WorkoutDto d) {
+        WorkoutEntity e = new WorkoutEntity();
+        if (d.id != null) e.id = d.id;
+        e.type = d.type != null ? d.type : "";
+        e.titleVi = d.titleVi != null ? d.titleVi : "";
+        e.titleEn = d.titleEn;
+        e.primaryMuscle = d.primaryMuscle != null ? d.primaryMuscle : "";
+        e.level = d.level != null ? d.level : "";
+        e.goal = d.goal;
+        e.workSec = d.workSec;
+        e.restSec = d.restSec;
+        e.roundRestSec = d.roundRestSec;
+        e.rounds = d.rounds;
+        e.equipment = d.equipment != null ? d.equipment : "none";
+        e.coverImageUrl = d.coverImageUrl;
+        e.sortOrder = d.sortOrder;
+        e.status = d.status != null ? d.status : "DRAFT";
+        e.version = d.version;
+        return e;
+    }
+
+    @NonNull
+    public static LocalExerciseGroupDto toLocalDto(@NonNull WorkoutDto d) {
+        LocalExerciseGroupDto dto = new LocalExerciseGroupDto();
+        dto.group = d.goal != null && !d.goal.isEmpty() ? d.goal : (d.primaryMuscle != null ? d.primaryMuscle.toLowerCase() : "");
+        dto.group_name = d.titleVi;
+        dto.difficulty = d.level;
+        int count = d.items != null ? d.items.size() : 10;
+        dto.duration_min = Math.max(1, (d.workSec + d.restSec) * count / 60);
+        dto.coverImageUrl = d.coverImageUrl;
+        return dto;
     }
 }

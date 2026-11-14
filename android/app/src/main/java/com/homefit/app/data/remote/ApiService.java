@@ -14,6 +14,7 @@ import com.homefit.app.data.remote.dto.RegisterRequest;
 import com.homefit.app.data.remote.dto.StatsResponse;
 import com.homefit.app.data.remote.dto.UpdateProfileRequest;
 import com.homefit.app.data.remote.dto.UserDto;
+import com.homefit.app.data.remote.dto.WorkoutDto;
 import com.homefit.app.data.remote.dto.WorkoutSessionDto;
 import com.homefit.app.data.remote.dto.WorkoutSessionRequest;
 import com.homefit.app.data.remote.dto.WorkoutSessionResponse;
@@ -60,6 +61,11 @@ public interface ApiService {
     @GET("exercises")
     Call<List<ExerciseDto>> getExercises(@Query("categoryId") Long categoryId,
                                          @Query("updatedAfter") String updatedAfter);
+
+    @GET("workouts")
+    Call<List<WorkoutDto>> getWorkouts(@Query("type") String type,
+                                       @Query("level") String level,
+                                       @Query("goal") String goal);
 
     // ---- Khám phá ----
     @GET("discover")

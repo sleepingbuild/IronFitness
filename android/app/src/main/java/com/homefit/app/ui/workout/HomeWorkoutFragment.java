@@ -53,6 +53,7 @@ public class HomeWorkoutFragment extends Fragment {
 
         setupChipListeners();
         setupMockActions();
+        loadStaticCoverImages();
 
         View btnProBadge = view.findViewById(R.id.btnProBadge);
         if (btnProBadge != null) {
@@ -250,6 +251,29 @@ public class HomeWorkoutFragment extends Fragment {
         tv.setBackgroundResource(R.drawable.bg_chip_active);
         tv.setTextColor(requireContext().getColor(R.color.hf_primary));
         tv.setTypeface(null, android.graphics.Typeface.BOLD);
+    }
+
+    private void loadStaticCoverImages() {
+        if (binding == null) return;
+        com.bumptech.glide.Glide.with(this)
+                .load("https://images.unsplash.com/photo-1549576490-b0b4831ef60a?w=800")
+                .centerCrop()
+                .into(binding.ivForYouCalorieCover);
+
+        com.bumptech.glide.Glide.with(this)
+                .load("https://images.unsplash.com/photo-1434596922112-19c563067271?w=800")
+                .centerCrop()
+                .into(binding.ivForYouLegCover);
+
+        com.bumptech.glide.Glide.with(this)
+                .load("https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=800")
+                .centerCrop()
+                .into(binding.ivTabataCover);
+
+        com.bumptech.glide.Glide.with(this)
+                .load("https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800")
+                .centerCrop()
+                .into(binding.ivStretchBackCover);
     }
 
     private void onGroupClicked(LocalExerciseGroupDto group) {

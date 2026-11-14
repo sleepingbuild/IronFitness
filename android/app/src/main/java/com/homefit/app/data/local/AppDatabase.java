@@ -9,24 +9,26 @@ import androidx.room.RoomDatabase;
 import com.homefit.app.data.local.dao.CategoryDao;
 import com.homefit.app.data.local.dao.ExerciseDao;
 import com.homefit.app.data.local.dao.UserProfileDao;
+import com.homefit.app.data.local.dao.WorkoutDao;
 import com.homefit.app.data.local.dao.WorkoutLogDao;
 import com.homefit.app.data.local.entity.CategoryEntity;
 import com.homefit.app.data.local.entity.ExerciseEntity;
 import com.homefit.app.data.local.entity.UserProfileEntity;
+import com.homefit.app.data.local.entity.WorkoutEntity;
 import com.homefit.app.data.local.entity.WorkoutLogEntity;
 
 /**
- * Room database (version 1). Đổi schema phải tăng version và viết Migration;
- * KHÔNG dùng fallbackToDestructiveMigration ở bản release.
+ * Room database (version 2).
  */
 @Database(
         entities = {
                 CategoryEntity.class,
                 ExerciseEntity.class,
                 WorkoutLogEntity.class,
-                UserProfileEntity.class
+                UserProfileEntity.class,
+                WorkoutEntity.class
         },
-        version = 1,
+        version = 2,
         exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -40,12 +42,16 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract UserProfileDao userProfileDao();
 
+    public abstract WorkoutDao workoutDao();
+
     public static AppDatabase getInstance(Context context) {
         if (instance == null) {
             synchronized (AppDatabase.class) {
                 if (instance == null) {
                     instance = Room.databaseBuilder(
-                            context.getApplicationContext(), AppDatabase.class, "homefit.db").build();
+                            context.getApplicationContext(), AppDatabase.class, "homefit.db")
+                            .fallbackToDestructiveMigration()
+                            .build();
                 }
             }
         }

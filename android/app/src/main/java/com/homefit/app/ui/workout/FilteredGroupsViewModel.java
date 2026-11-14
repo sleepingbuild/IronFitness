@@ -101,6 +101,7 @@ public class FilteredGroupsViewModel extends AndroidViewModel {
         dto.difficulty = level.equals("Trung bình") ? "Medium" : level;
         dto.description = "Buổi HIIT ngắn, nhịp độ cố định (20s làm / 10s nghỉ x 8 hiệp)";
         dto.duration_min = 6;
+        dto.coverImageUrl = "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=800";
         dto.workouts = new ArrayList<>();
         
         // Block A: Khởi động
@@ -130,6 +131,7 @@ public class FilteredGroupsViewModel extends AndroidViewModel {
         dto.difficulty = "Easy";
         dto.description = "Giảm cứng và mỏi lưng, cải thiện linh hoạt (Giãn tĩnh)";
         dto.duration_min = 7;
+        dto.coverImageUrl = "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800";
         dto.workouts = new ArrayList<>();
         
         dto.workouts.add(createWorkout("cat_cow", "Cat-Cow", "35s", "Vận động nhẹ"));
@@ -149,6 +151,7 @@ public class FilteredGroupsViewModel extends AndroidViewModel {
         dto.group_name = "Đốt cháy calo toàn thân";
         dto.difficulty = level;
         dto.description = "HIIT toàn thân, nhịp tim cao, thiên về đốt năng lượng (3 vòng)";
+        dto.coverImageUrl = "https://images.unsplash.com/photo-1549576490-b0b4831ef60a?w=800";
         dto.workouts = new ArrayList<>();
 
         if ("Hard".equalsIgnoreCase(level)) {
@@ -187,6 +190,7 @@ public class FilteredGroupsViewModel extends AndroidViewModel {
         dto.difficulty = level.equals("Trung bình") ? "Medium" : level;
         dto.description = "Tăng sức mạnh thân dưới bằng cách tăng dần độ khó (2 vòng x 7 bài)";
         dto.duration_min = 21;
+        dto.coverImageUrl = "https://images.unsplash.com/photo-1434596922112-19c563067271?w=800";
         dto.workouts = new ArrayList<>();
 
         dto.workouts.add(createWorkout("squat_slow", "Squat chậm", "40s", "Nhịp xuống 3 giây"));

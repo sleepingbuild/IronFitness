@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.homefit.app.R;
 import com.homefit.app.data.local.dto.LocalExerciseGroupDto;
 import com.homefit.app.databinding.ItemHomeWorkoutBinding;
@@ -73,19 +74,16 @@ public class HomeWorkoutAdapter extends RecyclerView.Adapter<HomeWorkoutAdapter.
             
             int duration = dto.duration_min;
             if (duration <= 0) {
-                // Fake duration based on count and difficulty
-                if (diffStr.equalsIgnoreCase("Easy")) duration = (int) (count * 1.0); // ~1 min per exercise
-                else if (diffStr.equalsIgnoreCase("Medium")) duration = (int) (count * 1.5); // ~1.5 min per exercise
-                else if (diffStr.equalsIgnoreCase("Hard")) duration = (int) (count * 2.0); // ~2 min per exercise
+                if (diffStr.equalsIgnoreCase("Easy")) duration = (int) (count * 1.0);
+                else if (diffStr.equalsIgnoreCase("Medium")) duration = (int) (count * 1.5);
+                else if (diffStr.equalsIgnoreCase("Hard")) duration = (int) (count * 2.0);
             }
             
             String title = dto.group_name + " " + diffStr;
             binding.tvName.setText(title);
 
-            // Subtract Warmup/Cooldown blocks if generated via PopularWorkoutGenerator
             int mainBlockCount = count;
             if (count > 0 && dto.duration_min > 0) {
-                // If it has multiple warmup and cool down blocks, main block is usually smaller
                 int nonMainCount = 0;
                 for (LocalExerciseGroupDto.LocalWorkoutDto w : dto.workouts) {
                     if ("Warm-up".equalsIgnoreCase(w.target) || "Cool-down".equalsIgnoreCase(w.target)) {
@@ -108,6 +106,31 @@ public class HomeWorkoutAdapter extends RecyclerView.Adapter<HomeWorkoutAdapter.
             else if (groupKey.contains("chan")) thumbColor = R.color.hf_thumb_legs;
             
             binding.cardThumb.setCardBackgroundColor(binding.getRoot().getContext().getColor(thumbColor));
+
+            if (dto.coverImageUrl != null && !dto.coverImageUrl.trim().isEmpty()) {
+                Glide.with(binding.ivCoverImage)
+                        .load(dto.coverImageUrl)
+                        .centerCrop()
+                        .listener(new com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable>() {
+                            @Override
+                            public boolean onLoadFailed(@androidx.annotation.Nullable com.bumptech.glide.load.engine.GlideException e, Object model, com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target, boolean isFirstResource) {
+                                binding.ivCoverImage.setVisibility(View.GONE);
+                                binding.ivIcon.setVisibility(View.VISIBLE);
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(android.graphics.drawable.Drawable resource, Object model, com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target, com.bumptech.glide.load.DataSource dataSource, boolean isFirstResource) {
+                                binding.ivCoverImage.setVisibility(View.VISIBLE);
+                                binding.ivIcon.setVisibility(View.GONE);
+                                return false;
+                            }
+                        })
+                        .into(binding.ivCoverImage);
+            } else {
+                binding.ivCoverImage.setVisibility(View.GONE);
+                binding.ivIcon.setVisibility(View.VISIBLE);
+            }
 
             binding.llDifficulty.removeAllViews();
             int diffIcons = 2; // Default Medium

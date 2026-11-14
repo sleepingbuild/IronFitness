@@ -57,6 +57,9 @@ public class Workout {
     @Column(name = "equipment", nullable = false, length = 50)
     private String equipment = "none";
 
+    @Column(name = "cover_image_url", length = 500)
+    private String coverImageUrl;
+
     @Column(name = "sort_order", nullable = false)
     private int sortOrder;
 
@@ -110,6 +113,8 @@ public class Workout {
     public void setRounds(int rounds) { this.rounds = rounds; }
     public String getEquipment() { return equipment; }
     public void setEquipment(String equipment) { this.equipment = equipment; }
+    public String getCoverImageUrl() { return coverImageUrl; }
+    public void setCoverImageUrl(String coverImageUrl) { this.coverImageUrl = coverImageUrl; }
     public int getSortOrder() { return sortOrder; }
     public void setSortOrder(int sortOrder) { this.sortOrder = sortOrder; }
     public String getStatus() { return status; }

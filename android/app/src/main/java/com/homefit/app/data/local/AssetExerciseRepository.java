@@ -34,6 +34,9 @@ public class AssetExerciseRepository {
                                 context.getAssets().open("exercises/" + file), StandardCharsets.UTF_8)) {
                             LocalExerciseGroupDto dto = gson.fromJson(reader, LocalExerciseGroupDto.class);
                             if (dto != null && dto.group != null) {
+                                if (dto.coverImageUrl == null || dto.coverImageUrl.trim().isEmpty()) {
+                                    dto.coverImageUrl = getDefaultCoverForGroup(dto.group);
+                                }
                                 cache.add(dto);
                             }
                         } catch (Exception e) {
@@ -46,6 +49,19 @@ public class AssetExerciseRepository {
             Log.e(TAG, "Lỗi đọc danh sách file assets/exercises", e);
         }
         return cache;
+    }
+
+    private String getDefaultCoverForGroup(String group) {
+        if (group == null) return "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800";
+        String g = group.toLowerCase();
+        if (g.contains("bung")) return "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800";
+        if (g.contains("nguc")) return "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800";
+        if (g.contains("tay")) return "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800";
+        if (g.contains("chan")) return "https://images.unsplash.com/photo-1434596922112-19c563067271?w=800";
+        if (g.contains("back") || g.contains("lung")) return "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=800";
+        if (g.contains("tabata")) return "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=800";
+        if (g.contains("stretch")) return "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800";
+        return "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800";
     }
 
     public List<LocalExerciseGroupDto.LocalWorkoutDto> getAllUniqueWorkouts() {
@@ -63,6 +79,6 @@ public class AssetExerciseRepository {
         }
         java.text.Collator collator = java.text.Collator.getInstance(new java.util.Locale("vi", "VN"));
         allWorkouts.sort((w1, w2) -> collator.compare(w1.name != null ? w1.name : "", w2.name != null ? w2.name : ""));
- return allWorkouts;
- }
+        return allWorkouts;
+    }
 }

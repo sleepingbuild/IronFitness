@@ -26,6 +26,7 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>ID</th>
+                                    <th>Ảnh bìa</th>
                                     <th>Tên buổi tập (VI)</th>
                                     <th>Loại (Type)</th>
                                     <th>Nhóm cơ</th>
@@ -38,6 +39,12 @@
                             <tbody>
                                 <tr th:each="w : ${workouts}">
                                     <td th:text="${w.id}">1</td>
+                                    <td>
+                                        <img th:if="${w.coverImageUrl != null and !w.coverImageUrl.empty}" th:src="${w.coverImageUrl}" class="rounded shadow-sm" style="width: 60px; height: 40px; object-fit: cover;" alt="Cover">
+                                        <div th:unless="${w.coverImageUrl != null and !w.coverImageUrl.empty}" class="bg-light rounded d-flex align-items-center justify-content-center text-muted" style="width: 60px; height: 40px;">
+                                            <i class="bi bi-image"></i>
+                                        </div>
+                                    </td>
                                     <td class="fw-bold" th:text="${w.titleVi}">Cơ Bụng Cấp Dễ</td>
                                     <td><span class="badge bg-secondary" th:text="${w.type}">body_part</span></td>
                                     <td th:text="${w.primaryMuscle}">Bụng</td>
@@ -56,7 +63,7 @@
                                     </td>
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(workouts)}">
-                                    <td colspan="8" class="text-center py-4 text-muted">Chưa có buổi tập nào được tạo. Bấm "Tạo buổi tập mới" để thêm.</td>
+                                    <td colspan="9" class="text-center py-4 text-muted">Chưa có buổi tập nào được tạo. Bấm "Tạo buổi tập mới" để thêm.</td>
                                 </tr>
                             </tbody>
                         </table>

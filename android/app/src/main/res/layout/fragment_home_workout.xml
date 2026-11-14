@@ -404,7 +404,14 @@
                     android:layout_marginEnd="16dp"
                     app:cardCornerRadius="12dp"
                     app:strokeWidth="0dp"
-                    app:cardBackgroundColor="@color/hf_thumb_fullbody" />
+                    app:cardBackgroundColor="@color/hf_thumb_fullbody">
+
+                    <ImageView
+                        android:id="@+id/ivForYouCalorieCover"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"/>
+                </com.google.android.material.card.MaterialCardView>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -446,7 +453,14 @@
                     android:layout_marginEnd="16dp"
                     app:cardCornerRadius="12dp"
                     app:strokeWidth="0dp"
-                    app:cardBackgroundColor="@color/hf_thumb_legs" />
+                    app:cardBackgroundColor="@color/hf_thumb_legs">
+
+                    <ImageView
+                        android:id="@+id/ivForYouLegCover"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"/>
+                </com.google.android.material.card.MaterialCardView>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -526,10 +540,16 @@
                     android:focusable="true"
                     android:foreground="?attr/selectableItemBackground">
 
-                    <TextView
+                    <ImageView
+                        android:id="@+id/ivTabataCover"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="#66000000" />
+                        android:scaleType="centerCrop"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#66000000"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -554,10 +574,16 @@
                     android:focusable="true"
                     android:foreground="?attr/selectableItemBackground">
 
-                    <TextView
+                    <ImageView
+                        android:id="@+id/ivStretchBackCover"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="#66000000" />
+                        android:scaleType="centerCrop"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#66000000"/>
 
                     <TextView
                         android:layout_width="wrap_content"
