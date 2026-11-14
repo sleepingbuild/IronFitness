@@ -107,9 +107,15 @@ public class HomeWorkoutAdapter extends RecyclerView.Adapter<HomeWorkoutAdapter.
             
             binding.cardThumb.setCardBackgroundColor(binding.getRoot().getContext().getColor(thumbColor));
 
-            if (dto.coverImageUrl != null && !dto.coverImageUrl.trim().isEmpty()) {
+            String coverUrl = dto.coverImageUrl;
+            if (coverUrl == null || coverUrl.trim().isEmpty()) {
+                coverUrl = getDefaultCoverForGroup(dto.group);
+            }
+
+            if (coverUrl != null && !coverUrl.trim().isEmpty()) {
+                String fullUrl = com.homefit.app.ui.common.MediaLoader.resolveUrl(coverUrl);
                 Glide.with(binding.ivCoverImage)
-                        .load(dto.coverImageUrl)
+                        .load(fullUrl)
                         .centerCrop()
                         .listener(new com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable>() {
                             @Override
@@ -157,6 +163,19 @@ public class HomeWorkoutAdapter extends RecyclerView.Adapter<HomeWorkoutAdapter.
                 iv.setLayoutParams(new ViewGroup.LayoutParams(size, size));
                 binding.llDifficulty.addView(iv);
             }
+        }
+
+        private String getDefaultCoverForGroup(String group) {
+            if (group == null) return "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800";
+            String g = group.toLowerCase();
+            if (g.contains("bung")) return "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800";
+            if (g.contains("nguc")) return "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800";
+            if (g.contains("tay")) return "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800";
+            if (g.contains("chan")) return "https://images.unsplash.com/photo-1434596922112-19c563067271?w=800";
+            if (g.contains("back") || g.contains("lung")) return "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=800";
+            if (g.contains("tabata")) return "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=800";
+            if (g.contains("stretch")) return "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800";
+            return "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800";
         }
     }
 }
