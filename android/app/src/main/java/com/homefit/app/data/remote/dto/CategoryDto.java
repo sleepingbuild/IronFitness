@@ -1,13 +1,26 @@
 package com.homefit.app.data.remote.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 public class CategoryDto {
+    @SerializedName("id")
     public long id;
-    public String name;
+
+    @SerializedName("slug")
     public String slug;
+
+    @SerializedName("name")
+    public String name;
+
+    @SerializedName(value = "iconUrl", alternate = {"icon_url"})
     public String iconUrl;
+
+    @SerializedName(value = "sortOrder", alternate = {"sort_order"})
     public int sortOrder;
-    /** false nghĩa là danh mục đã bị tắt: app phải xóa khỏi Room. */
-    public Boolean isActive;
-    /** ISO-8601 UTC. */
+
+    @SerializedName(value = "isActive", alternate = {"is_active", "active"})
+    public Boolean isActive = true;
+
+    @SerializedName(value = "updatedAt", alternate = {"updated_at"})
     public String updatedAt;
 }

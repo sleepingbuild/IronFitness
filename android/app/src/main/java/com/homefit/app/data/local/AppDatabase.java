@@ -28,7 +28,7 @@ import com.homefit.app.data.local.entity.WorkoutLogEntity;
                 UserProfileEntity.class,
                 WorkoutEntity.class
         },
-        version = 2,
+        version = 3,
         exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 

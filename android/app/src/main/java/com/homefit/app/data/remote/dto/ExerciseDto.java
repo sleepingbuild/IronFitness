@@ -1,19 +1,41 @@
 package com.homefit.app.data.remote.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 public class ExerciseDto {
+    @SerializedName("id")
     public long id;
+
+    @SerializedName(value = "categoryId", alternate = {"category_id"})
     public long categoryId;
+
+    @SerializedName("name")
     public String name;
+
+    @SerializedName("description")
     public String description;
+
+    @SerializedName(value = "mediaUrl", alternate = {"media_url", "mediaURL"})
     public String mediaUrl;
-    /** "GIF" hoặc "VIDEO". */
+
+    @SerializedName(value = "mediaType", alternate = {"media_type"})
     public String mediaType;
+
+    @SerializedName(value = "durationSec", alternate = {"duration_sec"})
     public Integer durationSec;
+
+    @SerializedName("reps")
     public Integer reps;
+
+    @SerializedName(value = "restSec", alternate = {"rest_sec"})
     public int restSec;
+
+    @SerializedName(value = "sortOrder", alternate = {"sort_order"})
     public int sortOrder;
-    /** false nghĩa là bài tập đã bị tắt: app phải xóa khỏi Room. */
+
+    @SerializedName(value = "isActive", alternate = {"is_active", "active"})
     public Boolean isActive;
-    /** ISO-8601 UTC. */
+
+    @SerializedName(value = "updatedAt", alternate = {"updated_at"})
     public String updatedAt;
 }
