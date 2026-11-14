@@ -97,6 +97,15 @@ public class AdminExerciseController {
         return LIST_URL;
     }
 
+    @GetMapping(value = "/export", produces = "text/csv; charset=UTF-8")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<String> exportCsv() {
+        String csv = service.exportCsv();
+        return org.springframework.http.ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=exercises.csv")
+                .body(csv);
+    }
+
     @PostMapping("/import")
     public String importCsv(@RequestParam("file") MultipartFile file, RedirectAttributes redirect) {
         if (file.isEmpty()) {

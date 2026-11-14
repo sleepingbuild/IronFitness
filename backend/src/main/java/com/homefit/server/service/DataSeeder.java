@@ -63,8 +63,102 @@ public class DataSeeder implements ApplicationRunner {
 
         seedChallengePrograms(exerciseMap);
 
+        autoAssignRealFitnessImages();
+
         log.info("Đã đồng bộ hóa dữ liệu thành công! Tổng bài tập: {}, Tổng buổi tập: {}",
                 exerciseRepository.count(), workoutRepository.count());
+    }
+
+    private void autoAssignRealFitnessImages() {
+        List<Exercise> allExercises = exerciseRepository.findAll();
+        int exUpdated = 0;
+        for (Exercise e : allExercises) {
+            String url = e.getMediaUrl();
+            if (url == null || url.trim().isEmpty() || url.contains("placehold.co") || url.contains("placeholder") || url.contains("via.placeholder.com")) {
+                e.setMediaUrl(getRealFitnessMediaUrlForExercise(e.getName(), e.getCategoryId()));
+                exerciseRepository.save(e);
+                exUpdated++;
+            }
+        }
+
+        List<Workout> allWorkouts = workoutRepository.findAll();
+        int woUpdated = 0;
+        for (Workout w : allWorkouts) {
+            String cover = w.getCoverImageUrl();
+            if (cover == null || cover.trim().isEmpty() || cover.contains("placehold.co") || cover.contains("placeholder") || cover.contains("via.placeholder.com")) {
+                w.setCoverImageUrl(getRealFitnessCoverUrlForWorkout(w.getType(), w.getGoal(), w.getPrimaryMuscle()));
+                workoutRepository.save(w);
+                woUpdated++;
+            }
+        }
+
+        log.info("Tự động gán bộ ảnh thể hình thực tế thành công: {} Bài tập, {} Buổi tập", exUpdated, woUpdated);
+    }
+
+    private String getRealFitnessMediaUrlForExercise(String name, Long categoryId) {
+        String n = name != null ? name.toLowerCase() : "";
+        if (n.contains("plank") || n.contains("gập bụng") || n.contains("crunch") || n.contains("mountain climber") || n.contains("leg raise")) {
+            return "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600";
+        }
+        if (n.contains("hít đất") || n.contains("push-up") || n.contains("pushup") || n.contains("ngực")) {
+            return "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=600";
+        }
+        if (n.contains("tay") || n.contains("dip") || n.contains("curl") || n.contains("tricep") || n.contains("bicep")) {
+            return "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600";
+        }
+        if (n.contains("squat") || n.contains("lunge") || n.contains("chân") || n.contains("mông") || n.contains("calf")) {
+            return "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600";
+        }
+        if (n.contains("lưng") || n.contains("superman") || n.contains("bird dog") || n.contains("row") || n.contains("cat-cow")) {
+            return "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=600";
+        }
+        if (n.contains("stretch") || n.contains("giãn") || n.contains("kéo")) {
+            return "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600";
+        }
+        if (n.contains("jumping") || n.contains("burpee") || n.contains("tabata") || n.contains("hiit")) {
+            return "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=600";
+        }
+
+        if (categoryId != null) {
+            if (categoryId == 1L) return "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600";
+            if (categoryId == 2L) return "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=600";
+            if (categoryId == 3L) return "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600";
+            if (categoryId == 4L) return "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600";
+            if (categoryId == 5L) return "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600";
+            if (categoryId == 6L) return "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=600";
+        }
+        return "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600";
+    }
+
+    private String getRealFitnessCoverUrlForWorkout(String type, String goal, String primaryMuscle) {
+        if ("tabata".equalsIgnoreCase(type) || "tabata".equalsIgnoreCase(goal)) {
+            return "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=800";
+        }
+        if ("stretch".equalsIgnoreCase(type) || "stretch".equalsIgnoreCase(goal)) {
+            return "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800";
+        }
+        if ("fatloss".equalsIgnoreCase(goal)) {
+            return "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800";
+        }
+        if (primaryMuscle != null) {
+            String m = primaryMuscle.toLowerCase();
+            if (m.contains("bụng") || m.contains("abs")) {
+                return "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800";
+            }
+            if (m.contains("ngực") || m.contains("chest")) {
+                return "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800";
+            }
+            if (m.contains("tay") || m.contains("arms")) {
+                return "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800";
+            }
+            if (m.contains("chân") || m.contains("legs")) {
+                return "https://images.unsplash.com/photo-1434596922112-19c563067271?w=800";
+            }
+            if (m.contains("lưng") || m.contains("back")) {
+                return "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=800";
+            }
+        }
+        return "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800";
     }
 
     private Map<String, Category> seedCategories() {

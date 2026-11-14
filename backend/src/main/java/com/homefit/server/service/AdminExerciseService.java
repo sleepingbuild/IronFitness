@@ -8,6 +8,7 @@ import com.homefit.server.repository.ExerciseRepository;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,6 +115,35 @@ public class AdminExerciseService {
         exercises.save(exercise);
     }
     
+    @Transactional(readOnly = true)
+    public String exportCsv() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("id,name,categoryId,description,durationSec,reps,restSec,mediaType,mediaUrl,sortOrder,active\n");
+        List<Exercise> list = exercises.findAllByOrderByCategoryIdAscSortOrderAscIdAsc();
+        for (Exercise e : list) {
+            sb.append(e.getId()).append(",");
+            sb.append(escapeCsv(e.getName())).append(",");
+            sb.append(e.getCategoryId() != null ? e.getCategoryId() : "").append(",");
+            sb.append(escapeCsv(e.getDescription() != null ? e.getDescription() : "")).append(",");
+            sb.append(e.getDurationSec() != null ? e.getDurationSec() : "").append(",");
+            sb.append(e.getReps() != null ? e.getReps() : "").append(",");
+            sb.append(e.getRestSec()).append(",");
+            sb.append(e.getMediaType() != null ? e.getMediaType().name() : "GIF").append(",");
+            sb.append(escapeCsv(e.getMediaUrl() != null ? e.getMediaUrl() : "")).append(",");
+            sb.append(e.getSortOrder()).append(",");
+            sb.append(e.isActive()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    private String escapeCsv(String value) {
+        if (value == null) return "";
+        if (value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
+    }
+
     @Transactional
     public int importCsv(MultipartFile file) throws Exception {
         int count = 0;
@@ -126,40 +156,84 @@ public class AdminExerciseService {
                     continue;
                 }
                 if (line.trim().isEmpty()) continue;
-                String[] parts = line.split(",");
-                if (parts.length < 9) continue;
-                
-                Exercise ex = new Exercise();
-                ex.setCategoryId(Long.parseLong(parts[0].trim()));
-                ex.setName(parts[1].trim());
-                
-                StringBuilder desc = new StringBuilder(parts[2]);
-                for (int j = 3; j < parts.length - 6; j++) {
-                    desc.append(",").append(parts[j]);
+                List<String> tokens = parseCsvLine(line);
+                if (tokens.size() < 2) continue;
+
+                Long id = parseLong(tokens.get(0));
+                String name = tokens.get(1).trim();
+                Long categoryId = tokens.size() > 2 ? parseLong(tokens.get(2)) : 1L;
+                String desc = tokens.size() > 3 ? tokens.get(3).trim() : "";
+                Integer dur = tokens.size() > 4 ? parseInt(tokens.get(4)) : null;
+                Integer reps = tokens.size() > 5 ? parseInt(tokens.get(5)) : null;
+                Integer restSec = tokens.size() > 6 ? parseInt(tokens.get(6)) : 15;
+                String mediaTypeStr = tokens.size() > 7 ? tokens.get(7).trim() : "GIF";
+                String mediaUrl = tokens.size() > 8 ? tokens.get(8).trim() : "";
+                Integer sortOrder = tokens.size() > 9 ? parseInt(tokens.get(9)) : 0;
+                Boolean active = tokens.size() > 10 ? Boolean.parseBoolean(tokens.get(10).trim()) : true;
+
+                Exercise ex = null;
+                if (id != null) {
+                    ex = exercises.findById(id).orElse(null);
                 }
-                ex.setDescription(desc.toString().trim());
-                
-                String durStr = parts[parts.length - 6].trim();
-                ex.setDurationSec(durStr.isEmpty() ? null : Integer.parseInt(durStr));
-                
-                String repsStr = parts[parts.length - 5].trim();
-                ex.setReps(repsStr.isEmpty() ? null : Integer.parseInt(repsStr));
-                
-                String restStr = parts[parts.length - 4].trim();
-                ex.setRestSec(restStr.isEmpty() ? 15 : Integer.parseInt(restStr));
-                
-                String typeStr = parts[parts.length - 3].trim();
-                ex.setMediaType(com.homefit.server.domain.MediaType.valueOf(typeStr.toUpperCase()));
-                
-                ex.setMediaUrl(parts[parts.length - 2].trim());
-                ex.setSortOrder(Integer.parseInt(parts[parts.length - 1].trim()));
-                ex.setActive(true);
-                
+                if (ex == null && !name.isEmpty()) {
+                    ex = exercises.findFirstByName(name).orElseGet(Exercise::new);
+                }
+                if (ex == null) {
+                    ex = new Exercise();
+                }
+
+                if (categoryId != null) ex.setCategoryId(categoryId);
+                if (!name.isEmpty()) ex.setName(name);
+                ex.setDescription(desc.isEmpty() ? null : desc);
+                ex.setDurationSec(dur);
+                ex.setReps(reps);
+                if (restSec != null) ex.setRestSec(restSec);
+                if (!mediaTypeStr.isEmpty()) {
+                    try { ex.setMediaType(com.homefit.server.domain.MediaType.valueOf(mediaTypeStr.toUpperCase())); } catch (Exception ignored) {}
+                }
+                if (!mediaUrl.isEmpty()) ex.setMediaUrl(mediaUrl);
+                if (sortOrder != null) ex.setSortOrder(sortOrder);
+                if (active != null) ex.setActive(active);
+
                 exercises.save(ex);
                 count++;
             }
         }
         return count;
+    }
+
+    private List<String> parseCsvLine(String line) {
+        List<String> result = new ArrayList<>();
+        boolean inQuotes = false;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == '"') {
+                if (inQuotes && i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                    sb.append('"');
+                    i++;
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if (c == ',' && !inQuotes) {
+                result.add(sb.toString());
+                sb.setLength(0);
+            } else {
+                sb.append(c);
+            }
+        }
+        result.add(sb.toString());
+        return result;
+    }
+
+    private Long parseLong(String val) {
+        if (val == null || val.trim().isEmpty()) return null;
+        try { return Long.parseLong(val.trim()); } catch (Exception e) { return null; }
+    }
+
+    private Integer parseInt(String val) {
+        if (val == null || val.trim().isEmpty()) return null;
+        try { return Integer.parseInt(val.trim()); } catch (Exception e) { return null; }
     }
     
     public Map<String, String> checkMediaLink(String urlString) {

@@ -123,4 +123,140 @@ public class AdminWorkoutController {
         redirect.addFlashAttribute("message", "Đã xoá buổi tập.");
         return "redirect:/admin/workouts";
     }
+
+    @GetMapping(value = "/export", produces = "text/csv; charset=UTF-8")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<String> exportCsv() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("id,type,titleVi,primaryMuscle,level,goal,workSec,restSec,rounds,equipment,coverImageUrl,sortOrder,status\n");
+        for (Workout w : workoutRepository.findAllByOrderBySortOrderAsc()) {
+            sb.append(w.getId()).append(",");
+            sb.append(escapeCsv(w.getType())).append(",");
+            sb.append(escapeCsv(w.getTitleVi())).append(",");
+            sb.append(escapeCsv(w.getPrimaryMuscle())).append(",");
+            sb.append(escapeCsv(w.getLevel())).append(",");
+            sb.append(escapeCsv(w.getGoal())).append(",");
+            sb.append(w.getWorkSec()).append(",");
+            sb.append(w.getRestSec()).append(",");
+            sb.append(w.getRounds()).append(",");
+            sb.append(escapeCsv(w.getEquipment())).append(",");
+            sb.append(escapeCsv(w.getCoverImageUrl())).append(",");
+            sb.append(w.getSortOrder()).append(",");
+            sb.append(escapeCsv(w.getStatus())).append("\n");
+        }
+        return org.springframework.http.ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=workouts.csv")
+                .body(sb.toString());
+    }
+
+    @PostMapping("/import")
+    public String importCsv(@RequestParam("file") MultipartFile file, RedirectAttributes redirect) {
+        if (file.isEmpty()) {
+            redirect.addFlashAttribute("errorMessage", "Vui lòng chọn file CSV.");
+            return "redirect:/admin/workouts";
+        }
+        try {
+            int imported = 0;
+            try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(file.getInputStream(), java.nio.charset.StandardCharsets.UTF_8))) {
+                String line;
+                boolean firstLine = true;
+                while ((line = reader.readLine()) != null) {
+                    if (firstLine) {
+                        firstLine = false;
+                        continue;
+                    }
+                    if (line.trim().isEmpty()) continue;
+                    java.util.List<String> tokens = parseCsvLine(line);
+                    if (tokens.size() < 3) continue;
+
+                    Long id = parseLong(tokens.get(0));
+                    String type = tokens.size() > 1 ? tokens.get(1).trim() : "body_part";
+                    String titleVi = tokens.size() > 2 ? tokens.get(2).trim() : "";
+                    String primaryMuscle = tokens.size() > 3 ? tokens.get(3).trim() : "Toàn thân";
+                    String level = tokens.size() > 4 ? tokens.get(4).trim() : "easy";
+                    String goal = tokens.size() > 5 ? tokens.get(5).trim() : "";
+                    Integer workSec = tokens.size() > 6 ? parseInt(tokens.get(6)) : 30;
+                    Integer restSec = tokens.size() > 7 ? parseInt(tokens.get(7)) : 15;
+                    Integer rounds = tokens.size() > 8 ? parseInt(tokens.get(8)) : 1;
+                    String equipment = tokens.size() > 9 ? tokens.get(9).trim() : "none";
+                    String coverImageUrl = tokens.size() > 10 ? tokens.get(10).trim() : "";
+                    Integer sortOrder = tokens.size() > 11 ? parseInt(tokens.get(11)) : 0;
+                    String status = tokens.size() > 12 ? tokens.get(12).trim() : "PUBLISHED";
+
+                    Workout w = null;
+                    if (id != null) {
+                        w = workoutRepository.findById(id).orElse(null);
+                    }
+                    if (w == null && !titleVi.isEmpty()) {
+                        w = workoutRepository.findFirstByTitleVi(titleVi).orElseGet(Workout::new);
+                    }
+                    if (w == null) {
+                        w = new Workout();
+                    }
+
+                    if (!type.isEmpty()) w.setType(type);
+                    if (!titleVi.isEmpty()) w.setTitleVi(titleVi);
+                    if (!primaryMuscle.isEmpty()) w.setPrimaryMuscle(primaryMuscle);
+                    if (!level.isEmpty()) w.setLevel(level);
+                    w.setGoal(goal);
+                    if (workSec != null) w.setWorkSec(workSec);
+                    if (restSec != null) w.setRestSec(restSec);
+                    if (rounds != null) w.setRounds(rounds);
+                    if (!equipment.isEmpty()) w.setEquipment(equipment);
+                    if (!coverImageUrl.isEmpty()) w.setCoverImageUrl(coverImageUrl);
+                    if (sortOrder != null) w.setSortOrder(sortOrder);
+                    if (!status.isEmpty()) w.setStatus(status);
+
+                    workoutRepository.save(w);
+                    imported++;
+                }
+            }
+            redirect.addFlashAttribute("message", "Nhập thành công " + imported + " buổi tập.");
+        } catch (Exception e) {
+            redirect.addFlashAttribute("errorMessage", "Lỗi nhập CSV: " + e.getMessage());
+        }
+        return "redirect:/admin/workouts";
+    }
+
+    private String escapeCsv(String value) {
+        if (value == null) return "";
+        if (value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
+    }
+
+    private java.util.List<String> parseCsvLine(String line) {
+        java.util.List<String> result = new java.util.ArrayList<>();
+        boolean inQuotes = false;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == '"') {
+                if (inQuotes && i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                    sb.append('"');
+                    i++;
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if (c == ',' && !inQuotes) {
+                result.add(sb.toString());
+                sb.setLength(0);
+            } else {
+                sb.append(c);
+            }
+        }
+        result.add(sb.toString());
+        return result;
+    }
+
+    private Long parseLong(String val) {
+        if (val == null || val.trim().isEmpty()) return null;
+        try { return Long.parseLong(val.trim()); } catch (Exception e) { return null; }
+    }
+
+    private Integer parseInt(String val) {
+        if (val == null || val.trim().isEmpty()) return null;
+        try { return Integer.parseInt(val.trim()); } catch (Exception e) { return null; }
+    }
 }
