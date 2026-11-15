@@ -45,7 +45,7 @@ public final class MediaLoader {
                 .load(fullUrl)
                 .placeholder(R.drawable.bg_media_placeholder)
                 .error(R.drawable.bg_media_placeholder)
-                .centerCrop()
+                .fitCenter()
                 .into(target);
     }
 
