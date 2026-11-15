@@ -75,10 +75,11 @@ public class DataSeeder implements ApplicationRunner {
         for (Exercise e : allExercises) {
             if (e.getMediaUrl() == null || e.getMediaUrl().isBlank() 
                     || e.getMediaUrl().contains("unsplash.com") 
-                    || e.getMediaUrl().contains("/images/muscles/")) {
+                    || e.getMediaUrl().contains("/images/muscles/")
+                    || e.getMediaUrl().contains("/images/exercises/")) {
                 String newUrl = getRealFitnessMediaUrlForExercise(e.getName(), e.getCategoryId());
                 e.setMediaUrl(newUrl);
-                e.setMediaType(com.homefit.server.domain.MediaType.IMAGE);
+                e.setMediaType(com.homefit.server.domain.MediaType.GIF);
                 exerciseRepository.save(e);
                 exUpdated++;
             }
@@ -95,75 +96,86 @@ public class DataSeeder implements ApplicationRunner {
             }
         }
 
-        log.info("Cập nhật bộ ảnh minh họa động tác bài tập (nền trắng) và ảnh bìa nhóm cơ thành công: {} Bài tập, {} Buổi tập", exUpdated, woUpdated);
+        log.info("Cập nhật bộ ảnh minh họa động tác 3D mở (nền trắng) và ảnh bìa nhóm cơ thành công: {} Bài tập, {} Buổi tập", exUpdated, woUpdated);
     }
 
     private String getRealFitnessMediaUrlForExercise(String name, Long categoryId) {
-        String base = "https://ironfitness-et3g.onrender.com/images/exercises/";
+        String base = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/";
         String n = name != null ? name.toLowerCase() : "";
         
         if (n.contains("plank")) {
-            return base + "plank.png";
+            return base + "Plank/0.jpg";
         }
-        if (n.contains("gập bụng") || n.contains("crunch") || n.contains("sit-up") || n.contains("leg raise") || n.contains("dead bug") || n.contains("hollow") || n.contains("heel tap") || n.contains("v-up")) {
-            return base + "crunch.png";
+        if (n.contains("gập bụng") || n.contains("crunch") || n.contains("sit-up")) {
+            if (n.contains("đạp xe") || n.contains("bicycle")) return base + "Air_Bike/0.jpg";
+            if (n.contains("chữ v") || n.contains("v-up")) return base + "Jackknife_Sit-Up/0.jpg";
+            return base + "3_4_Sit-Up/0.jpg";
+        }
+        if (n.contains("nâng chân") || n.contains("leg raise") || n.contains("hollow")) {
+            return base + "Flat_Bench_Lying_Leg_Raise/0.jpg";
+        }
+        if (n.contains("dead bug") || n.contains("bọ chết")) {
+            return base + "Dead_Bug/0.jpg";
+        }
+        if (n.contains("heel tap") || n.contains("chạm gót")) {
+            return base + "3_4_Sit-Up/0.jpg";
         }
         if (n.contains("hít đất") || n.contains("push-up") || n.contains("pushup") || n.contains("chống đẩy")) {
-            if (n.contains("kim cương")) return base + "pushup.png";
-            return base + "pushup.png";
+            if (n.contains("kim cương") || n.contains("diamond")) return base + "Pushups_Close_and_Wide_Hand_Positions/0.jpg";
+            return base + "Pushups/0.jpg";
         }
         if (n.contains("dip") || n.contains("nhún tay") || n.contains("tricep")) {
-            return base + "dips.png";
+            return base + "Bench_Dips/0.jpg";
         }
         if (n.contains("curl") || n.contains("tay") || n.contains("bicep")) {
-            return base + "bicep_curl.png";
+            return base + "Dumbbell_Bicep_Curl/0.jpg";
         }
         if (n.contains("pike")) {
-            return base + "pike_pushup.png";
+            return base + "Pushups/0.jpg";
         }
         if (n.contains("squat") || n.contains("ngồi xổm") || n.contains("wall sit")) {
-            return base + "squat.png";
+            return base + "Bodyweight_Squat/0.jpg";
         }
         if (n.contains("lunge") || n.contains("chùng chân") || n.contains("step-up")) {
-            return base + "lunge.png";
+            return base + "Bodyweight_Walking_Lunge/0.jpg";
         }
         if (n.contains("bridge") || n.contains("cầu mông")) {
-            return base + "glute_bridge.png";
+            return base + "Butt_Lift_Bridge/0.jpg";
         }
         if (n.contains("donkey") || n.contains("đá chân")) {
-            return base + "donkey_kick.png";
+            return base + "Donkey_Calf_Raises/0.jpg";
         }
         if (n.contains("calf") || n.contains("gót chân") || n.contains("bắp chân")) {
-            return base + "calf_raise.png";
+            return base + "Calf_Press/0.jpg";
         }
         if (n.contains("superman") || n.contains("siêu nhân")) {
-            return base + "superman.png";
+            return base + "Superman/0.jpg";
         }
         if (n.contains("bird dog") || n.contains("chó chim") || n.contains("cat-cow") || n.contains("snow angel")) {
-            return base + "bird_dog.png";
+            return base + "Cat_Stretch/0.jpg";
         }
         if (n.contains("mountain climber") || n.contains("leo núi")) {
-            return base + "mountain_climber.png";
+            return base + "Mountain_Climbers/0.jpg";
         }
         if (n.contains("burpee")) {
-            return base + "burpee.png";
+            return base + "Pushups/0.jpg";
         }
         if (n.contains("jack") || n.contains("jumping") || n.contains("nhảy") || n.contains("đấm bốc") || n.contains("chạy") || n.contains("tabata") || n.contains("hiit")) {
-            return base + "jumping_jacks.png";
+            return base + "Air_Bike/0.jpg";
         }
         if (n.contains("stretch") || n.contains("giãn") || n.contains("kéo") || n.contains("pose") || n.contains("opener")) {
-            return base + "stretch.png";
+            return base + "All_Fours_Quad_Stretch/0.jpg";
         }
 
         if (categoryId != null) {
-            if (categoryId == 1L) return base + "crunch.png";
-            if (categoryId == 2L) return base + "pushup.png";
-            if (categoryId == 3L) return base + "squat.png";
-            if (categoryId == 4L) return base + "jumping_jacks.png";
-            if (categoryId == 5L) return base + "bicep_curl.png";
-            if (categoryId == 6L) return base + "superman.png";
+            if (categoryId == 1L) return base + "3_4_Sit-Up/0.jpg";
+            if (categoryId == 2L) return base + "Pushups/0.jpg";
+            if (categoryId == 3L) return base + "Bodyweight_Squat/0.jpg";
+            if (categoryId == 4L) return base + "Air_Bike/0.jpg";
+            if (categoryId == 5L) return base + "Dumbbell_Bicep_Curl/0.jpg";
+            if (categoryId == 6L) return base + "Superman/0.jpg";
         }
-        return base + "crunch.png";
+        return base + "3_4_Sit-Up/0.jpg";
     }
 
     private String getRealFitnessCoverUrlForWorkout(String type, String goal, String primaryMuscle) {
