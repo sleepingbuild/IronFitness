@@ -99,67 +99,67 @@ public class DataSeeder implements ApplicationRunner {
     private String getRealFitnessMediaUrlForExercise(String name, Long categoryId) {
         String n = name != null ? name.toLowerCase() : "";
         if (n.contains("plank") || n.contains("gập bụng") || n.contains("crunch") || n.contains("sit-up") || n.contains("mountain climber") || n.contains("leg raise")) {
-            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-6.svg";
+            return "/images/muscles/abs.svg";
         }
         if (n.contains("hít đất") || n.contains("push-up") || n.contains("pushup") || n.contains("chống đẩy") || n.contains("ngực")) {
-            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-4.svg";
+            return "/images/muscles/chest.svg";
         }
         if (n.contains("tay") || n.contains("dip") || n.contains("curl") || n.contains("tricep") || n.contains("bicep")) {
-            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-1.svg";
+            return "/images/muscles/arms.svg";
         }
         if (n.contains("squat") || n.contains("lunge") || n.contains("chân") || n.contains("mông") || n.contains("calf")) {
-            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-10.svg";
+            return "/images/muscles/legs.svg";
         }
         if (n.contains("lưng") || n.contains("superman") || n.contains("bird dog") || n.contains("row") || n.contains("cat-cow")) {
-            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-12.svg";
+            return "/images/muscles/back.svg";
         }
         if (n.contains("stretch") || n.contains("giãn") || n.contains("kéo")) {
-            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-12.svg";
+            return "/images/muscles/back.svg";
         }
         if (n.contains("jack") || n.contains("jumping") || n.contains("burpee") || n.contains("tabata") || n.contains("hiit")) {
-            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-11.svg";
+            return "/images/muscles/fullbody.svg";
         }
 
         if (categoryId != null) {
-            if (categoryId == 1L) return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-6.svg";
-            if (categoryId == 2L) return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-4.svg";
-            if (categoryId == 3L) return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-10.svg";
-            if (categoryId == 4L) return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-11.svg";
-            if (categoryId == 5L) return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-1.svg";
-            if (categoryId == 6L) return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-12.svg";
+            if (categoryId == 1L) return "/images/muscles/abs.svg";
+            if (categoryId == 2L) return "/images/muscles/chest.svg";
+            if (categoryId == 3L) return "/images/muscles/legs.svg";
+            if (categoryId == 4L) return "/images/muscles/fullbody.svg";
+            if (categoryId == 5L) return "/images/muscles/arms.svg";
+            if (categoryId == 6L) return "/images/muscles/back.svg";
         }
-        return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-6.svg";
+        return "/images/muscles/abs.svg";
     }
 
     private String getRealFitnessCoverUrlForWorkout(String type, String goal, String primaryMuscle) {
         if ("tabata".equalsIgnoreCase(type) || "tabata".equalsIgnoreCase(goal)) {
-            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-11.svg";
+            return "/images/muscles/fullbody.svg";
         }
         if ("stretch".equalsIgnoreCase(type) || "stretch".equalsIgnoreCase(goal)) {
-            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-12.svg";
+            return "/images/muscles/back.svg";
         }
         if ("fatloss".equalsIgnoreCase(goal)) {
-            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-11.svg";
+            return "/images/muscles/fullbody.svg";
         }
         if (primaryMuscle != null) {
             String m = primaryMuscle.toLowerCase();
             if (m.contains("bụng") || m.contains("abs")) {
-                return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-6.svg";
+                return "/images/muscles/abs.svg";
             }
             if (m.contains("ngực") || m.contains("chest")) {
-                return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-4.svg";
+                return "/images/muscles/chest.svg";
             }
             if (m.contains("tay") || m.contains("arms")) {
-                return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-1.svg";
+                return "/images/muscles/arms.svg";
             }
             if (m.contains("chân") || m.contains("legs")) {
-                return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-10.svg";
+                return "/images/muscles/legs.svg";
             }
             if (m.contains("lưng") || m.contains("back")) {
-                return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-12.svg";
+                return "/images/muscles/back.svg";
             }
         }
-        return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-11.svg";
+        return "/images/muscles/fullbody.svg";
     }
 
     private Map<String, Category> seedCategories() {
