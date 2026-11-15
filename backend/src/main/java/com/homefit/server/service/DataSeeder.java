@@ -73,8 +73,8 @@ public class DataSeeder implements ApplicationRunner {
         List<Exercise> allExercises = exerciseRepository.findAll();
         int exUpdated = 0;
         for (Exercise e : allExercises) {
-            String newUrl = getRealFitnessMediaUrlForExercise(e.getName(), e.getCategoryId());
-            if (e.getMediaUrl() == null || !e.getMediaUrl().equals(newUrl)) {
+            if (e.getMediaUrl() == null || e.getMediaUrl().isBlank() || e.getMediaUrl().contains("/images/muscles/")) {
+                String newUrl = getRealFitnessMediaUrlForExercise(e.getName(), e.getCategoryId());
                 e.setMediaUrl(newUrl);
                 e.setMediaType(com.homefit.server.domain.MediaType.GIF);
                 exerciseRepository.save(e);
@@ -93,43 +93,42 @@ public class DataSeeder implements ApplicationRunner {
             }
         }
 
-        log.info("Ép ghi đè toàn bộ bộ ảnh 3D giải phẫu thể hình nền trắng thành công: {} Bài tập, {} Buổi tập", exUpdated, woUpdated);
+        log.info("Cập nhật bộ ảnh minh họa động tác bài tập và ảnh bìa nhóm cơ thành công: {} Bài tập, {} Buổi tập", exUpdated, woUpdated);
     }
 
     private String getRealFitnessMediaUrlForExercise(String name, Long categoryId) {
-        String base = "https://ironfitness-et3g.onrender.com/images/muscles/";
         String n = name != null ? name.toLowerCase() : "";
-        if (n.contains("plank") || n.contains("gập bụng") || n.contains("crunch") || n.contains("sit-up") || n.contains("mountain climber") || n.contains("leg raise")) {
-            return base + "abs.png";
+        if (n.contains("plank") || n.contains("gập bụng") || n.contains("crunch") || n.contains("sit-up") || n.contains("leg raise") || n.contains("dead bug") || n.contains("hollow") || n.contains("heel tap")) {
+            return "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600";
         }
         if (n.contains("hít đất") || n.contains("push-up") || n.contains("pushup") || n.contains("chống đẩy") || n.contains("ngực")) {
-            return base + "chest.png";
+            return "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=600";
         }
-        if (n.contains("tay") || n.contains("dip") || n.contains("curl") || n.contains("tricep") || n.contains("bicep")) {
-            return base + "arms.png";
+        if (n.contains("tay") || n.contains("dip") || n.contains("curl") || n.contains("tricep") || n.contains("bicep") || n.contains("pike")) {
+            return "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600";
         }
-        if (n.contains("squat") || n.contains("lunge") || n.contains("chân") || n.contains("mông") || n.contains("calf")) {
-            return base + "legs.png";
+        if (n.contains("squat") || n.contains("lunge") || n.contains("chân") || n.contains("mông") || n.contains("calf") || n.contains("bridge") || n.contains("donkey") || n.contains("step-up") || n.contains("wall sit")) {
+            return "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600";
         }
-        if (n.contains("lưng") || n.contains("superman") || n.contains("bird dog") || n.contains("row") || n.contains("cat-cow")) {
-            return base + "back.png";
+        if (n.contains("lưng") || n.contains("superman") || n.contains("bird dog") || n.contains("row") || n.contains("cat-cow") || n.contains("snow angel")) {
+            return "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=600";
         }
-        if (n.contains("stretch") || n.contains("giãn") || n.contains("kéo")) {
-            return base + "back.png";
+        if (n.contains("stretch") || n.contains("giãn") || n.contains("kéo") || n.contains("pose") || n.contains("opener")) {
+            return "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600";
         }
-        if (n.contains("jack") || n.contains("jumping") || n.contains("burpee") || n.contains("tabata") || n.contains("hiit")) {
-            return base + "fullbody.png";
+        if (n.contains("jack") || n.contains("jumping") || n.contains("burpee") || n.contains("tabata") || n.contains("hiit") || n.contains("mountain climber") || n.contains("leo núi") || n.contains("nhảy") || n.contains("đấm bốc") || n.contains("chạy")) {
+            return "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600";
         }
 
         if (categoryId != null) {
-            if (categoryId == 1L) return base + "abs.png";
-            if (categoryId == 2L) return base + "chest.png";
-            if (categoryId == 3L) return base + "legs.png";
-            if (categoryId == 4L) return base + "fullbody.png";
-            if (categoryId == 5L) return base + "arms.png";
-            if (categoryId == 6L) return base + "back.png";
+            if (categoryId == 1L) return "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600";
+            if (categoryId == 2L) return "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=600";
+            if (categoryId == 3L) return "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600";
+            if (categoryId == 4L) return "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600";
+            if (categoryId == 5L) return "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600";
+            if (categoryId == 6L) return "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=600";
         }
-        return base + "abs.png";
+        return "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600";
     }
 
     private String getRealFitnessCoverUrlForWorkout(String type, String goal, String primaryMuscle) {
@@ -165,6 +164,7 @@ public class DataSeeder implements ApplicationRunner {
     }
 
     private Map<String, Category> seedCategories() {
+        String base = "https://ironfitness-et3g.onrender.com/images/muscles/";
         Map<String, String[]> defs = Map.of(
                 "abs", new String[]{"Cơ Bụng", "1"},
                 "chest", new String[]{"Cơ Ngực", "2"},
@@ -185,6 +185,7 @@ public class DataSeeder implements ApplicationRunner {
                 return categoryRepository.save(cat);
             });
             c.setActive(true);
+            c.setIconUrl(base + slug + ".png");
             categoryRepository.save(c);
             result.put(slug, c);
         });
