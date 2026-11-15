@@ -98,68 +98,68 @@ public class DataSeeder implements ApplicationRunner {
 
     private String getRealFitnessMediaUrlForExercise(String name, Long categoryId) {
         String n = name != null ? name.toLowerCase() : "";
-        if (n.contains("plank") || n.contains("gập bụng") || n.contains("crunch") || n.contains("mountain climber") || n.contains("leg raise")) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Abdominal_Crunches/0.jpg";
+        if (n.contains("plank")) {
+            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg";
         }
-        if (n.contains("hít đất") || n.contains("push-up") || n.contains("pushup") || n.contains("ngực")) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Push-up/0.jpg";
+        if (n.contains("gập bụng") || n.contains("crunch") || n.contains("sit-up") || n.contains("mountain climber") || n.contains("leg raise")) {
+            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/3_4_Sit-Up/0.jpg";
+        }
+        if (n.contains("hít đất") || n.contains("push-up") || n.contains("pushup") || n.contains("chống đẩy") || n.contains("ngực")) {
+            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg";
         }
         if (n.contains("tay") || n.contains("dip") || n.contains("curl") || n.contains("tricep") || n.contains("bicep")) {
             return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg";
         }
         if (n.contains("squat") || n.contains("lunge") || n.contains("chân") || n.contains("mông") || n.contains("calf")) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Squat/0.jpg";
-        }
-        if (n.contains("lưng") || n.contains("superman") || n.contains("bird dog") || n.contains("row") || n.contains("cat-cow")) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions_Back_Extensions/0.jpg";
+            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Lunge/0.jpg";
         }
         if (n.contains("stretch") || n.contains("giãn") || n.contains("kéo")) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/All_Fours_Quadruped_Abdominal_Stretch/0.jpg";
+            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/All_Fours_Quad_Stretch/0.jpg";
         }
-        if (n.contains("jumping") || n.contains("burpee") || n.contains("tabata") || n.contains("hiit")) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Jumping_Jacks/0.jpg";
+        if (n.contains("jack") || n.contains("jumping") || n.contains("burpee") || n.contains("tabata") || n.contains("hiit")) {
+            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Jackknife_Sit-Up/0.jpg";
         }
 
         if (categoryId != null) {
-            if (categoryId == 1L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Abdominal_Crunches/0.jpg";
-            if (categoryId == 2L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Push-up/0.jpg";
-            if (categoryId == 3L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Squat/0.jpg";
-            if (categoryId == 4L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Burpee/0.jpg";
+            if (categoryId == 1L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/3_4_Sit-Up/0.jpg";
+            if (categoryId == 2L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg";
+            if (categoryId == 3L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Lunge/0.jpg";
+            if (categoryId == 4L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg";
             if (categoryId == 5L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg";
-            if (categoryId == 6L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions_Back_Extensions/0.jpg";
+            if (categoryId == 6L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Behind_Head_Chest_Stretch/0.jpg";
         }
-        return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Abdominal_Crunches/0.jpg";
+        return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg";
     }
 
     private String getRealFitnessCoverUrlForWorkout(String type, String goal, String primaryMuscle) {
         if ("tabata".equalsIgnoreCase(type) || "tabata".equalsIgnoreCase(goal)) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Jumping_Jacks/0.jpg";
+            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Jackknife_Sit-Up/0.jpg";
         }
         if ("stretch".equalsIgnoreCase(type) || "stretch".equalsIgnoreCase(goal)) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/All_Fours_Quadruped_Abdominal_Stretch/0.jpg";
+            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/All_Fours_Quad_Stretch/0.jpg";
         }
         if ("fatloss".equalsIgnoreCase(goal)) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Burpee/0.jpg";
+            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg";
         }
         if (primaryMuscle != null) {
             String m = primaryMuscle.toLowerCase();
             if (m.contains("bụng") || m.contains("abs")) {
-                return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Abdominal_Crunches/0.jpg";
+                return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/3_4_Sit-Up/0.jpg";
             }
             if (m.contains("ngực") || m.contains("chest")) {
-                return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Push-up/0.jpg";
+                return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg";
             }
             if (m.contains("tay") || m.contains("arms")) {
                 return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg";
             }
             if (m.contains("chân") || m.contains("legs")) {
-                return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Squat/0.jpg";
+                return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Lunge/0.jpg";
             }
             if (m.contains("lưng") || m.contains("back")) {
-                return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions_Back_Extensions/0.jpg";
+                return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Behind_Head_Chest_Stretch/0.jpg";
             }
         }
-        return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Burpee/0.jpg";
+        return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg";
     }
 
     private Map<String, Category> seedCategories() {
