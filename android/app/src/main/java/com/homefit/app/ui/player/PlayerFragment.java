@@ -276,9 +276,23 @@ public class PlayerFragment extends Fragment {
     private void loadExerciseDetailsAndMedia(LocalWorkoutDto current) {
         if (current == null) {
             binding.tvExerciseDescription.setText("Giữ tư thế chuẩn, siết chặt cơ và thở đều.");
+            binding.tvTargetMuscleCaption.setText("Nhóm cơ tác động chính: Toàn thân");
             binding.ivMedia.setImageResource(R.drawable.bg_media_placeholder);
             return;
         }
+
+        String targetMuscle = "Toàn thân";
+        if (current.target != null && !current.target.isBlank()) {
+            targetMuscle = current.target;
+        } else if (current.name != null) {
+            String nameLower = current.name.toLowerCase(java.util.Locale.US);
+            if (nameLower.contains("bụng") || nameLower.contains("plank") || nameLower.contains("crunch")) targetMuscle = "Cơ Bụng";
+            else if (nameLower.contains("ngực") || nameLower.contains("push")) targetMuscle = "Cơ Ngực";
+            else if (nameLower.contains("tay") || nameLower.contains("dip") || nameLower.contains("curl")) targetMuscle = "Cơ Tay";
+            else if (nameLower.contains("chân") || nameLower.contains("squat") || nameLower.contains("lunge")) targetMuscle = "Cơ Chân & Mông";
+            else if (nameLower.contains("lưng")) targetMuscle = "Cơ Lưng";
+        }
+        binding.tvTargetMuscleCaption.setText("Nhóm cơ tác động chính: " + targetMuscle);
 
         StringBuilder initialDesc = new StringBuilder();
         if (current.instructions != null && !current.instructions.isEmpty()) {

@@ -74,7 +74,7 @@ public class DataSeeder implements ApplicationRunner {
         int exUpdated = 0;
         for (Exercise e : allExercises) {
             String newUrl = getRealFitnessMediaUrlForExercise(e.getName(), e.getCategoryId());
-            if (e.getMediaUrl() == null || e.getMediaUrl().contains("unsplash") || e.getMediaUrl().contains("free-exercise-db") || e.getMediaUrl().contains("placeholder") || !e.getMediaUrl().equals(newUrl)) {
+            if (e.getMediaUrl() == null || !e.getMediaUrl().equals(newUrl)) {
                 e.setMediaUrl(newUrl);
                 e.setMediaType(com.homefit.server.domain.MediaType.GIF);
                 exerciseRepository.save(e);
@@ -86,7 +86,7 @@ public class DataSeeder implements ApplicationRunner {
         int woUpdated = 0;
         for (Workout w : allWorkouts) {
             String newCover = getRealFitnessCoverUrlForWorkout(w.getType(), w.getGoal(), w.getPrimaryMuscle());
-            if (w.getCoverImageUrl() == null || w.getCoverImageUrl().contains("unsplash") || w.getCoverImageUrl().contains("free-exercise-db") || w.getCoverImageUrl().contains("placeholder") || !w.getCoverImageUrl().equals(newCover)) {
+            if (w.getCoverImageUrl() == null || !w.getCoverImageUrl().equals(newCover)) {
                 w.setCoverImageUrl(newCover);
                 workoutRepository.save(w);
                 woUpdated++;
@@ -97,69 +97,71 @@ public class DataSeeder implements ApplicationRunner {
     }
 
     private String getRealFitnessMediaUrlForExercise(String name, Long categoryId) {
+        String base = "https://ironfitness-et3g.onrender.com/images/muscles/";
         String n = name != null ? name.toLowerCase() : "";
         if (n.contains("plank") || n.contains("gập bụng") || n.contains("crunch") || n.contains("sit-up") || n.contains("mountain climber") || n.contains("leg raise")) {
-            return "/images/muscles/abs.svg";
+            return base + "abs.png";
         }
         if (n.contains("hít đất") || n.contains("push-up") || n.contains("pushup") || n.contains("chống đẩy") || n.contains("ngực")) {
-            return "/images/muscles/chest.svg";
+            return base + "chest.png";
         }
         if (n.contains("tay") || n.contains("dip") || n.contains("curl") || n.contains("tricep") || n.contains("bicep")) {
-            return "/images/muscles/arms.svg";
+            return base + "arms.png";
         }
         if (n.contains("squat") || n.contains("lunge") || n.contains("chân") || n.contains("mông") || n.contains("calf")) {
-            return "/images/muscles/legs.svg";
+            return base + "legs.png";
         }
         if (n.contains("lưng") || n.contains("superman") || n.contains("bird dog") || n.contains("row") || n.contains("cat-cow")) {
-            return "/images/muscles/back.svg";
+            return base + "back.png";
         }
         if (n.contains("stretch") || n.contains("giãn") || n.contains("kéo")) {
-            return "/images/muscles/back.svg";
+            return base + "back.png";
         }
         if (n.contains("jack") || n.contains("jumping") || n.contains("burpee") || n.contains("tabata") || n.contains("hiit")) {
-            return "/images/muscles/fullbody.svg";
+            return base + "fullbody.png";
         }
 
         if (categoryId != null) {
-            if (categoryId == 1L) return "/images/muscles/abs.svg";
-            if (categoryId == 2L) return "/images/muscles/chest.svg";
-            if (categoryId == 3L) return "/images/muscles/legs.svg";
-            if (categoryId == 4L) return "/images/muscles/fullbody.svg";
-            if (categoryId == 5L) return "/images/muscles/arms.svg";
-            if (categoryId == 6L) return "/images/muscles/back.svg";
+            if (categoryId == 1L) return base + "abs.png";
+            if (categoryId == 2L) return base + "chest.png";
+            if (categoryId == 3L) return base + "legs.png";
+            if (categoryId == 4L) return base + "fullbody.png";
+            if (categoryId == 5L) return base + "arms.png";
+            if (categoryId == 6L) return base + "back.png";
         }
-        return "/images/muscles/abs.svg";
+        return base + "abs.png";
     }
 
     private String getRealFitnessCoverUrlForWorkout(String type, String goal, String primaryMuscle) {
+        String base = "https://ironfitness-et3g.onrender.com/images/muscles/";
         if ("tabata".equalsIgnoreCase(type) || "tabata".equalsIgnoreCase(goal)) {
-            return "/images/muscles/fullbody.svg";
+            return base + "fullbody.png";
         }
         if ("stretch".equalsIgnoreCase(type) || "stretch".equalsIgnoreCase(goal)) {
-            return "/images/muscles/back.svg";
+            return base + "back.png";
         }
         if ("fatloss".equalsIgnoreCase(goal)) {
-            return "/images/muscles/fullbody.svg";
+            return base + "fullbody.png";
         }
         if (primaryMuscle != null) {
             String m = primaryMuscle.toLowerCase();
             if (m.contains("bụng") || m.contains("abs")) {
-                return "/images/muscles/abs.svg";
+                return base + "abs.png";
             }
             if (m.contains("ngực") || m.contains("chest")) {
-                return "/images/muscles/chest.svg";
+                return base + "chest.png";
             }
             if (m.contains("tay") || m.contains("arms")) {
-                return "/images/muscles/arms.svg";
+                return base + "arms.png";
             }
             if (m.contains("chân") || m.contains("legs")) {
-                return "/images/muscles/legs.svg";
+                return base + "legs.png";
             }
             if (m.contains("lưng") || m.contains("back")) {
-                return "/images/muscles/back.svg";
+                return base + "back.png";
             }
         }
-        return "/images/muscles/fullbody.svg";
+        return base + "fullbody.png";
     }
 
     private Map<String, Category> seedCategories() {
