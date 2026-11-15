@@ -93,7 +93,7 @@ public class ExerciseRepository {
                 AppExecutors.diskIO().execute(() -> {
                     applyExercises(body, null);
                     android.util.Log.i("ExerciseRepository", "Đã đồng bộ thành công " + body.size() + " bài tập từ Server vào Room DB");
-                    result.postValue(Resource.success(true));
+                    syncWorkouts(result);
                 });
             }
 
@@ -101,6 +101,31 @@ public class ExerciseRepository {
             protected void onError(@NonNull String code, @Nullable String message) {
                 android.util.Log.e("ExerciseRepository", "Lỗi đồng bộ bài tập từ Server: " + code + " - " + message);
                 result.postValue(Resource.error(code, message));
+            }
+        });
+    }
+
+    private void syncWorkouts(MutableLiveData<Resource<Boolean>> result) {
+        api.getWorkouts(null, null, null).enqueue(new ApiCallback<List<com.homefit.app.data.remote.dto.WorkoutDto>>() {
+            @Override
+            protected void onSuccess(@NonNull List<com.homefit.app.data.remote.dto.WorkoutDto> body) {
+                AppExecutors.diskIO().execute(() -> {
+                    List<com.homefit.app.data.local.entity.WorkoutEntity> list = new ArrayList<>();
+                    for (com.homefit.app.data.remote.dto.WorkoutDto d : body) {
+                        list.add(Mappers.toEntity(d));
+                    }
+                    if (!list.isEmpty()) {
+                        db.workoutDao().upsertAll(list);
+                    }
+                    android.util.Log.i("ExerciseRepository", "Đã đồng bộ thành công " + body.size() + " buổi tập từ Server vào Room DB");
+                    result.postValue(Resource.success(true));
+                });
+            }
+
+            @Override
+            protected void onError(@NonNull String code, @Nullable String message) {
+                android.util.Log.e("ExerciseRepository", "Lỗi đồng bộ buổi tập từ Server: " + code + " - " + message);
+                result.postValue(Resource.success(true));
             }
         });
     }

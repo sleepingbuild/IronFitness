@@ -303,8 +303,13 @@ public class PlayerFragment extends Fragment {
             com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
                 var list = com.homefit.app.data.local.AppDatabase.getInstance(requireContext()).exerciseDao().getAllNow();
                 com.homefit.app.data.local.entity.ExerciseEntity match = null;
+                String normCurrent = current.name.toLowerCase(java.util.Locale.US).replaceAll("[^a-zA-Z0-9]", "");
                 for (var e : list) {
-                    if (e.name != null && e.name.equalsIgnoreCase(current.name)) {
+                    if (e.name == null) continue;
+                    String normE = e.name.toLowerCase(java.util.Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                    if (e.name.equalsIgnoreCase(current.name)
+                            || (!normE.isEmpty() && normCurrent.contains(normE))
+                            || (!normCurrent.isEmpty() && normE.contains(normCurrent))) {
                         match = e;
                         break;
                     }

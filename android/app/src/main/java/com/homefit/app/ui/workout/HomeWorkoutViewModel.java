@@ -25,7 +25,28 @@ public class HomeWorkoutViewModel extends AndroidViewModel {
     }
 
     private void loadData() {
-        allGroups.setValue(repository.getAllGroups());
+        List<LocalExerciseGroupDto> initial = repository.getAllGroups();
+        allGroups.setValue(initial);
+
+        com.homefit.app.data.local.AppDatabase db = com.homefit.app.data.local.AppDatabase.getInstance(getApplication());
+        db.workoutDao().getAll().observeForever(entities -> {
+            if (entities != null && !entities.isEmpty()) {
+                List<LocalExerciseGroupDto> currentList = allGroups.getValue();
+                if (currentList != null) {
+                    for (LocalExerciseGroupDto dto : currentList) {
+                        for (var entity : entities) {
+                            if (entity.coverImageUrl != null && !entity.coverImageUrl.isEmpty()) {
+                                if ((entity.goal != null && entity.goal.equalsIgnoreCase(dto.group))
+                                        || (entity.primaryMuscle != null && entity.primaryMuscle.equalsIgnoreCase(dto.group_name))) {
+                                    dto.coverImageUrl = entity.coverImageUrl;
+                                }
+                            }
+                        }
+                    }
+                    allGroups.postValue(currentList);
+                }
+            }
+        });
     }
 
     public LiveData<List<LocalExerciseGroupDto>> getAllGroups() {

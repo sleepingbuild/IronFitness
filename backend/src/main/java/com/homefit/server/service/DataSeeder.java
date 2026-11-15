@@ -73,9 +73,10 @@ public class DataSeeder implements ApplicationRunner {
         List<Exercise> allExercises = exerciseRepository.findAll();
         int exUpdated = 0;
         for (Exercise e : allExercises) {
-            String url = e.getMediaUrl();
-            if (url == null || url.trim().isEmpty() || url.contains("placehold.co") || url.contains("placeholder") || url.contains("via.placeholder.com")) {
-                e.setMediaUrl(getRealFitnessMediaUrlForExercise(e.getName(), e.getCategoryId()));
+            String newUrl = getRealFitnessMediaUrlForExercise(e.getName(), e.getCategoryId());
+            if (e.getMediaUrl() == null || !e.getMediaUrl().equals(newUrl)) {
+                e.setMediaUrl(newUrl);
+                e.setMediaType(com.homefit.server.domain.MediaType.GIF);
                 exerciseRepository.save(e);
                 exUpdated++;
             }
@@ -84,15 +85,15 @@ public class DataSeeder implements ApplicationRunner {
         List<Workout> allWorkouts = workoutRepository.findAll();
         int woUpdated = 0;
         for (Workout w : allWorkouts) {
-            String cover = w.getCoverImageUrl();
-            if (cover == null || cover.trim().isEmpty() || cover.contains("placehold.co") || cover.contains("placeholder") || cover.contains("via.placeholder.com")) {
-                w.setCoverImageUrl(getRealFitnessCoverUrlForWorkout(w.getType(), w.getGoal(), w.getPrimaryMuscle()));
+            String newCover = getRealFitnessCoverUrlForWorkout(w.getType(), w.getGoal(), w.getPrimaryMuscle());
+            if (w.getCoverImageUrl() == null || !w.getCoverImageUrl().equals(newCover)) {
+                w.setCoverImageUrl(newCover);
                 workoutRepository.save(w);
                 woUpdated++;
             }
         }
 
-        log.info("Tự động gán bộ ảnh thể hình thực tế thành công: {} Bài tập, {} Buổi tập", exUpdated, woUpdated);
+        log.info("Ép ghi đè toàn bộ bộ ảnh 3D giải phẫu thể hình nền trắng thành công: {} Bài tập, {} Buổi tập", exUpdated, woUpdated);
     }
 
     private String getRealFitnessMediaUrlForExercise(String name, Long categoryId) {
