@@ -74,7 +74,7 @@ public class DataSeeder implements ApplicationRunner {
         int exUpdated = 0;
         for (Exercise e : allExercises) {
             String newUrl = getRealFitnessMediaUrlForExercise(e.getName(), e.getCategoryId());
-            if (e.getMediaUrl() == null || e.getMediaUrl().contains("unsplash") || e.getMediaUrl().contains("placeholder") || !e.getMediaUrl().equals(newUrl)) {
+            if (e.getMediaUrl() == null || e.getMediaUrl().contains("unsplash") || e.getMediaUrl().contains("free-exercise-db") || e.getMediaUrl().contains("placeholder") || !e.getMediaUrl().equals(newUrl)) {
                 e.setMediaUrl(newUrl);
                 e.setMediaType(com.homefit.server.domain.MediaType.GIF);
                 exerciseRepository.save(e);
@@ -86,7 +86,7 @@ public class DataSeeder implements ApplicationRunner {
         int woUpdated = 0;
         for (Workout w : allWorkouts) {
             String newCover = getRealFitnessCoverUrlForWorkout(w.getType(), w.getGoal(), w.getPrimaryMuscle());
-            if (w.getCoverImageUrl() == null || w.getCoverImageUrl().contains("unsplash") || w.getCoverImageUrl().contains("placeholder") || !w.getCoverImageUrl().equals(newCover)) {
+            if (w.getCoverImageUrl() == null || w.getCoverImageUrl().contains("unsplash") || w.getCoverImageUrl().contains("free-exercise-db") || w.getCoverImageUrl().contains("placeholder") || !w.getCoverImageUrl().equals(newCover)) {
                 w.setCoverImageUrl(newCover);
                 workoutRepository.save(w);
                 woUpdated++;
@@ -98,68 +98,68 @@ public class DataSeeder implements ApplicationRunner {
 
     private String getRealFitnessMediaUrlForExercise(String name, Long categoryId) {
         String n = name != null ? name.toLowerCase() : "";
-        if (n.contains("plank")) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg";
-        }
-        if (n.contains("gập bụng") || n.contains("crunch") || n.contains("sit-up") || n.contains("mountain climber") || n.contains("leg raise")) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/3_4_Sit-Up/0.jpg";
+        if (n.contains("plank") || n.contains("gập bụng") || n.contains("crunch") || n.contains("sit-up") || n.contains("mountain climber") || n.contains("leg raise")) {
+            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-6.svg";
         }
         if (n.contains("hít đất") || n.contains("push-up") || n.contains("pushup") || n.contains("chống đẩy") || n.contains("ngực")) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg";
+            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-4.svg";
         }
         if (n.contains("tay") || n.contains("dip") || n.contains("curl") || n.contains("tricep") || n.contains("bicep")) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg";
+            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-1.svg";
         }
         if (n.contains("squat") || n.contains("lunge") || n.contains("chân") || n.contains("mông") || n.contains("calf")) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Lunge/0.jpg";
+            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-10.svg";
+        }
+        if (n.contains("lưng") || n.contains("superman") || n.contains("bird dog") || n.contains("row") || n.contains("cat-cow")) {
+            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-12.svg";
         }
         if (n.contains("stretch") || n.contains("giãn") || n.contains("kéo")) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/All_Fours_Quad_Stretch/0.jpg";
+            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-12.svg";
         }
         if (n.contains("jack") || n.contains("jumping") || n.contains("burpee") || n.contains("tabata") || n.contains("hiit")) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Jackknife_Sit-Up/0.jpg";
+            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-11.svg";
         }
 
         if (categoryId != null) {
-            if (categoryId == 1L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/3_4_Sit-Up/0.jpg";
-            if (categoryId == 2L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg";
-            if (categoryId == 3L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Lunge/0.jpg";
-            if (categoryId == 4L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg";
-            if (categoryId == 5L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg";
-            if (categoryId == 6L) return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Behind_Head_Chest_Stretch/0.jpg";
+            if (categoryId == 1L) return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-6.svg";
+            if (categoryId == 2L) return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-4.svg";
+            if (categoryId == 3L) return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-10.svg";
+            if (categoryId == 4L) return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-11.svg";
+            if (categoryId == 5L) return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-1.svg";
+            if (categoryId == 6L) return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-12.svg";
         }
-        return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg";
+        return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-6.svg";
     }
 
     private String getRealFitnessCoverUrlForWorkout(String type, String goal, String primaryMuscle) {
         if ("tabata".equalsIgnoreCase(type) || "tabata".equalsIgnoreCase(goal)) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Jackknife_Sit-Up/0.jpg";
+            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-11.svg";
         }
         if ("stretch".equalsIgnoreCase(type) || "stretch".equalsIgnoreCase(goal)) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/All_Fours_Quad_Stretch/0.jpg";
+            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-12.svg";
         }
         if ("fatloss".equalsIgnoreCase(goal)) {
-            return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg";
+            return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-11.svg";
         }
         if (primaryMuscle != null) {
             String m = primaryMuscle.toLowerCase();
             if (m.contains("bụng") || m.contains("abs")) {
-                return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/3_4_Sit-Up/0.jpg";
+                return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-6.svg";
             }
             if (m.contains("ngực") || m.contains("chest")) {
-                return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pushups/0.jpg";
+                return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-4.svg";
             }
             if (m.contains("tay") || m.contains("arms")) {
-                return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bench_Dips/0.jpg";
+                return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-1.svg";
             }
             if (m.contains("chân") || m.contains("legs")) {
-                return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Lunge/0.jpg";
+                return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-10.svg";
             }
             if (m.contains("lưng") || m.contains("back")) {
-                return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Behind_Head_Chest_Stretch/0.jpg";
+                return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-12.svg";
             }
         }
-        return "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg";
+        return "https://raw.githubusercontent.com/wger-project/wger/master/wger/core/static/images/muscles/main/muscle-11.svg";
     }
 
     private Map<String, Category> seedCategories() {
