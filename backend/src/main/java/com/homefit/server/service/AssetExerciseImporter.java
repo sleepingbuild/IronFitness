@@ -115,7 +115,7 @@ public class AssetExerciseImporter implements ApplicationRunner {
 
                         exercise.setRestSec(15);
                         exercise.setMediaType(MediaType.GIF);
-                        exercise.setMediaUrl("https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600");
+                        exercise.setMediaUrl("https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Abdominal_Crunches/0.jpg");
                         exercise.setSortOrder(sortOrderCounter++);
                         exercise.setActive(true);
 

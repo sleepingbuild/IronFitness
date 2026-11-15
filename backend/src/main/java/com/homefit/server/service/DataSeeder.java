@@ -74,7 +74,7 @@ public class DataSeeder implements ApplicationRunner {
         int exUpdated = 0;
         for (Exercise e : allExercises) {
             String newUrl = getRealFitnessMediaUrlForExercise(e.getName(), e.getCategoryId());
-            if (e.getMediaUrl() == null || !e.getMediaUrl().equals(newUrl)) {
+            if (e.getMediaUrl() == null || e.getMediaUrl().contains("unsplash") || e.getMediaUrl().contains("placeholder") || !e.getMediaUrl().equals(newUrl)) {
                 e.setMediaUrl(newUrl);
                 e.setMediaType(com.homefit.server.domain.MediaType.GIF);
                 exerciseRepository.save(e);
@@ -86,7 +86,7 @@ public class DataSeeder implements ApplicationRunner {
         int woUpdated = 0;
         for (Workout w : allWorkouts) {
             String newCover = getRealFitnessCoverUrlForWorkout(w.getType(), w.getGoal(), w.getPrimaryMuscle());
-            if (w.getCoverImageUrl() == null || !w.getCoverImageUrl().equals(newCover)) {
+            if (w.getCoverImageUrl() == null || w.getCoverImageUrl().contains("unsplash") || w.getCoverImageUrl().contains("placeholder") || !w.getCoverImageUrl().equals(newCover)) {
                 w.setCoverImageUrl(newCover);
                 workoutRepository.save(w);
                 woUpdated++;
@@ -275,7 +275,7 @@ public class DataSeeder implements ApplicationRunner {
             e.setReps(reps);
             e.setRestSec(rest);
             e.setMediaType(MediaType.GIF);
-            e.setMediaUrl("https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600");
+            e.setMediaUrl(getRealFitnessMediaUrlForExercise(name, cat.getId()));
             e.setSortOrder(sort++);
             e.setActive(true);
 
