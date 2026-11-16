@@ -6,11 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -18,7 +16,6 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.homefit.app.R;
 import com.homefit.app.data.local.entity.UserProfileEntity;
-import com.homefit.app.data.remote.ApiClient;
 import com.homefit.app.databinding.FragmentRegisterBinding;
 import com.homefit.app.ui.common.AfterTextChanged;
 import com.homefit.app.ui.common.UiUtils;
@@ -77,74 +74,39 @@ public class RegisterFragment extends Fragment {
         binding.tilPassword.setError(passwordError == 0 ? null : getString(passwordError));
         binding.tilConfirm.setError(confirmError == 0 ? null : getString(confirmError));
 
-        String targetUrl = ApiClient.getBaseUrl(requireContext()) + "auth/register";
-
         if (nameError != 0 || emailError != 0 || passwordError != 0 || confirmError != 0) {
-            StringBuilder sb = new StringBuilder("Thông tin nhập chưa đúng:\n");
-            if (nameError != 0) sb.append("- Tên không được rỗng.\n");
-            if (emailError != 0) sb.append("- Email chưa đúng định dạng.\n");
-            if (passwordError != 0) sb.append("- Mật khẩu phải tối thiểu 8 ký tự.\n");
-            if (confirmError != 0) sb.append("- Mật khẩu xác nhận không khớp.\n");
-            sb.append("\nURL dự kiến: ").append(targetUrl);
-
-            showDebugDialog("Cảnh báo nhập liệu", sb.toString());
             return;
         }
 
         UiUtils.hideKeyboard(this);
-        Toast.makeText(requireContext(), "Đang gửi POST đến: " + targetUrl, Toast.LENGTH_LONG).show();
         viewModel.register(email, password, name);
     }
 
     private void render(@Nullable Resource<UserProfileEntity> resource) {
         if (resource == null) {
             setLoading(false);
-            showFormError(null);
+            showFormError(null, false);
             return;
         }
-        String targetUrl = ApiClient.getBaseUrl(requireContext()) + "auth/register";
         switch (resource.status) {
             case LOADING:
                 setLoading(true);
-                showFormError("Đang gửi POST " + targetUrl + "...");
+                showFormError("Đang kết nối...", false);
                 break;
             case SUCCESS:
                 setLoading(false);
-                showFormError(null);
-                String successMsg = "Đăng ký THÀNH CÔNG!\n\nTarget URL: " + targetUrl
-                        + "\nEmail: " + (resource.data != null ? resource.data.email : "");
-                Toast.makeText(requireContext(), "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
-                showDebugDialog("Kết quả Đăng ký (200 OK)", successMsg, this::goToWorkout);
+                showFormError(null, false);
+                goToWorkout();
                 break;
             case ERROR:
                 setLoading(false);
                 String errorText = ErrorMessages.toText(requireContext(), resource);
-                String fullMsg = "Đăng ký THẤT BẠI!\n\nURL đang gọi: " + targetUrl
-                        + "\nMã lỗi HTTP / Code: " + (resource.code != null ? resource.code : "HTTP_ERR")
-                        + "\nChi tiết lỗi: " + errorText;
-                showFormError("Lỗi [" + resource.code + "]: " + errorText);
-                showDebugDialog("Kết quả Gọi API Đăng ký", fullMsg);
-                Log.e(TAG, fullMsg);
+                showFormError(errorText, true);
+                Log.e(TAG, "Lỗi đăng ký: " + resource.code + " - " + errorText);
                 break;
             default:
                 break;
         }
-    }
-
-    private void showDebugDialog(String title, String message) {
-        showDebugDialog(title, message, null);
-    }
-
-    private void showDebugDialog(String title, String message, @Nullable Runnable onDismiss) {
-        if (!isAdded() || getContext() == null) return;
-        new AlertDialog.Builder(requireContext())
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("Đóng", (dialog, which) -> {
-                    if (onDismiss != null) onDismiss.run();
-                })
-                .setCancelable(false)
-                .show();
     }
 
     private void goToWorkout() {
@@ -166,8 +128,14 @@ public class RegisterFragment extends Fragment {
         binding.tilConfirm.setEnabled(!loading);
     }
 
-    private void showFormError(@Nullable String message) {
+    private void showFormError(@Nullable String message, boolean isError) {
+        if (binding == null) return;
         binding.tvFormError.setText(message);
+        if (getContext() != null) {
+            binding.tvFormError.setTextColor(requireContext().getColor(
+                    isError ? R.color.hf_danger : R.color.hf_primary
+            ));
+        }
         binding.tvFormError.setVisibility(message == null ? View.GONE : View.VISIBLE);
     }
 

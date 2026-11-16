@@ -7,13 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -27,7 +25,6 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.homefit.app.R;
 import com.homefit.app.data.local.entity.UserProfileEntity;
-import com.homefit.app.data.remote.ApiClient;
 import com.homefit.app.data.remote.ErrorCodes;
 import com.homefit.app.databinding.FragmentLoginBinding;
 import com.homefit.app.ui.common.AfterTextChanged;
@@ -105,70 +102,41 @@ public class LoginFragment extends Fragment {
         binding.tilEmail.setError(emailError == 0 ? null : getString(emailError));
         binding.tilPassword.setError(passwordError == 0 ? null : getString(passwordError));
 
-        String targetUrl = ApiClient.getBaseUrl(requireContext()) + "auth/login";
-
         if (emailError != 0 || passwordError != 0) {
-            String msg = "Vui lòng nhập Email và Mật khẩu hợp lệ!\n\nURL dự kiến: " + targetUrl;
-            showDebugDialog("Cảnh báo nhập liệu", msg);
             return;
         }
 
         UiUtils.hideKeyboard(this);
-        Toast.makeText(requireContext(), "Đang gửi POST đến: " + targetUrl, Toast.LENGTH_LONG).show();
         viewModel.login(email, password);
     }
 
     private void render(@Nullable Resource<UserProfileEntity> resource) {
         if (resource == null) {
             setLoading(false);
-            showFormError(null);
+            showFormError(null, false);
             return;
         }
-        String targetUrl = ApiClient.getBaseUrl(requireContext()) + "auth/login";
         switch (resource.status) {
             case LOADING:
                 setLoading(true);
-                showFormError("Đang gửi POST " + targetUrl + "...");
+                showFormError("Đang kết nối...", false);
                 break;
             case SUCCESS:
                 setLoading(false);
-                showFormError(null);
-                String successMsg = "Đăng nhập THÀNH CÔNG!\n\nTarget URL: " + targetUrl
-                        + "\nEmail: " + (resource.data != null ? resource.data.email : "");
-                Toast.makeText(requireContext(), "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                showDebugDialog("Kết quả Đăng nhập (200 OK)", successMsg, this::goToWorkout);
+                showFormError(null, false);
+                goToWorkout();
                 break;
             case ERROR:
                 setLoading(false);
                 String errorMsg = ErrorCodes.UNAUTHORIZED.equals(resource.code)
                         ? getString(R.string.login_error_invalid)
                         : ErrorMessages.toText(requireContext(), resource);
-                String fullError = "Đăng nhập THẤT BẠI!\n\nURL đang gọi: " + targetUrl
-                        + "\nMã lỗi HTTP / Code: " + (resource.code != null ? resource.code : "ERR")
-                        + "\nChi tiết lỗi: " + errorMsg;
-                showFormError("Lỗi [" + resource.code + "]: " + errorMsg);
-                showDebugDialog("Kết quả Gọi API Đăng nhập", fullError);
-                Log.e(TAG, fullError);
+                showFormError(errorMsg, true);
+                Log.e(TAG, "Lỗi đăng nhập: " + resource.code + " - " + errorMsg);
                 break;
             default:
                 break;
         }
-    }
-
-    private void showDebugDialog(String title, String message) {
-        showDebugDialog(title, message, null);
-    }
-
-    private void showDebugDialog(String title, String message, @Nullable Runnable onDismiss) {
-        if (!isAdded() || getContext() == null) return;
-        new AlertDialog.Builder(requireContext())
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("Đóng", (dialog, which) -> {
-                    if (onDismiss != null) onDismiss.run();
-                })
-                .setCancelable(false)
-                .show();
     }
 
     private void goToWorkout() {
@@ -189,8 +157,14 @@ public class LoginFragment extends Fragment {
         binding.tilPassword.setEnabled(!loading);
     }
 
-    private void showFormError(@Nullable String message) {
+    private void showFormError(@Nullable String message, boolean isError) {
+        if (binding == null) return;
         binding.tvFormError.setText(message);
+        if (getContext() != null) {
+            binding.tvFormError.setTextColor(requireContext().getColor(
+                    isError ? R.color.hf_danger : R.color.hf_primary
+            ));
+        }
         binding.tvFormError.setVisibility(message == null ? View.GONE : View.VISIBLE);
     }
 
@@ -202,20 +176,20 @@ public class LoginFragment extends Fragment {
     private void handleGoogleLoginToBackend(String idToken) {
         viewModel.loginWithGoogle(idToken).observe(getViewLifecycleOwner(), resource -> {
             if (resource == null) return;
-            String targetUrl = ApiClient.getBaseUrl(requireContext()) + "auth/google";
             switch (resource.status) {
                 case LOADING:
                     setLoading(true);
-                    showFormError("Đang đăng nhập qua Google...");
+                    showFormError("Đang kết nối...", false);
                     break;
                 case SUCCESS:
                     setLoading(false);
-                    showDebugDialog("Đăng nhập Google THÀNH CÔNG", "URL: " + targetUrl, this::goToWorkout);
+                    showFormError(null, false);
+                    goToWorkout();
                     break;
                 case ERROR:
                     setLoading(false);
                     String msg = ErrorMessages.toText(requireContext(), resource);
-                    showDebugDialog("Đăng nhập Google THẤT BẠI", "URL: " + targetUrl + "\nLỗi: " + msg);
+                    showFormError(msg, true);
                     break;
             }
         });
