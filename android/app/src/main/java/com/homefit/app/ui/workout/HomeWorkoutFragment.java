@@ -70,6 +70,9 @@ public class HomeWorkoutFragment extends Fragment {
         updateProStateUI();
         updateStreakUI();
         updateChallengeHeroUI();
+
+        // Tải/đồng bộ ngay lập tức dữ liệu mới nhất từ backend API vào Room DB
+        new com.homefit.app.data.repository.ExerciseRepository(requireContext()).refresh();
     }
 
     @Override
@@ -78,6 +81,7 @@ public class HomeWorkoutFragment extends Fragment {
         updateProStateUI();
         updateStreakUI();
         updateChallengeHeroUI();
+        new com.homefit.app.data.repository.ExerciseRepository(requireContext()).refresh();
     }
 
     private void updateChallengeHeroUI() {

@@ -97,26 +97,22 @@ public class HomeWorkoutAdapter extends RecyclerView.Adapter<HomeWorkoutAdapter.
             
             binding.tvDuration.setText(duration + " phút • " + mainBlockCount + (dto.duration_min > 0 ? " Bài tập / vòng" : " Bài tập"));
             
-            // Thumbnail
-            String groupKey = dto.group != null ? dto.group.toLowerCase() : "";
-            int thumbColor = R.color.hf_thumb_fullbody;
-            if (groupKey.contains("bung")) thumbColor = R.color.hf_thumb_abs;
-            else if (groupKey.contains("nguc")) thumbColor = R.color.hf_thumb_chest;
-            else if (groupKey.contains("tay")) thumbColor = R.color.hf_thumb_arms;
-            else if (groupKey.contains("chan")) thumbColor = R.color.hf_thumb_legs;
-            
-            binding.cardThumb.setCardBackgroundColor(binding.getRoot().getContext().getColor(thumbColor));
+            // Thumbnail frame: Pure white background with border
+            binding.cardThumb.setCardBackgroundColor(0xFFFFFFFF);
 
             String coverUrl = dto.coverImageUrl;
-            if (coverUrl == null || coverUrl.trim().isEmpty()) {
-                coverUrl = getDefaultCoverForGroup(dto.group);
+            if (coverUrl == null || coverUrl.trim().isEmpty() || coverUrl.contains("unsplash.com")) {
+                coverUrl = getDefaultCoverForGroup(dto.group, dto.group_name);
             }
 
             if (coverUrl != null && !coverUrl.trim().isEmpty()) {
+                binding.ivCoverImage.setVisibility(View.VISIBLE);
+                binding.ivIcon.setVisibility(View.GONE);
                 String fullUrl = com.homefit.app.ui.common.MediaLoader.resolveUrl(coverUrl);
                 Glide.with(binding.ivCoverImage)
                         .load(fullUrl)
-                        .centerCrop()
+                        .fitCenter()
+                        .placeholder(R.drawable.bg_media_placeholder)
                         .listener(new com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable>() {
                             @Override
                             public boolean onLoadFailed(@androidx.annotation.Nullable com.bumptech.glide.load.engine.GlideException e, Object model, com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target, boolean isFirstResource) {
@@ -165,17 +161,16 @@ public class HomeWorkoutAdapter extends RecyclerView.Adapter<HomeWorkoutAdapter.
             }
         }
 
-        private String getDefaultCoverForGroup(String group) {
-            if (group == null) return "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800";
-            String g = group.toLowerCase();
-            if (g.contains("bung")) return "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800";
-            if (g.contains("nguc")) return "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800";
-            if (g.contains("tay")) return "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800";
-            if (g.contains("chan")) return "https://images.unsplash.com/photo-1434596922112-19c563067271?w=800";
-            if (g.contains("back") || g.contains("lung")) return "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=800";
-            if (g.contains("tabata")) return "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=800";
-            if (g.contains("stretch")) return "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800";
-            return "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800";
+        private String getDefaultCoverForGroup(String group, String groupName) {
+            String base = "https://ironfitness-et3g.onrender.com/images/muscles/";
+            String combined = (group != null ? group : "") + " " + (groupName != null ? groupName : "");
+            String g = combined.toLowerCase(java.util.Locale.US);
+            if (g.contains("bung") || g.contains("abs")) return base + "abs.png";
+            if (g.contains("nguc") || g.contains("chest")) return base + "chest.png";
+            if (g.contains("tay") || g.contains("arms")) return base + "arms.png";
+            if (g.contains("chan") || g.contains("legs") || g.contains("mông")) return base + "legs.png";
+            if (g.contains("back") || g.contains("lung") || g.contains("lưng")) return base + "back.png";
+            return base + "fullbody.png";
         }
     }
 }

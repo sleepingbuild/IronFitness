@@ -52,16 +52,17 @@ public class AssetExerciseRepository {
     }
 
     private String getDefaultCoverForGroup(String group) {
-        if (group == null) return "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800";
-        String g = group.toLowerCase();
-        if (g.contains("bung")) return "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800";
-        if (g.contains("nguc")) return "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800";
-        if (g.contains("tay")) return "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800";
-        if (g.contains("chan")) return "https://images.unsplash.com/photo-1434596922112-19c563067271?w=800";
-        if (g.contains("back") || g.contains("lung")) return "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=800";
-        if (g.contains("tabata")) return "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=800";
-        if (g.contains("stretch")) return "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800";
-        return "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800";
+        String base = "https://ironfitness-et3g.onrender.com/images/muscles/";
+        if (group == null) return base + "fullbody.png";
+        String g = group.toLowerCase(java.util.Locale.US);
+        if (g.contains("bung") || g.contains("abs")) return base + "abs.png";
+        if (g.contains("nguc") || g.contains("chest")) return base + "chest.png";
+        if (g.contains("tay") || g.contains("arms")) return base + "arms.png";
+        if (g.contains("chan") || g.contains("legs") || g.contains("mông")) return base + "legs.png";
+        if (g.contains("back") || g.contains("lung") || g.contains("lưng")) return base + "back.png";
+        if (g.contains("tabata") || g.contains("full")) return base + "fullbody.png";
+        if (g.contains("stretch")) return base + "back.png";
+        return base + "fullbody.png";
     }
 
     public List<LocalExerciseGroupDto.LocalWorkoutDto> getAllUniqueWorkouts() {

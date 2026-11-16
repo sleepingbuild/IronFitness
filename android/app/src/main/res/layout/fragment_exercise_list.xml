@@ -18,10 +18,12 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <ImageView
+                android:id="@+id/ivHeaderBanner"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:background="#F2C299"
+                android:scaleType="fitCenter"
+                android:background="#FFFFFF"
+                android:contentDescription="Ảnh bìa nhóm cơ"
                 app:layout_collapseMode="parallax"/>
 
             <androidx.appcompat.widget.Toolbar
@@ -35,7 +37,7 @@
                     android:layout_height="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_arrow_back"
-                    app:tint="@color/white" />
+                    app:tint="?attr/colorOnSurface" />
 
             </androidx.appcompat.widget.Toolbar>
 

@@ -116,6 +116,7 @@ public class ExerciseListFragment extends Fragment {
             binding.tvCount.setText(count + " Bài tập");
 
             adapter.submitList(workouts);
+            displayHeaderBanner();
             binding.progress.setVisibility(View.GONE);
             binding.stateView.getRoot().setVisibility(View.GONE);
             binding.rvExercises.setVisibility(View.VISIBLE);
@@ -176,6 +177,7 @@ public class ExerciseListFragment extends Fragment {
             binding.tvCount.setText(count + " Bài tập");
 
             adapter.submitList(currentGroup.workouts);
+            displayHeaderBanner();
             // Hide progress and state view
             binding.progress.setVisibility(View.GONE);
             binding.stateView.getRoot().setVisibility(View.GONE);
@@ -188,6 +190,37 @@ public class ExerciseListFragment extends Fragment {
         }
 
         checkProgressAndSetupButtons();
+    }
+
+    private void displayHeaderBanner() {
+        if (binding == null) return;
+        String coverUrl = null;
+        if (currentGroup != null && currentGroup.coverImageUrl != null
+                && !currentGroup.coverImageUrl.isBlank()
+                && !currentGroup.coverImageUrl.contains("unsplash.com")) {
+            coverUrl = currentGroup.coverImageUrl;
+        }
+        if (coverUrl == null || coverUrl.isBlank()) {
+            coverUrl = getMuscleCoverUrlForGroup(groupKey, groupName);
+        }
+        String fullUrl = com.homefit.app.ui.common.MediaLoader.resolveUrl(coverUrl);
+        com.bumptech.glide.Glide.with(binding.ivHeaderBanner)
+                .load(fullUrl)
+                .fitCenter()
+                .placeholder(R.drawable.bg_media_placeholder)
+                .into(binding.ivHeaderBanner);
+    }
+
+    private String getMuscleCoverUrlForGroup(String groupKey, String groupName) {
+        String base = "https://ironfitness-et3g.onrender.com/images/muscles/";
+        String combined = (groupKey != null ? groupKey : "") + " " + (groupName != null ? groupName : "");
+        String g = combined.toLowerCase(java.util.Locale.US);
+        if (g.contains("bung") || g.contains("abs")) return base + "abs.png";
+        if (g.contains("nguc") || g.contains("chest")) return base + "chest.png";
+        if (g.contains("tay") || g.contains("arms")) return base + "arms.png";
+        if (g.contains("chan") || g.contains("legs") || g.contains("mông")) return base + "legs.png";
+        if (g.contains("back") || g.contains("lung") || g.contains("lưng")) return base + "back.png";
+        return base + "fullbody.png";
     }
 
     private LocalExerciseGroupDto getDynamicGroup(String groupKey, String diff, String name) {
