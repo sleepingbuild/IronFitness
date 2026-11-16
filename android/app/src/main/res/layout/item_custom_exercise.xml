@@ -17,8 +17,8 @@
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:layout_marginEnd="16dp"
-        android:background="?attr/colorSurfaceVariant"
-        android:scaleType="centerCrop"
+        android:background="#FFFFFF"
+        android:scaleType="fitCenter"
         app:shapeAppearance="@style/ShapeAppearance.HomeFit.Small" />
 
     <LinearLayout

@@ -29,7 +29,8 @@
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:importantForAccessibility="no"
-            android:scaleType="centerCrop"
+            android:background="#FFFFFF"
+            android:scaleType="fitCenter"
             app:shapeAppearance="@style/ShapeAppearance.HomeFit.Small" />
 
         <LinearLayout
