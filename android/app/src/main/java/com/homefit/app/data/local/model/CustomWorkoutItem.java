@@ -6,6 +6,7 @@ public class CustomWorkoutItem {
     public String exerciseId;
     public String exerciseName;
     public String target;
+    public String mediaUrl;
     public String muscleArea; // bung, nguc, tay, vai, back, leg, toan_than, khoi_dong, gian_co
     public String role;       // warmup, main, cooldown
     public int order;

@@ -203,6 +203,7 @@ public class AddExerciseBottomSheetDialogFragment extends BottomSheetDialogFragm
                     item.exerciseId = String.valueOf(e.id);
                     item.exerciseName = e.name;
                     item.target = e.description != null ? e.description : "";
+                    item.mediaUrl = e.mediaUrl;
                     item.instructions = new ArrayList<>();
                     if (e.description != null) item.instructions.add(e.description);
                     item.tips = "Giữ nhịp thở đều.";
@@ -220,6 +221,7 @@ public class AddExerciseBottomSheetDialogFragment extends BottomSheetDialogFragm
                     item.exerciseId = dto.id;
                     item.exerciseName = dto.name;
                     item.target = dto.target;
+                    item.mediaUrl = dto.mediaUrl;
                     item.instructions = dto.instructions;
                     item.tips = dto.tips;
 

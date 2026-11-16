@@ -293,6 +293,8 @@ public class HomeWorkoutFragment extends Fragment {
                         args.putString("duration", group.duration_min + " phút");
                         int count = group.workouts != null ? group.workouts.size() : 13;
                         args.putString("count", count + " Bài tập");
+                        args.putString("groupKey", group.group);
+                        args.putString("coverImageUrl", group.coverImageUrl);
                         NavHostFragment.findNavController(this).navigate(R.id.action_global_lockedWorkout, args);
                     } else {
                         openGroup(group);

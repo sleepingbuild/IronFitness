@@ -101,7 +101,29 @@ public class AddExerciseAdapter extends RecyclerView.Adapter<AddExerciseAdapter.
             holder.ivCheck.setColorFilter(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.darker_gray));
         }
 
-        MediaLoader.loadThumbnail(holder.ivThumb, "", "IMAGE");
+        if (item.mediaUrl != null && !item.mediaUrl.trim().isEmpty()) {
+            MediaLoader.loadThumbnail(holder.ivThumb, item.mediaUrl, "IMAGE");
+        } else {
+            com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
+                var list = com.homefit.app.data.local.AppDatabase.getInstance(holder.itemView.getContext()).exerciseDao().getAllNow();
+                String foundUrl = "";
+                if (item.exerciseName != null) {
+                    String normItem = item.exerciseName.toLowerCase(java.util.Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                    for (var e : list) {
+                        if (e.name == null) continue;
+                        String normE = e.name.toLowerCase(java.util.Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                        if (e.name.equalsIgnoreCase(item.exerciseName) || (!normE.isEmpty() && normItem.contains(normE))) {
+                            foundUrl = e.mediaUrl;
+                            break;
+                        }
+                    }
+                }
+                final String url = foundUrl;
+                com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
+                    MediaLoader.loadThumbnail(holder.ivThumb, url, "IMAGE");
+                });
+            });
+        }
 
         holder.itemView.setOnClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
