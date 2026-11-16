@@ -52,6 +52,11 @@ public class DataSeeder implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
+        if (exerciseRepository.count() > 0) {
+            log.info("Database đã có dữ liệu bài tập ({} bài). Bỏ qua quy trình seed và giữ nguyên toàn bộ mediaUrl/coverImageUrl.", exerciseRepository.count());
+            return;
+        }
+
         log.info("Bắt đầu quy trình nạp đồng bộ dữ liệu chuẩn từ Android sang Backend...");
 
         Map<String, Category> categories = seedCategories();
