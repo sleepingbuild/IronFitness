@@ -223,7 +223,31 @@ public class PlayerFragment extends Fragment {
             binding.tvRestCounter.setText(formatTime(state.remainingSeconds));
 
             if (current != null && current.mediaUrl != null && !current.mediaUrl.isEmpty()) {
-                MediaLoader.loadThumbnail(binding.ivNextThumb, current.mediaUrl, "GIF");
+                MediaLoader.loadFull(binding.ivNextThumb, current.mediaUrl, "GIF");
+            } else if (current != null && current.name != null) {
+                com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
+                    var list = com.homefit.app.data.local.AppDatabase.getInstance(requireContext()).exerciseDao().getAllNow();
+                    String foundUrl = "";
+                    String normCurrent = current.name.toLowerCase(java.util.Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                    for (var e : list) {
+                        if (e.name == null) continue;
+                        String normE = e.name.toLowerCase(java.util.Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                        if (e.name.equalsIgnoreCase(current.name) || (!normE.isEmpty() && normCurrent.contains(normE))) {
+                            foundUrl = e.mediaUrl;
+                            break;
+                        }
+                    }
+                    final String url = foundUrl;
+                    com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
+                        if (binding != null && isAdded()) {
+                            if (!url.isEmpty()) {
+                                MediaLoader.loadFull(binding.ivNextThumb, url, "GIF");
+                            } else {
+                                binding.ivNextThumb.setImageResource(R.drawable.bg_media_placeholder);
+                            }
+                        }
+                    });
+                });
             } else {
                 binding.ivNextThumb.setImageResource(R.drawable.bg_media_placeholder);
             }

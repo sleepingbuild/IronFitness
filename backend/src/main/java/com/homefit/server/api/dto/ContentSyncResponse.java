@@ -6,5 +6,6 @@ public record ContentSyncResponse(
         Instant lastUpdatedAt,
         long exerciseCount,
         long workoutCount,
-        long categoryCount
+        long categoryCount,
+        long contentVersion
 ) {}

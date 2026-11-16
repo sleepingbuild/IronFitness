@@ -46,6 +46,11 @@ public class AssetExerciseImporter implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
+        if (exerciseRepository.count() > 0) {
+            log.info("Database đã có dữ liệu bài tập ({} bài). AssetExerciseImporter bỏ qua quy trình seed và giữ nguyên mediaUrl/coverImageUrl.", exerciseRepository.count());
+            return;
+        }
+
         File assetsDir = new File("D:/IronFitness/android/app/src/main/assets/exercises");
         if (!assetsDir.exists() || !assetsDir.isDirectory()) {
             assetsDir = new File("../android/app/src/main/assets/exercises");

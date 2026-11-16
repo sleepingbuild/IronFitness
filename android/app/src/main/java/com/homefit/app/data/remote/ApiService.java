@@ -4,6 +4,7 @@ import com.homefit.app.data.remote.dto.AuthResponse;
 import com.homefit.app.data.remote.dto.BatchSessionsRequest;
 import com.homefit.app.data.remote.dto.BatchSessionsResponse;
 import com.homefit.app.data.remote.dto.CategoryDto;
+import com.homefit.app.data.remote.dto.ContentSyncResponseDto;
 import com.homefit.app.data.remote.dto.DiscoverDto;
 import com.homefit.app.data.remote.dto.ExerciseDto;
 import com.homefit.app.data.remote.dto.GoogleLoginRequest;
@@ -55,6 +56,9 @@ public interface ApiService {
     Call<UserDto> updateProfile(@Body UpdateProfileRequest body);
 
     // ---- Thư viện bài tập (tham số null sẽ bị bỏ qua) ----
+    @GET("content/sync")
+    Call<ContentSyncResponseDto> getContentSyncInfo();
+
     @GET("categories")
     Call<List<CategoryDto>> getCategories(@Query("updatedAfter") String updatedAfter);
 

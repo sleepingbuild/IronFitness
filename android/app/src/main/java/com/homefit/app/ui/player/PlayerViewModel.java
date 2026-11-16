@@ -104,7 +104,39 @@ public class PlayerViewModel extends AndroidViewModel {
             currentIndex = 0;
         }
         totalWorkoutSeconds = 0;
+        enrichExercisesFromDb();
         startPreparing();
+    }
+
+    private void enrichExercisesFromDb() {
+        com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
+            var dbList = com.homefit.app.data.local.AppDatabase.getInstance(getApplication()).exerciseDao().getAllNow();
+            if (dbList == null || dbList.isEmpty()) return;
+            boolean changed = false;
+            for (LocalWorkoutDto dto : exercises) {
+                if (dto.name == null) continue;
+                String normDto = dto.name.toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                for (var e : dbList) {
+                    if (e.name == null) continue;
+                    String normE = e.name.toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                    if (e.name.equalsIgnoreCase(dto.name)
+                            || (!normE.isEmpty() && normDto.contains(normE))
+                            || (!normDto.isEmpty() && normE.contains(normDto))) {
+                        if (e.mediaUrl != null && !e.mediaUrl.isBlank()) {
+                            dto.mediaUrl = e.mediaUrl;
+                            changed = true;
+                        }
+                        if (e.description != null && !e.description.isBlank()) {
+                            dto.target = e.description;
+                        }
+                        break;
+                    }
+                }
+            }
+            if (changed) {
+                com.homefit.app.util.AppExecutors.mainThread().execute(this::updateUi);
+            }
+        });
     }
 
     public void addRestSeconds(int seconds) {

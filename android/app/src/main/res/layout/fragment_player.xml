@@ -252,7 +252,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@color/white"
+            android:background="#FFFFFF"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -260,6 +260,7 @@
                 android:id="@+id/ivNextThumb"
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
+                android:background="#FFFFFF"
                 android:scaleType="fitCenter"
                 tools:src="@drawable/bg_media_placeholder" />
         </LinearLayout>

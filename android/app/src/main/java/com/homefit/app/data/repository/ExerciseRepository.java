@@ -64,7 +64,19 @@ public class ExerciseRepository {
      */
     public LiveData<Resource<Boolean>> refresh() {
         MutableLiveData<Resource<Boolean>> result = new MutableLiveData<>(Resource.loading());
-        syncCategories(result);
+        api.getContentSyncInfo().enqueue(new ApiCallback<com.homefit.app.data.remote.dto.ContentSyncResponseDto>() {
+            @Override
+            protected void onSuccess(@NonNull com.homefit.app.data.remote.dto.ContentSyncResponseDto body) {
+                android.util.Log.i("ExerciseRepository", "GET /api/v1/content/sync version=" + body.contentVersion + ", exercises=" + body.exerciseCount + ", workouts=" + body.workoutCount);
+                syncCategories(result);
+            }
+
+            @Override
+            protected void onError(@NonNull String code, @Nullable String message) {
+                android.util.Log.w("ExerciseRepository", "getContentSyncInfo error: " + code + ", tiếp tục syncCategories");
+                syncCategories(result);
+            }
+        });
         return result;
     }
 

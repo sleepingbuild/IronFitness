@@ -62,8 +62,14 @@ public class ExerciseListAdapter extends RecyclerView.Adapter<ExerciseListAdapte
                 com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
                     var list = com.homefit.app.data.local.AppDatabase.getInstance(binding.getRoot().getContext()).exerciseDao().getAllNow();
                     String foundUrl = "";
+                    String normDto = dto.name != null ? dto.name.toLowerCase(java.util.Locale.US).replaceAll("[^a-zA-Z0-9]", "") : "";
                     for (var e : list) {
                         if (e.name != null && e.name.equalsIgnoreCase(dto.name)) {
+                            foundUrl = e.mediaUrl;
+                            break;
+                        }
+                        String normE = e.name != null ? e.name.toLowerCase(java.util.Locale.US).replaceAll("[^a-zA-Z0-9]", "") : "";
+                        if (!normE.isEmpty() && (normDto.contains(normE) || normE.contains(normDto))) {
                             foundUrl = e.mediaUrl;
                             break;
                         }

@@ -4,6 +4,7 @@ import com.homefit.server.api.dto.ContentSyncResponse;
 import com.homefit.server.domain.Exercise;
 import com.homefit.server.domain.Workout;
 import com.homefit.server.repository.CategoryRepository;
+import com.homefit.server.repository.ContentReleaseRepository;
 import com.homefit.server.repository.ExerciseRepository;
 import com.homefit.server.repository.WorkoutRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,13 +22,16 @@ public class ContentSyncApiController {
     private final ExerciseRepository exerciseRepository;
     private final WorkoutRepository workoutRepository;
     private final CategoryRepository categoryRepository;
+    private final ContentReleaseRepository contentReleaseRepository;
 
     public ContentSyncApiController(ExerciseRepository exerciseRepository,
                                   WorkoutRepository workoutRepository,
-                                  CategoryRepository categoryRepository) {
+                                  CategoryRepository categoryRepository,
+                                  ContentReleaseRepository contentReleaseRepository) {
         this.exerciseRepository = exerciseRepository;
         this.workoutRepository = workoutRepository;
         this.categoryRepository = categoryRepository;
+        this.contentReleaseRepository = contentReleaseRepository;
     }
 
     @GetMapping("/sync")
@@ -48,6 +52,10 @@ public class ContentSyncApiController {
             }
         }
 
-        return new ContentSyncResponse(latest, exercises.size(), workouts.size(), categoryRepository.count());
+        long releaseVersion = contentReleaseRepository.findTopByOrderByVersionDesc()
+                .map(r -> (long) r.getVersion())
+                .orElse(latest.getEpochSecond() > 0 ? latest.getEpochSecond() : 1L);
+
+        return new ContentSyncResponse(latest, exercises.size(), workouts.size(), categoryRepository.count(), releaseVersion);
     }
 }
