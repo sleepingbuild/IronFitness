@@ -3,9 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?attr/colorSurface"
-    android:paddingBottom="16dp">
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface">
 
     <!-- Top Header: Exercise Name & Close Button -->
     <TextView
@@ -23,7 +22,7 @@
         app:layout_constraintEnd_toStartOf="@id/btnClose"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="CHỐNG ĐẨY VÀO TƯỜNG" />
+        tools:text="ARM CIRCLES" />
 
     <ImageButton
         android:id="@+id/btnClose"
@@ -47,21 +46,20 @@
         android:layout_marginTop="12dp"
         android:layout_marginBottom="12dp"
         app:layout_constraintBottom_toTopOf="@id/btnAdd"
-        app:layout_constraintHeight_max="520dp"
         app:layout_constraintTop_toBottomOf="@id/tvExerciseTitle">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="20dp">
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="16dp">
 
             <!-- 1. Illustration Frame (2D White Background Image) -->
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:background="#FFFFFF"
-                android:clipToOutline="true">
+                android:background="#FFFFFF">
 
                 <ImageView
                     android:id="@+id/ivMedia"
@@ -214,6 +212,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="24dp"
         android:text="THÊM"
         android:textColor="@color/white"
         android:textSize="18sp"
