@@ -23,9 +23,11 @@ import com.homefit.app.util.AppExecutors;
 import com.homefit.app.util.BmiCalculator;
 
 import java.util.Locale;
+import android.util.Log;
 
 public class DiscoverFragment extends Fragment {
 
+    private static final String TAG = "DiscoverFragment";
     private TextView tvBmiScore;
     private TextView tvBmiCategoryBadge;
     private TextView tvUserStats;
@@ -52,15 +54,30 @@ public class DiscoverFragment extends Fragment {
             btnUpdate.setOnClickListener(v -> showUpdateBmiDialog());
         }
 
+        View cardLibrary = view.findViewById(R.id.cardExerciseLibraryTool);
         MaterialButton btnOpenLibrary = view.findViewById(R.id.btnOpenLibrary);
-        if (btnOpenLibrary != null) {
-            btnOpenLibrary.setOnClickListener(v -> {
-                Bundle args = new Bundle();
-                args.putLong("categoryId", 1);
-                args.putString("categoryName", "Tất cả bài tập");
-                NavHostFragment.findNavController(this).navigate(R.id.action_category_to_exerciseList, args);
-            });
-        }
+
+        View.OnClickListener openLibraryListener = v -> {
+            try {
+                com.homefit.app.ui.workout.AddExerciseBottomSheetDialogFragment bottomSheet =
+                        new com.homefit.app.ui.workout.AddExerciseBottomSheetDialogFragment();
+                bottomSheet.show(getChildFragmentManager(), "AddExerciseModal");
+            } catch (Exception e) {
+                Log.e(TAG, "Lỗi mở modal 95 bài tập: " + e.getMessage());
+                try {
+                    Bundle args = new Bundle();
+                    args.putString("groupKey", "category_1");
+                    args.putString("difficulty", "Easy");
+                    args.putString("groupName", "Thư viện 95 bài tập");
+                    NavHostFragment.findNavController(this).navigate(R.id.action_discover_to_exerciseList, args);
+                } catch (Exception ex) {
+                    Log.e(TAG, "Lỗi điều hướng NavController: " + ex.getMessage());
+                }
+            }
+        };
+
+        if (cardLibrary != null) cardLibrary.setOnClickListener(openLibraryListener);
+        if (btnOpenLibrary != null) btnOpenLibrary.setOnClickListener(openLibraryListener);
 
         setupArticleCards(view);
         loadBmiData();
