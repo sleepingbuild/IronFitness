@@ -55,4 +55,8 @@ public class LoginViewModel extends AndroidViewModel {
     public LiveData<Resource<UserProfileEntity>> loginWithGoogle(String idToken) {
         return authRepository.loginWithGoogle(idToken);
     }
+
+    public LiveData<Resource<UserProfileEntity>> loginAsGuest() {
+        return authRepository.loginAsGuest();
+    }
 }

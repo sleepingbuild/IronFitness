@@ -89,8 +89,32 @@ public class LoginFragment extends Fragment {
                 NavHostFragment.findNavController(this).navigate(R.id.action_login_to_register));
 
         binding.btnGoogleLogin.setOnClickListener(v -> signInWithGoogle());
+        if (binding.btnGuestMode != null) {
+            binding.btnGuestMode.setOnClickListener(v -> loginAsGuest());
+        }
 
         viewModel.getState().observe(getViewLifecycleOwner(), this::render);
+    }
+
+    private void loginAsGuest() {
+        setLoading(true);
+        showFormError("Đang kết nối...", false);
+        viewModel.loginAsGuest().observe(getViewLifecycleOwner(), resource -> {
+            if (resource == null) return;
+            switch (resource.status) {
+                case SUCCESS:
+                    setLoading(false);
+                    showFormError(null, false);
+                    goToWorkout();
+                    break;
+                case ERROR:
+                    setLoading(false);
+                    showFormError("Không thể tạo phiên Khách", true);
+                    break;
+                default:
+                    break;
+            }
+        });
     }
 
     private void submit() {

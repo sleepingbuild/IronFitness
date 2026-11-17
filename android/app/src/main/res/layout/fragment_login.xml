@@ -99,11 +99,21 @@
             android:text="Đăng nhập bằng Google" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGuestMode"
+            style="@style/Widget.HomeFit.Button.Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:text="Trải nghiệm ngay không cần đăng nhập"
+            android:textColor="?attr/colorPrimary"
+            android:textStyle="bold" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnGoRegister"
             style="@style/Widget.HomeFit.Button.Text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_sm"
+            android:layout_marginTop="@dimen/space_xs"
             android:text="@string/login_go_register" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

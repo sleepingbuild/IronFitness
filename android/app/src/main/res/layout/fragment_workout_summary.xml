@@ -49,90 +49,229 @@
     </RelativeLayout>
 
     <!-- Main Content Container -->
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:paddingHorizontal="32dp">
+        android:fillViewport="true">
 
-        <!-- Circular Muscle Icon -->
-        <FrameLayout
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:background="@drawable/bg_chip_inactive">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp">
+
+            <!-- Circular Muscle Icon -->
+            <FrameLayout
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:background="@drawable/bg_chip_inactive">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="💪"
+                    android:textSize="44sp" />
+            </FrameLayout>
 
             <TextView
+                android:id="@+id/tvCompletedText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="💪"
-                android:textSize="48sp" />
-        </FrameLayout>
+                android:layout_marginTop="16dp"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:text="1 bài tập đã được hoàn thành." />
 
-        <TextView
-            android:id="@+id/tvCompletedText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:textColor="?attr/colorPrimary"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            tools:text="1 bài tập đã được hoàn thành." />
+            <TextView
+                android:id="@+id/tvMotivationalQuote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="Mồ hôi nhiều hơn, tỏa sáng sau!"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="22sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvMotivationalQuote"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:text="Mồ hôi nhiều hơn, tỏa sáng sau!"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="26sp"
-            android:textStyle="bold" />
+            <!-- Summary Stats Container -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
 
-    </LinearLayout>
+                <!-- Stat 1: Calories -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="1dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:id="@+id/tvSummaryCalories"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="?attr/colorPrimary"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            tools:text="120 kcal" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Calo tiêu thụ"
+                            android:textColor="#6B7280"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Stat 2: Active Duration -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="3dp"
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="1dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:id="@+id/tvSummaryDuration"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="?attr/colorPrimary"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            tools:text="14:30" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Thời gian thực tập"
+                            android:textColor="#6B7280"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Stat 3: Streak -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="1dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:id="@+id/tvSummaryStreak"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#FF9800"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            tools:text="1 ngày 🔥" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Chuỗi tập Streak"
+                            android:textColor="#6B7280"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogWeightSummary"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginTop="16dp"
+                android:text="Ghi nhận cân nặng hiện tại ⚖️"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                app:backgroundTint="#F0F6FF"
+                app:cornerRadius="20dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <!-- Bottom Action Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="20dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnContinueWorkout"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="54dp"
             android:text="Tiếp tục tập luyện"
             android:textColor="@color/white"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:textStyle="bold"
             app:backgroundTint="?attr/colorPrimary"
-            app:cornerRadius="28dp" />
+            app:cornerRadius="27dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRestartWorkout"
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="12dp"
+            android:layout_height="54dp"
+            android:layout_marginTop="10dp"
             android:text="Khởi động lại bài tập này"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:textStyle="bold"
-            app:cornerRadius="28dp" />
+            app:cornerRadius="27dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFinish"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:text="Thực hiện sau"
             android:textColor="?attr/colorOnSurfaceVariant"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
     </LinearLayout>
 
 </LinearLayout>

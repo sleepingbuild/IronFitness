@@ -1,18 +1,29 @@
 package com.homefit.app.ui.player;
 
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.homefit.app.R;
+import com.homefit.app.data.local.AppDatabase;
+import com.homefit.app.data.local.entity.UserProfileEntity;
 import com.homefit.app.databinding.FragmentWorkoutSummaryBinding;
+import com.homefit.app.util.AppExecutors;
+import com.homefit.app.util.StreakCalculator;
+
+import java.util.List;
+import java.util.Locale;
 
 public class WorkoutSummaryFragment extends Fragment {
 
@@ -42,6 +53,11 @@ public class WorkoutSummaryFragment extends Fragment {
         String groupName = getArguments() != null ? getArguments().getString("groupName", "") : "";
         String customWorkoutId = getArguments() != null ? getArguments().getString("customWorkoutId", null) : null;
 
+        // Render chỉ số
+        binding.tvCompletedText.setText(totalExercises + " bài tập đã được hoàn thành.");
+        binding.tvSummaryCalories.setText(String.format(Locale.US, "%.0f kcal", caloriesBurned));
+        binding.tvSummaryDuration.setText(formatDuration(activeDurationSec));
+
         // Lưu buổi tập vào CSDL Room & đồng bộ lên Server Render
         long now = System.currentTimeMillis();
         long startedAt = now - (Math.max(totalSeconds, 1) * 1000L);
@@ -49,29 +65,27 @@ public class WorkoutSummaryFragment extends Fragment {
                 new com.homefit.app.data.repository.WorkoutLogRepository(requireContext());
 
         final double finalCalories = caloriesBurned;
-        com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
-            int previousCount = com.homefit.app.data.local.AppDatabase.getInstance(requireContext()).workoutLogDao().getCountNow();
+        AppExecutors.diskIO().execute(() -> {
+            AppDatabase db = AppDatabase.getInstance(requireContext());
+            int previousCount = db.workoutLogDao().getCountNow();
             logRepo.saveWorkout(null, startedAt, now, totalSeconds, activeDurationSec, finalCalories, totalExercises);
 
-            // Nâng cao Retention: Tự động bật nhắc tập 18:00 sau buổi đầu tiên nếu chưa bật
-            if (previousCount == 0) {
-                com.homefit.app.ui.settings.SettingsStore settingsStore = new com.homefit.app.ui.settings.SettingsStore(requireContext());
-                if (!settingsStore.isReminderEnabled()) {
-                    settingsStore.setReminderEnabled(true);
-                    settingsStore.setReminderTime(18, 0);
-                    com.homefit.app.notification.ReminderScheduler.scheduleDaily(requireContext(), 18, 0);
-                    com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
-                        if (isAdded() && getContext() != null) {
-                            android.widget.Toast.makeText(requireContext(),
-                                    "Chúc mừng bạn đã hoàn thành buổi tập đầu tiên! 🎯 Đã bật nhắc nhở luyện tập lúc 18:00 hằng ngày.",
-                                    android.widget.Toast.LENGTH_LONG).show();
-                        }
-                    });
+            List<Long> completedTimes = db.workoutLogDao().getAllCompletedTimesNow();
+            StreakCalculator.Result streakResult = StreakCalculator.calculateStreak(completedTimes);
+
+            AppExecutors.mainThread().execute(() -> {
+                if (binding != null) {
+                    binding.tvSummaryStreak.setText(streakResult.streakCount + " ngày 🔥");
                 }
-            }
+
+                // Retention Booster: Hộp thoại gợi ý bật nhắc tập 18:00 hằng ngày sau buổi tập đầu tiên
+                if (previousCount == 0 && isAdded() && getContext() != null) {
+                    showFirstWorkoutReminderDialog();
+                }
+            });
         });
 
-        binding.tvCompletedText.setText(totalExercises + " bài tập đã được hoàn thành.");
+        binding.btnLogWeightSummary.setOnClickListener(v -> showWeightInputDialog());
 
         binding.btnBack.setOnClickListener(v -> exitSummary());
         binding.btnFinish.setOnClickListener(v -> exitSummary());
@@ -88,10 +102,74 @@ public class WorkoutSummaryFragment extends Fragment {
             }
             args.putInt("resumeIndex", 0);
             navController.navigate(R.id.action_player_to_summary, args);
-            // Replace with restarting player
             navController.popBackStack(R.id.homeWorkoutFragment, false);
             navController.navigate(R.id.playerFragment, args);
         });
+    }
+
+    private String formatDuration(int seconds) {
+        int min = seconds / 60;
+        int sec = seconds % 60;
+        if (min > 0) {
+            return String.format(Locale.US, "%d:%02d", min, sec);
+        }
+        return seconds + "s";
+    }
+
+    private void showWeightInputDialog() {
+        final EditText etWeight = new EditText(requireContext());
+        etWeight.setHint("Ví dụ: 65.0");
+        etWeight.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Ghi nhận cân nặng hiện tại (kg)")
+                .setMessage("Nhập số cân nặng để theo dõi biểu đồ trên tab Báo cáo:")
+                .setView(etWeight)
+                .setPositiveButton("Lưu cân nặng", (dialog, which) -> {
+                    try {
+                        String input = etWeight.getText().toString().trim();
+                        if (!input.isEmpty()) {
+                            double w = Double.parseDouble(input);
+                            if (w > 20 && w < 300) {
+                                saveWeightToDb(w);
+                            }
+                        }
+                    } catch (Exception ignored) {}
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+
+    private void saveWeightToDb(double weight) {
+        AppExecutors.diskIO().execute(() -> {
+            AppDatabase db = AppDatabase.getInstance(requireContext());
+            UserProfileEntity userProfile = db.userProfileDao().getNow();
+            if (userProfile == null) userProfile = new UserProfileEntity();
+            userProfile.weightKg = weight;
+            db.userProfileDao().upsert(userProfile);
+            AppExecutors.mainThread().execute(() -> {
+                if (isAdded() && getContext() != null) {
+                    Toast.makeText(requireContext(), "Đã lưu cân nặng thành công! ⚖️", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+    }
+
+    private void showFirstWorkoutReminderDialog() {
+        com.homefit.app.ui.settings.SettingsStore settingsStore = new com.homefit.app.ui.settings.SettingsStore(requireContext());
+        if (settingsStore.isReminderEnabled()) return;
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("⏰ Bật nhắc nhở tập luyện hằng ngày?")
+                .setMessage("Chúc mừng bạn đã hoàn thành buổi tập đầu tiên! 🎯 Bạn có muốn bật nhắc nhở lúc 18:00 hằng ngày để xây dựng thói quen tốt không?")
+                .setPositiveButton("Bật nhắc nhở 18:00", (dialog, which) -> {
+                    settingsStore.setReminderEnabled(true);
+                    settingsStore.setReminderTime(18, 0);
+                    com.homefit.app.notification.ReminderScheduler.scheduleDaily(requireContext(), 18, 0);
+                    Toast.makeText(requireContext(), "Đã bật nhắc nhở lúc 18:00 hằng ngày! 🔔", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Để sau", null)
+                .show();
     }
 
     private void exitSummary() {

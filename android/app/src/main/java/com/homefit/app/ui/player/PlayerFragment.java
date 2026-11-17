@@ -4,6 +4,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+import android.speech.tts.TextToSpeech;
+import android.media.ToneGenerator;
+import android.media.AudioManager;
+import java.util.Locale;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -47,6 +52,13 @@ public class PlayerFragment extends Fragment {
     private PlayerState lastState = null;
     private String lastLoadedExerciseName = null;
 
+    private TextToSpeech textToSpeech;
+    private ToneGenerator toneGenerator;
+    private boolean isSoundMuted = false;
+    private int lastSpokenIndex = -1;
+    private PlayerState lastSpokenState = null;
+    private int lastBeepSecond = -1;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -84,6 +96,16 @@ public class PlayerFragment extends Fragment {
             }
         }
 
+        try {
+            toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, 80);
+        } catch (Exception ignored) {}
+
+        textToSpeech = new TextToSpeech(requireContext().getApplicationContext(), status -> {
+            if (status == TextToSpeech.SUCCESS && textToSpeech != null) {
+                textToSpeech.setLanguage(new Locale("vi", "VN"));
+            }
+        });
+
         setupButtons();
         setupBackPressHandler();
         observeViewModel();
@@ -95,6 +117,14 @@ public class PlayerFragment extends Fragment {
         binding.btnNext.setOnClickListener(v -> viewModel.onNextClicked());
         binding.btnPrevious.setOnClickListener(v -> viewModel.onPreviousClicked());
         binding.btnDoneReps.setOnClickListener(v -> viewModel.onRepsDoneClicked());
+
+        if (binding.btnSoundToggle != null) {
+            binding.btnSoundToggle.setOnClickListener(v -> {
+                isSoundMuted = !isSoundMuted;
+                binding.btnSoundToggle.setImageResource(isSoundMuted ? R.drawable.ic_volume_off : R.drawable.ic_volume_up);
+                Toast.makeText(requireContext(), isSoundMuted ? "Đã tắt âm thanh" : "Đã bật âm thanh", Toast.LENGTH_SHORT).show();
+            });
+        }
 
         // Rest screen controls (Image 1)
         binding.btnAddRest20s.setOnClickListener(v -> viewModel.addRestSeconds(20));
@@ -286,6 +316,38 @@ public class PlayerFragment extends Fragment {
 
         lastExerciseIndex = state.currentExerciseIndex;
         lastState = state.state;
+
+        // Sound effects & TTS speaking
+        if (!isSoundMuted) {
+            if (state.remainingSeconds > 0 && state.remainingSeconds <= 3 && state.remainingSeconds != lastBeepSecond) {
+                lastBeepSecond = state.remainingSeconds;
+                if (toneGenerator != null) {
+                    try {
+                        toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP, 150);
+                    } catch (Exception ignored) {}
+                }
+            }
+
+            if (state.currentExerciseIndex != lastSpokenIndex || state.state != lastSpokenState) {
+                lastSpokenIndex = state.currentExerciseIndex;
+                lastSpokenState = state.state;
+                if (textToSpeech != null) {
+                    String speechText = null;
+                    if (state.state == PlayerState.PREPARING) {
+                        speechText = "Chuẩn bị: " + (current != null ? current.name : "");
+                    } else if (state.state == PlayerState.RESTING) {
+                        speechText = "Nghỉ ngơi. Bài tiếp theo: " + (current != null ? current.name : "");
+                    } else if (state.state == PlayerState.EXERCISING) {
+                        speechText = "Bắt đầu: " + (current != null ? current.name : "");
+                    }
+                    if (speechText != null && !speechText.isBlank()) {
+                        try {
+                            textToSpeech.speak(speechText, TextToSpeech.QUEUE_FLUSH, null, "exercise_tts");
+                        } catch (Exception ignored) {}
+                    }
+                }
+            }
+        }
     }
 
     private void loadRestingMedia(LocalWorkoutDto current) {
@@ -421,6 +483,15 @@ public class PlayerFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+            textToSpeech = null;
+        }
+        if (toneGenerator != null) {
+            toneGenerator.release();
+            toneGenerator = null;
+        }
         restBannerAdHelper.destroy();
         if (exoPlayer != null) {
             exoPlayer.release();

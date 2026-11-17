@@ -72,6 +72,25 @@ public class AuthRepository {
         return result;
     }
 
+    public LiveData<Resource<UserProfileEntity>> loginAsGuest() {
+        MutableLiveData<Resource<UserProfileEntity>> result = new MutableLiveData<>(Resource.loading());
+        AppExecutors.diskIO().execute(() -> {
+            long guestId = 999999L;
+            tokenStore.saveSession("GUEST_TOKEN", "GUEST_REFRESH", guestId);
+            UserProfileEntity guestProfile = db.userProfileDao().getNow();
+            if (guestProfile == null) {
+                guestProfile = new UserProfileEntity();
+                guestProfile.userId = guestId;
+                guestProfile.displayName = "Khách hàng";
+                guestProfile.email = "guest@homefit.app";
+                guestProfile.isPremium = false;
+                db.userProfileDao().upsert(guestProfile);
+            }
+            saveProfileAndPost(guestProfile, result);
+        });
+        return result;
+    }
+
     /** Làm mới hồ sơ từ server (GET /me). */
     public LiveData<Resource<UserProfileEntity>> refreshProfile() {
         MutableLiveData<Resource<UserProfileEntity>> result = new MutableLiveData<>(Resource.loading());

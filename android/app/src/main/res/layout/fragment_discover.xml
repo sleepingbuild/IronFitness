@@ -18,13 +18,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="KHÁM PHÁ HOMEFIT"
+            android:text="CÔNG CỤ SỨC KHỎE &amp; KHÁM PHÁ"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
-        <!-- 1. Thông tin App -->
+        <!-- 1. Thẻ Tính chỉ số BMI & Khuyến nghị tập luyện -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardBmiTool"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -39,19 +40,21 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
                     <TextView
-                        android:id="@+id/tv_app_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
-                        android:text="HomeFit Fitness"
+                        android:text="📊 CHỈ SỐ BMI &amp; KHUYẾN NGHỊ"
                         android:textColor="@color/white"
-                        android:textSize="22sp"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/tv_app_version"
+                        android:id="@+id/tvBmiCategoryBadge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
@@ -59,31 +62,149 @@
                         android:backgroundTint="#FFC400"
                         android:paddingHorizontal="10dp"
                         android:paddingVertical="4dp"
-                        android:text="v2.5.0 PRO"
+                        android:text="BÌNH THƯỜNG"
                         android:textColor="#1A1A1A"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/tv_app_desc"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvBmiScore"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="22.5"
+                        android:textColor="@color/white"
+                        android:textSize="36sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvUserStats"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#E6F0FF"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            tools:text="170 cm • 65.0 kg" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Thể trạng lý tưởng"
+                            android:textColor="#CCE0FF"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvBmiRecommendation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
                     android:lineSpacingExtra="3dp"
-                    android:text="Ứng dụng luyện tập cá nhân hóa tại nhà hàng đầu. Giúp bạn rèn luyện sức khỏe và đạt được vóc dáng mơ ước không cần thiết bị."
+                    android:text="Khuyên dùng: Duy trì chuỗi tập Toàn Thân &amp; Cardio hàng ngày để xây dựng vóc dáng săn chắc."
                     android:textColor="#E6F0FF"
                     android:textSize="14sp" />
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="12dp" android:background="#3385FF" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnUpdateHeightWeight"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:layout_marginTop="14dp"
+                    android:text="Cập nhật Chiều cao / Cân nặng ✏️"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="#3385FF"
+                    app:cornerRadius="19dp" />
 
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="✨  Tùy chỉnh bài tập &amp; số hiệp linh hoạt" android:textColor="@color/white" android:textSize="13sp" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="✨  Đếm ngược tự động &amp; lưu tiến độ tập" android:textColor="@color/white" android:textSize="13sp" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="✨  Báo cáo cân nặng &amp; phân tích BMI chuẩn xác" android:textColor="@color/white" android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 2. Nội dung liên quan đến HomeFit -->
+        <!-- 2. Thẻ Tra cứu 95 bài tập -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardExerciseLibraryTool"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="1dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="?attr/colorOutlineVariant">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="#EFF6FF">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="🏋️"
+                        android:textSize="24sp" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tra cứu 95 Bài Tập HomeFit"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Xem minh họa 2D, nhóm cơ &amp; hướng dẫn chuẩn."
+                        android:textColor="#6B7280"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnOpenLibrary"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="Mở ngay"
+                    android:textColor="#0066FF"
+                    android:textSize="12sp"
+                    app:backgroundTint="#EFF6FF"
+                    app:cornerRadius="18dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 3. Góc Kiến Thức & Mẹo Tập Luyện -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -93,7 +214,6 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!-- Horizontal Scroll: HomeFit Articles -->
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -106,11 +226,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <!-- Tip 1 -->
+                <!-- Tip 1: Dinh Dưỡng -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardTipNutrition"
                     android:layout_width="260dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
                     app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="1dp"
@@ -122,17 +245,43 @@
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🥗 Dinh Dưỡng HomeFit" android:textColor="#0066FF" android:textSize="13sp" android:textStyle="bold" />
-                        <TextView android:id="@+id/tv_tip1_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Bí quyết ăn uống cân bằng tăng 200% hiệu quả tập" android:textColor="?attr/colorOnSurface" android:textSize="15sp" android:textStyle="bold" />
-                        <TextView android:id="@+id/tv_tip1_desc" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Kết hợp đạm và xơ hợp lý giúp cơ bắp phục hồi nhanh hơn sau mỗi buổi tập." android:textColor="#6B7280" android:textSize="13sp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🥗 Dinh Dưỡng HomeFit"
+                            android:textColor="#0066FF"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_tip1_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="Bí quyết ăn uống cân bằng tăng 200% hiệu quả tập"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_tip1_desc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="Kết hợp đạm và xơ hợp lý giúp cơ bắp phục hồi nhanh hơn sau mỗi buổi tập. Bấm để đọc chi tiết ➔"
+                            android:textColor="#6B7280"
+                            android:textSize="13sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Tip 2 -->
+                <!-- Tip 2: Phục hồi -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardTipRecovery"
                     android:layout_width="260dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
                     app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="1dp"
@@ -144,16 +293,42 @@
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="💤 Mẹo Phục Hồi Cơ Bắp" android:textColor="#0066FF" android:textSize="13sp" android:textStyle="bold" />
-                        <TextView android:id="@+id/tv_tip2_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Tầm quan trọng của kéo giãn cơ &amp; giấc ngủ" android:textColor="?attr/colorOnSurface" android:textSize="15sp" android:textStyle="bold" />
-                        <TextView android:id="@+id/tv_tip2_desc" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Kéo giãn cơ 5 phút sau buổi tập giúp tránh chấn thương và giảm mỏi cơ đáng kể." android:textColor="#6B7280" android:textSize="13sp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="💤 Mẹo Phục Hồi Cơ Bắp"
+                            android:textColor="#0066FF"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_tip2_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="Tầm quan trọng của kéo giãn cơ &amp; giấc ngủ"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_tip2_desc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="Kéo giãn cơ 5 phút sau buổi tập giúp tránh chấn thương và giảm mỏi cơ đáng kể. Bấm để đọc chi tiết ➔"
+                            android:textColor="#6B7280"
+                            android:textSize="13sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Tip 3 -->
+                <!-- Tip 3: Cộng đồng -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardTipCommunity"
                     android:layout_width="260dp"
                     android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
                     app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="1dp"
@@ -165,234 +340,37 @@
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="👥 Cộng Đồng HomeFit" android:textColor="#0066FF" android:textSize="13sp" android:textStyle="bold" />
-                        <TextView android:id="@+id/tv_tip3_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Hơn 100.000+ hội viên đồng hành mỗi ngày" android:textColor="?attr/colorOnSurface" android:textSize="15sp" android:textStyle="bold" />
-                        <TextView android:id="@+id/tv_tip3_desc" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Chia sẻ tiến độ, động lực và hình ảnh thay đổi vóc dáng cùng cộng đồng Việt Nam." android:textColor="#6B7280" android:textSize="13sp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="👥 Cộng Đồng HomeFit"
+                            android:textColor="#0066FF"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_tip3_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="Hơn 100.000+ hội viên đồng hành mỗi ngày"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_tip3_desc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="Chia sẻ tiến độ, động lực và hình ảnh thay đổi vóc dáng cùng cộng đồng Việt Nam. Bấm để đọc chi tiết ➔"
+                            android:textColor="#6B7280"
+                            android:textSize="13sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
         </HorizontalScrollView>
 
-        <!-- 3. Marketing Các Dự Án Khác -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Hệ Sinh Thái Dự Án HomeFit"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="vertical">
-
-            <!-- Project 1: HomeFit Nutrition -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="1dp"
-                app:strokeWidth="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                    <FrameLayout
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:background="#ECFDF5">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:text="🥗"
-                            android:textSize="24sp" />
-                    </FrameLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tv_app1_title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="HomeFit Nutrition"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tv_app1_desc"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Tính Calo thực đơn Eat Clean &amp; theo dõi dinh dưỡng."
-                            android:textColor="#6B7280"
-                            android:textSize="13sp" />
-                    </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.Material3.Button.TonalButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:text="Tải ngay"
-                        android:textColor="#059669"
-                        android:textSize="12sp"
-                        app:backgroundTint="#ECFDF5"
-                        app:cornerRadius="18dp" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Project 2: HomeFit Yoga & Meditate -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="1dp"
-                app:strokeWidth="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                    <FrameLayout
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:background="#F5F3FF">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:text="🧘"
-                            android:textSize="24sp" />
-                    </FrameLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tv_app2_title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="HomeFit Yoga &amp; Meditate"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tv_app2_desc"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Bài tập Yoga 15 phút giúp dẻo dai &amp; thư giãn tâm trí."
-                            android:textColor="#6B7280"
-                            android:textSize="13sp" />
-                    </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.Material3.Button.TonalButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:text="Tải ngay"
-                        android:textColor="#7C3AED"
-                        android:textSize="12sp"
-                        app:backgroundTint="#F5F3FF"
-                        app:cornerRadius="18dp" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Project 3: HomeFit Running Tracker -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="1dp"
-                app:strokeWidth="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                    <FrameLayout
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:background="#EFF6FF">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:text="🏃"
-                            android:textSize="24sp" />
-                    </FrameLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tv_app3_title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="HomeFit Running Tracker"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/tv_app3_desc"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="Đo quãng đường chạy GPS, tốc độ &amp; nhịp tim."
-                            android:textColor="#6B7280"
-                            android:textSize="13sp" />
-                    </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.Material3.Button.TonalButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:text="Tải ngay"
-                        android:textColor="#0066FF"
-                        android:textSize="12sp"
-                        app:backgroundTint="#EFF6FF"
-                        app:cornerRadius="18dp" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-        </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
