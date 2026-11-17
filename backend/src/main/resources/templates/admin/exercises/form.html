@@ -68,22 +68,30 @@
 
                         <div class="card bg-light border-0 mb-3">
                             <div class="card-body">
-                                <p class="fw-bold mb-2">Thông số tập luyện (Chế độ tập & Giá trị) <span class="text-danger">*</span></p>
+                                <p class="fw-bold mb-2">Thông số tập luyện gợi ý <span class="text-danger">*</span></p>
                                 <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label for="mode" class="form-label small fw-bold">Cách tính</label>
+                                    <div class="col-md-3">
+                                        <label for="mode" class="form-label small fw-bold">Cách tính mặc định</label>
                                         <select class="form-select" id="mode" th:field="*{mode}" required>
                                             <option value="DURATION">Theo thời gian (Giây)</option>
                                             <option value="REPS">Theo số lần (Reps)</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-4">
-                                        <label for="amount" class="form-label small fw-bold">Giá trị (Số giây / Số lần)</label>
+                                    <div class="col-md-3">
+                                        <label for="amount" class="form-label small fw-bold">Giá trị chính (Giây/Lần)</label>
                                         <input type="number" class="form-control" id="amount" th:field="*{amount}" min="1" max="3600" required placeholder="Ví dụ: 30 hoặc 12">
                                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <label for="restSec" class="form-label small fw-bold">Thời gian nghỉ (giây)</label>
+                                    <div class="col-md-2">
+                                        <label for="reps" class="form-label small fw-bold">Reps gợi ý</label>
+                                        <input type="number" class="form-control" id="reps" th:field="*{reps}" min="1" max="1000" placeholder="10, 12, 15">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="durationSec" class="form-label small fw-bold">Thời gian (s)</label>
+                                        <input type="number" class="form-control" id="durationSec" th:field="*{durationSec}" min="1" max="3600" placeholder="30, 45, 60">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="restSec" class="form-label small fw-bold">Thời gian nghỉ (s)</label>
                                         <input type="number" class="form-control border-primary" id="restSec" th:field="*{restSec}" min="0" max="600" required>
                                         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('restSec')}" th:errors="*{restSec}"></div>
                                     </div>

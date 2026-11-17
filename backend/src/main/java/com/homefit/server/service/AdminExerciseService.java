@@ -276,11 +276,11 @@ public class AdminExerciseService {
         exercise.setMediaUrl(form.getMediaUrl().trim());
         exercise.setMediaType(form.getMediaType());
         if (form.getMode() == ExerciseForm.Mode.DURATION) {
-            exercise.setDurationSec(form.getAmount());
-            exercise.setReps(null);
+            exercise.setDurationSec(form.getDurationSec() != null ? form.getDurationSec() : form.getAmount());
+            exercise.setReps(form.getReps());
         } else {
-            exercise.setReps(form.getAmount());
-            exercise.setDurationSec(null);
+            exercise.setReps(form.getReps() != null ? form.getReps() : form.getAmount());
+            exercise.setDurationSec(form.getDurationSec());
         }
         exercise.setRestSec(form.getRestSec());
         exercise.setSortOrder(form.getSortOrder());

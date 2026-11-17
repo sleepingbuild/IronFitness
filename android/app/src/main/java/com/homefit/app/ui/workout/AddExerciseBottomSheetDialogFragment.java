@@ -100,8 +100,11 @@ public class AddExerciseBottomSheetDialogFragment extends BottomSheetDialogFragm
             }
         });
 
-        adapter.setOnItemClickListener((item, isSelected, callback) ->
-                showConfigureDialog(item, isSelected, callback));
+        adapter.setOnItemClickListener((item, isSelected, callback) -> {
+            ExerciseDetailBottomSheetDialogFragment detailModal = ExerciseDetailBottomSheetDialogFragment.newInstance(item);
+            detailModal.setOnAddClickListener(() -> showConfigureDialog(item, isSelected, callback));
+            detailModal.show(getChildFragmentManager(), "ExerciseDetailModal");
+        });
 
         rvExercises.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvExercises.setAdapter(adapter);
@@ -152,10 +155,16 @@ public class AddExerciseBottomSheetDialogFragment extends BottomSheetDialogFragm
 
         if (item.reps != null && item.reps > 0) {
             etReps.setText(String.valueOf(item.reps));
+        } else if (item.timeSec == null || item.timeSec <= 0) {
+            etReps.setText("10");
         }
+
         if (item.sets != null && item.sets > 0) {
             etSets.setText(String.valueOf(item.sets));
+        } else {
+            etSets.setText("1");
         }
+
         if (item.timeSec != null && item.timeSec > 0) {
             etTimeSec.setText(String.valueOf(item.timeSec));
         }

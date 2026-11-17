@@ -45,6 +45,14 @@ public class ExerciseForm {
     @Max(value = 3600, message = "Giá trị tối đa 3600")
     private Integer amount = 30;
 
+    @Min(value = 1, message = "Số lần lặp phải từ 1 trở lên")
+    @Max(value = 1000, message = "Số lần tối đa 1000")
+    private Integer reps;
+
+    @Min(value = 1, message = "Thời gian phải từ 1 trở lên")
+    @Max(value = 3600, message = "Thời gian tối đa 3600 giây")
+    private Integer durationSec;
+
     @NotNull(message = "Vui lòng nhập thời gian nghỉ")
     @Min(value = 0, message = "Thời gian nghỉ không được âm")
     @Max(value = 600, message = "Thời gian nghỉ tối đa 600 giây")
@@ -64,12 +72,14 @@ public class ExerciseForm {
         f.description = e.getDescription() == null ? "" : e.getDescription();
         f.mediaUrl = e.getMediaUrl();
         f.mediaType = e.getMediaType();
+        f.reps = e.getReps();
+        f.durationSec = e.getDurationSec();
         if (e.getDurationSec() != null) {
             f.mode = Mode.DURATION;
             f.amount = e.getDurationSec();
         } else {
             f.mode = Mode.REPS;
-            f.amount = e.getReps();
+            f.amount = e.getReps() != null ? e.getReps() : 12;
         }
         f.restSec = e.getRestSec();
         f.sortOrder = e.getSortOrder();
@@ -108,6 +118,12 @@ public class ExerciseForm {
 
     public Integer getAmount() { return amount; }
     public void setAmount(Integer amount) { this.amount = amount; }
+
+    public Integer getReps() { return reps; }
+    public void setReps(Integer reps) { this.reps = reps; }
+
+    public Integer getDurationSec() { return durationSec; }
+    public void setDurationSec(Integer durationSec) { this.durationSec = durationSec; }
 
     public Integer getRestSec() { return restSec; }
     public void setRestSec(Integer restSec) { this.restSec = restSec; }
