@@ -2,6 +2,11 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+if (file("google-services.json").exists()) {
+    apply plugin: 'com.google.gms.google-services'
+    apply plugin: 'com.google.firebase.crashlytics'
+}
+
 android {
     namespace 'com.homefit.app'
     compileSdk {
@@ -53,7 +58,12 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment:2.7.7"
     implementation "androidx.navigation:navigation-ui:2.7.7"
 
-    // AdMob (W1-TV1-08, xem docs/ADS.md). Phiên bản: kiểm tra lại trên trang release notes AdMob trước khi merge.
+    // Firebase BoM, Analytics, Crashlytics
+    implementation platform('com.google.firebase:firebase-bom:33.5.1')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-crashlytics'
+
+    // AdMob
     implementation "com.google.android.gms:play-services-ads:25.5.0"
     implementation("com.google.android.gms:play-services-auth:21.0.0")
 

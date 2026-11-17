@@ -83,7 +83,7 @@ public class AuthRepository {
 
             @Override
             protected void onError(@NonNull String code, @Nullable String message) {
-                result.setValue(Resource.error(code, message));
+                result.postValue(Resource.error(code, message));
             }
         });
         return result;
@@ -99,7 +99,7 @@ public class AuthRepository {
 
             @Override
             protected void onError(@NonNull String code, @Nullable String message) {
-                result.setValue(Resource.error(code, message));
+                result.postValue(Resource.error(code, message));
             }
         });
         return result;
@@ -129,7 +129,7 @@ public class AuthRepository {
 
                         @Override
                         protected void onError(@NonNull String code, @Nullable String message) {
-                            result.setValue(Resource.error(code, message, saved));
+                            result.postValue(Resource.error(code, message, saved));
                         }
                     });
         });
@@ -147,16 +147,18 @@ public class AuthRepository {
             @Override
             protected void onSuccess(@NonNull AuthResponse body) {
                 if (body.accessToken == null || body.user == null) {
-                    result.setValue(Resource.error("RESPONSE_ERROR", "Dữ liệu trả về không hợp lệ"));
+                    result.postValue(Resource.error("RESPONSE_ERROR", "Dữ liệu trả về không hợp lệ"));
                     return;
                 }
                 tokenStore.saveSession(body.accessToken, body.refreshToken, body.user.id);
+                com.homefit.app.util.AnalyticsTracker.logLogin(null, "api");
                 saveProfileAndPost(Mappers.toEntity(body.user), result);
             }
 
             @Override
             protected void onError(@NonNull String code, @Nullable String message) {
-                result.setValue(Resource.error(code, message));
+                com.homefit.app.util.AnalyticsTracker.recordNonFatalException(new Exception("Auth error: " + code + " - " + message));
+                result.postValue(Resource.error(code, message));
             }
         };
     }

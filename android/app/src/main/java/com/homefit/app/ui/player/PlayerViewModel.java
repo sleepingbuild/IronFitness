@@ -83,6 +83,7 @@ public class PlayerViewModel extends AndroidViewModel {
     }
 
     public void loadExercises(String groupKey, String difficulty, String groupName, int resumeIndex) {
+        if (groupKey == null || difficulty == null) return;
         List<LocalWorkoutDto> activeList = ActiveWorkoutHolder.getInstance().getAndClearActiveWorkouts();
         if (activeList != null && !activeList.isEmpty()) {
             this.currentGroupKey = groupKey;
@@ -92,61 +93,66 @@ public class PlayerViewModel extends AndroidViewModel {
             return;
         }
 
-        if (groupKey.equals(currentGroupKey) && difficulty.equals(currentDifficulty) && !exercises.isEmpty()) {
+        if (groupKey.equals(currentGroupKey) && difficulty.equals(currentDifficulty) && exercises != null && !exercises.isEmpty()) {
             return; 
         }
         this.currentGroupKey = groupKey;
         this.currentDifficulty = difficulty;
 
-        List<LocalExerciseGroupDto> all = exerciseRepository.getAllGroups();
-        LocalExerciseGroupDto targetGroup = null;
-        for (LocalExerciseGroupDto g : all) {
-            if (g.group.equalsIgnoreCase(groupKey) && g.difficulty.equalsIgnoreCase(difficulty)) {
-                targetGroup = g;
-                break;
+        AppExecutors.diskIO().execute(() -> {
+            List<LocalExerciseGroupDto> all = exerciseRepository.getAllGroups();
+            LocalExerciseGroupDto targetGroup = null;
+            for (LocalExerciseGroupDto g : all) {
+                if (g.group.equalsIgnoreCase(groupKey) && g.difficulty.equalsIgnoreCase(difficulty)) {
+                    targetGroup = g;
+                    break;
+                }
             }
-        }
 
-        // Handle 28-day challenge dynamically if targetGroup is null
-        if (targetGroup == null && groupKey.startsWith("challenge_")) {
-            String level = groupKey.replace("challenge_", "");
-            try {
-                int dayIndex = Integer.parseInt(difficulty);
-                com.homefit.app.data.repository.ChallengeRepository challengeRepo = new com.homefit.app.data.repository.ChallengeRepository(getApplication());
-                targetGroup = challengeRepo.getSessionForDay(level, dayIndex);
-            } catch (Exception ignored) {}
-        }
-
-        // Handle category workouts if groupKey is category_ID
-        if (targetGroup == null && groupKey.startsWith("category_")) {
-            try {
-                long categoryId = Long.parseLong(groupKey.replace("category_", ""));
-                loadCategoryExercisesFromDb(categoryId, resumeIndex);
-                return;
-            } catch (Exception ignored) {}
-        }
-
-        // Handle generated goals dynamically
-        if (targetGroup == null) {
-            if ("muscle".equals(groupKey)) {
-                if ("Chân & Mông".equals(groupName)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createMuscleMedium2();
-                else if ("Thân trên + Lõi".equals(groupName)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createMuscleMedium3();
-                else targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createMuscleMedium1();
-            } else if ("fatloss".equals(groupKey)) {
-                if ("Easy".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createFatLossEasy();
-                else if ("Medium".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createFatLossMedium();
-                else if ("Hard".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createFatLossHard();
-            } else if ("keepfit".equals(groupKey)) {
-                if ("Easy".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createKeepFitEasy();
-                else if ("Medium".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createKeepFitMedium();
-                else if ("Hard".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createKeepFitHard();
+            // Handle 28-day challenge dynamically if targetGroup is null
+            if (targetGroup == null && groupKey.startsWith("challenge_")) {
+                String level = groupKey.replace("challenge_", "");
+                try {
+                    int dayIndex = Integer.parseInt(difficulty);
+                    com.homefit.app.data.repository.ChallengeRepository challengeRepo = new com.homefit.app.data.repository.ChallengeRepository(getApplication());
+                    targetGroup = challengeRepo.getSessionForDay(level, dayIndex);
+                } catch (Exception ignored) {}
             }
-        }
 
-        if (targetGroup != null && targetGroup.workouts != null && !targetGroup.workouts.isEmpty()) {
-            this.exercises = targetGroup.workouts;
-            startWorkout(resumeIndex);
-        }
+            // Handle category workouts if groupKey is category_ID
+            if (targetGroup == null && groupKey.startsWith("category_")) {
+                try {
+                    long categoryId = Long.parseLong(groupKey.replace("category_", ""));
+                    loadCategoryExercisesFromDb(categoryId, resumeIndex);
+                    return;
+                } catch (Exception ignored) {}
+            }
+
+            // Handle generated goals dynamically
+            if (targetGroup == null) {
+                if ("muscle".equals(groupKey)) {
+                    if ("Chân & Mông".equals(groupName)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createMuscleMedium2();
+                    else if ("Thân trên + Lõi".equals(groupName)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createMuscleMedium3();
+                    else targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createMuscleMedium1();
+                } else if ("fatloss".equals(groupKey)) {
+                    if ("Easy".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createFatLossEasy();
+                    else if ("Medium".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createFatLossMedium();
+                    else if ("Hard".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createFatLossHard();
+                } else if ("keepfit".equals(groupKey)) {
+                    if ("Easy".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createKeepFitEasy();
+                    else if ("Medium".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createKeepFitMedium();
+                    else if ("Hard".equalsIgnoreCase(difficulty)) targetGroup = com.homefit.app.ui.workout.PopularWorkoutGenerator.createKeepFitHard();
+                }
+            }
+
+            if (targetGroup != null && targetGroup.workouts != null && !targetGroup.workouts.isEmpty()) {
+                final List<LocalWorkoutDto> loadedList = targetGroup.workouts;
+                AppExecutors.mainThread().execute(() -> {
+                    this.exercises = loadedList;
+                    startWorkout(resumeIndex);
+                });
+            }
+        });
     }
 
     private void loadCategoryExercisesFromDb(long categoryId, int resumeIndex) {
@@ -185,6 +191,7 @@ public class PlayerViewModel extends AndroidViewModel {
         totalActiveDurationSec = 0;
         totalCaloriesBurned = 0.0;
         currentExerciseActiveSeconds = 0;
+        com.homefit.app.util.AnalyticsTracker.logWorkoutStart(getApplication(), currentGroupKey, currentGroupKey, currentDifficulty);
         enrichExercisesFromDb();
         startPreparing();
     }
@@ -365,6 +372,7 @@ public class PlayerViewModel extends AndroidViewModel {
     }
 
     private void startExercising() {
+        if (exercises == null || exercises.isEmpty() || currentIndex < 0 || currentIndex >= exercises.size()) return;
         currentState = PlayerState.EXERCISING;
         currentExerciseActiveSeconds = 0;
         LocalWorkoutDto currentExercise = exercises.get(currentIndex);
@@ -383,6 +391,7 @@ public class PlayerViewModel extends AndroidViewModel {
     }
 
     public void onPlayPauseClicked() {
+        if (exercises == null || exercises.isEmpty() || currentIndex < 0 || currentIndex >= exercises.size()) return;
         if (currentState == PlayerState.PAUSED) {
             LocalWorkoutDto currentExercise = exercises.get(currentIndex);
             int duration = parseDurationInSeconds(currentExercise.reps_sets);
@@ -431,6 +440,7 @@ public class PlayerViewModel extends AndroidViewModel {
         calculateAndAccumulateExerciseStats();
         currentState = PlayerState.FINISHED;
         stopTimer();
+        com.homefit.app.util.AnalyticsTracker.logWorkoutComplete(getApplication(), currentGroupKey, totalActiveDurationSec, totalCaloriesBurned);
         updateUi();
     }
 

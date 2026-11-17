@@ -41,12 +41,6 @@
             android:name=".ui.ads.AdsDemoActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-        <receiver android:name=".ui.settings.ReminderReceiver" android:exported="false" />
-        <receiver android:name=".ui.settings.BootReceiver" android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
         <receiver android:name=".notification.ReminderReceiver" android:exported="false" />
 
         <receiver android:name=".notification.BootReceiver" android:exported="true">

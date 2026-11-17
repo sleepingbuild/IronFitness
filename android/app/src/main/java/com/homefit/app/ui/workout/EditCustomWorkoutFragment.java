@@ -295,6 +295,9 @@ public class EditCustomWorkoutFragment extends Fragment {
             currentWorkout.title = "Buổi tập của tôi";
         }
         repository.saveWorkout(currentWorkout);
+        if (currentWorkout.items != null) {
+            com.homefit.app.util.AnalyticsTracker.logCustomWorkoutCreated(requireContext(), currentWorkout.items.size());
+        }
     }
 
     private void startWorkoutPlayer() {

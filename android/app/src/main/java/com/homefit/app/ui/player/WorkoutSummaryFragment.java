@@ -47,7 +47,29 @@ public class WorkoutSummaryFragment extends Fragment {
         long startedAt = now - (Math.max(totalSeconds, 1) * 1000L);
         com.homefit.app.data.repository.WorkoutLogRepository logRepo =
                 new com.homefit.app.data.repository.WorkoutLogRepository(requireContext());
-        logRepo.saveWorkout(null, startedAt, now, totalSeconds, activeDurationSec, caloriesBurned, totalExercises);
+
+        final double finalCalories = caloriesBurned;
+        com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
+            int previousCount = com.homefit.app.data.local.AppDatabase.getInstance(requireContext()).workoutLogDao().getCountNow();
+            logRepo.saveWorkout(null, startedAt, now, totalSeconds, activeDurationSec, finalCalories, totalExercises);
+
+            // Nâng cao Retention: Tự động bật nhắc tập 18:00 sau buổi đầu tiên nếu chưa bật
+            if (previousCount == 0) {
+                com.homefit.app.ui.settings.SettingsStore settingsStore = new com.homefit.app.ui.settings.SettingsStore(requireContext());
+                if (!settingsStore.isReminderEnabled()) {
+                    settingsStore.setReminderEnabled(true);
+                    settingsStore.setReminderTime(18, 0);
+                    com.homefit.app.notification.ReminderScheduler.scheduleDaily(requireContext(), 18, 0);
+                    com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
+                        if (isAdded() && getContext() != null) {
+                            android.widget.Toast.makeText(requireContext(),
+                                    "Chúc mừng bạn đã hoàn thành buổi tập đầu tiên! 🎯 Đã bật nhắc nhở luyện tập lúc 18:00 hằng ngày.",
+                                    android.widget.Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }
+        });
 
         binding.tvCompletedText.setText(totalExercises + " bài tập đã được hoàn thành.");
 
