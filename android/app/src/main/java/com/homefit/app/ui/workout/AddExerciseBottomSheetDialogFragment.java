@@ -1,6 +1,7 @@
 package com.homefit.app.ui.workout;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -203,8 +204,9 @@ public class AddExerciseBottomSheetDialogFragment extends BottomSheetDialogFragm
 
     private void loadExerciseLibrary() {
         allExerciseItems.clear();
+        Context appContext = requireContext().getApplicationContext();
         com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
-            List<com.homefit.app.data.local.entity.ExerciseEntity> entities = com.homefit.app.data.local.AppDatabase.getInstance(requireContext()).exerciseDao().getAllNow();
+            List<com.homefit.app.data.local.entity.ExerciseEntity> entities = com.homefit.app.data.local.AppDatabase.getInstance(appContext).exerciseDao().getAllNow();
             List<CustomWorkoutItem> items = new ArrayList<>();
             if (entities != null && !entities.isEmpty()) {
                 for (com.homefit.app.data.local.entity.ExerciseEntity e : entities) {
@@ -212,7 +214,7 @@ public class AddExerciseBottomSheetDialogFragment extends BottomSheetDialogFragm
                     item.exerciseId = String.valueOf(e.id);
                     item.exerciseName = e.name;
                     item.target = e.description != null ? e.description : "";
-                    item.mediaUrl = e.mediaUrl;
+                    item.mediaUrl = (e.mediaUrl != null && !e.mediaUrl.trim().isEmpty()) ? e.mediaUrl : "https://ironfitness-et3g.onrender.com/images/exercises/crunch.png";
                     item.instructions = new ArrayList<>();
                     if (e.description != null) item.instructions.add(e.description);
                     item.tips = "Giữ nhịp thở đều.";
@@ -230,7 +232,7 @@ public class AddExerciseBottomSheetDialogFragment extends BottomSheetDialogFragm
                     item.exerciseId = dto.id;
                     item.exerciseName = dto.name;
                     item.target = dto.target;
-                    item.mediaUrl = dto.mediaUrl;
+                    item.mediaUrl = (dto.mediaUrl != null && !dto.mediaUrl.trim().isEmpty()) ? dto.mediaUrl : "https://ironfitness-et3g.onrender.com/images/exercises/crunch.png";
                     item.instructions = dto.instructions;
                     item.tips = dto.tips;
 
@@ -248,6 +250,7 @@ public class AddExerciseBottomSheetDialogFragment extends BottomSheetDialogFragm
                                      item2.exerciseName != null ? item2.exerciseName : ""));
 
             com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
+                if (!isAdded() || getContext() == null) return;
                 allExerciseItems.clear();
                 allExerciseItems.addAll(items);
                 updateFilterChipText(allExerciseItems.size());

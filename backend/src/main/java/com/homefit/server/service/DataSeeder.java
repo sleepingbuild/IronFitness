@@ -52,13 +52,7 @@ public class DataSeeder implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        if (exerciseRepository.count() > 0 || workoutRepository.count() > 0) {
-            log.info("Database đã có dữ liệu bài tập ({} bài) hoặc buổi tập ({} buổi). Bỏ qua hoàn toàn quy trình seed để bảo vệ dữ liệu CSV và các thao tác trên Web Admin.",
-                    exerciseRepository.count(), workoutRepository.count());
-            return;
-        }
-
-        log.info("Bắt đầu quy trình nạp đồng bộ dữ liệu chuẩn từ Android sang Backend...");
+        log.info("Bắt đầu quy trình nạp đồng bộ dữ liệu chuẩn từ Android sang Backend (Idempotent Sync)...");
 
         Map<String, Category> categories = seedCategories();
         Map<String, Exercise> exerciseMap = seedExercises(categories);
@@ -654,28 +648,29 @@ public class DataSeeder implements ApplicationRunner {
         if (items == null) {
             items = new ArrayList<>();
             w.setItems(items);
-        } else {
-            items.clear();
         }
 
-        int pos = 1;
-        for (Exercise e : exList) {
-            if (e == null) continue;
-            WorkoutItem item = new WorkoutItem();
-            item.setWorkout(w);
-            item.setPosition(pos++);
-            item.setExerciseId(e.getId());
-            item.setBlock(pos <= 3 ? "A" : (pos > exList.size() - 2 ? "C" : "B"));
-            item.setRoundNum(1);
-            if (e.getDurationSec() != null) {
-                item.setMeasure("time");
-                item.setValue(e.getDurationSec());
-            } else {
-                item.setMeasure("reps");
-                item.setValue(e.getReps() != null ? e.getReps() : 12);
+        // Bổ sung danh sách bài tập con NẾU buổi tập đang RỖNG (0 bài) để không ghi đè Admin
+        if (items.isEmpty()) {
+            int pos = 1;
+            for (Exercise e : exList) {
+                if (e == null) continue;
+                WorkoutItem item = new WorkoutItem();
+                item.setWorkout(w);
+                item.setPosition(pos++);
+                item.setExerciseId(e.getId());
+                item.setBlock(pos <= 3 ? "A" : (pos > exList.size() - 2 ? "C" : "B"));
+                item.setRoundNum(1);
+                if (e.getDurationSec() != null) {
+                    item.setMeasure("time");
+                    item.setValue(e.getDurationSec());
+                } else {
+                    item.setMeasure("reps");
+                    item.setValue(e.getReps() != null ? e.getReps() : 12);
+                }
+                item.setRestAfterSec(restSec);
+                items.add(item);
             }
-            item.setRestAfterSec(restSec);
-            items.add(item);
         }
 
         return workoutRepository.save(w);

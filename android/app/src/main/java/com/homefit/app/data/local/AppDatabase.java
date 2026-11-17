@@ -10,15 +10,17 @@ import com.homefit.app.data.local.dao.CategoryDao;
 import com.homefit.app.data.local.dao.ExerciseDao;
 import com.homefit.app.data.local.dao.UserProfileDao;
 import com.homefit.app.data.local.dao.WorkoutDao;
+import com.homefit.app.data.local.dao.WorkoutItemDao;
 import com.homefit.app.data.local.dao.WorkoutLogDao;
 import com.homefit.app.data.local.entity.CategoryEntity;
 import com.homefit.app.data.local.entity.ExerciseEntity;
 import com.homefit.app.data.local.entity.UserProfileEntity;
 import com.homefit.app.data.local.entity.WorkoutEntity;
+import com.homefit.app.data.local.entity.WorkoutItemEntity;
 import com.homefit.app.data.local.entity.WorkoutLogEntity;
 
 /**
- * Room database (version 2).
+ * Room database (version 6).
  */
 @Database(
         entities = {
@@ -26,9 +28,10 @@ import com.homefit.app.data.local.entity.WorkoutLogEntity;
                 ExerciseEntity.class,
                 WorkoutLogEntity.class,
                 UserProfileEntity.class,
-                WorkoutEntity.class
+                WorkoutEntity.class,
+                WorkoutItemEntity.class
         },
-        version = 5,
+        version = 6,
         exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -43,6 +46,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract UserProfileDao userProfileDao();
 
     public abstract WorkoutDao workoutDao();
+
+    public abstract WorkoutItemDao workoutItemDao();
 
     public static AppDatabase getInstance(Context context) {
         if (instance == null) {

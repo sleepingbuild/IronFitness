@@ -122,14 +122,25 @@ public class ExerciseRepository {
             @Override
             protected void onSuccess(@NonNull List<com.homefit.app.data.remote.dto.WorkoutDto> body) {
                 AppExecutors.diskIO().execute(() -> {
-                    List<com.homefit.app.data.local.entity.WorkoutEntity> list = new ArrayList<>();
+                    List<com.homefit.app.data.local.entity.WorkoutEntity> workoutEntities = new ArrayList<>();
+                    List<com.homefit.app.data.local.entity.WorkoutItemEntity> itemEntities = new ArrayList<>();
                     for (com.homefit.app.data.remote.dto.WorkoutDto d : body) {
-                        list.add(Mappers.toEntity(d));
+                        workoutEntities.add(Mappers.toEntity(d));
+                        if (d.items != null) {
+                            for (com.homefit.app.data.remote.dto.WorkoutDto.WorkoutItemDto itemDto : d.items) {
+                                itemEntities.add(Mappers.toEntity(itemDto, d.id != null ? d.id : 0L));
+                            }
+                        }
                     }
-                    if (!list.isEmpty()) {
-                        db.workoutDao().upsertAll(list);
-                    }
-                    android.util.Log.i("ExerciseRepository", "Đã đồng bộ thành công " + body.size() + " buổi tập từ Server vào Room DB");
+                    db.runInTransaction(() -> {
+                        if (!workoutEntities.isEmpty()) {
+                            db.workoutDao().upsertAll(workoutEntities);
+                        }
+                        if (!itemEntities.isEmpty()) {
+                            db.workoutItemDao().upsertAll(itemEntities);
+                        }
+                    });
+                    android.util.Log.i("ExerciseRepository", "Đã đồng bộ thành công " + body.size() + " buổi tập và " + itemEntities.size() + " bài tập con từ Server vào Room DB");
                     result.postValue(Resource.success(true));
                 });
             }

@@ -117,6 +117,23 @@ public final class Mappers {
     }
 
     @NonNull
+    public static com.homefit.app.data.local.entity.WorkoutItemEntity toEntity(@NonNull WorkoutDto.WorkoutItemDto d, long defaultWorkoutId) {
+        com.homefit.app.data.local.entity.WorkoutItemEntity e = new com.homefit.app.data.local.entity.WorkoutItemEntity();
+        e.id = d.id != null ? d.id : System.nanoTime();
+        e.workoutId = d.workoutId != null ? d.workoutId : defaultWorkoutId;
+        e.exerciseId = d.exerciseId != null ? d.exerciseId : 0L;
+        e.position = d.position;
+        e.block = d.block != null ? d.block : "B";
+        e.measure = d.measure != null ? d.measure : "reps";
+        e.value = d.value;
+        e.restAfterSec = d.restAfterSec;
+        e.exerciseName = d.exerciseName != null ? d.exerciseName : "";
+        e.exerciseMediaUrl = d.exerciseMediaUrl != null ? d.exerciseMediaUrl : "";
+        e.exerciseMediaType = d.exerciseMediaType != null ? d.exerciseMediaType : "GIF";
+        return e;
+    }
+
+    @NonNull
     public static LocalExerciseGroupDto toLocalDto(@NonNull WorkoutDto d) {
         LocalExerciseGroupDto dto = new LocalExerciseGroupDto();
         dto.group = d.goal != null && !d.goal.isEmpty() ? d.goal : (d.primaryMuscle != null ? d.primaryMuscle.toLowerCase() : "");

@@ -15,6 +15,9 @@ public interface WorkoutDao {
     @Query("SELECT * FROM workouts ORDER BY sortOrder ASC")
     LiveData<List<WorkoutEntity>> getAll();
 
+    @Query("SELECT * FROM workouts ORDER BY sortOrder ASC")
+    List<WorkoutEntity> getAllNow();
+
     @Query("SELECT * FROM workouts WHERE type = :type ORDER BY sortOrder ASC")
     LiveData<List<WorkoutEntity>> getByType(String type);
 

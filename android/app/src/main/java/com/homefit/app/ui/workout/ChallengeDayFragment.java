@@ -86,17 +86,59 @@ public class ChallengeDayFragment extends Fragment {
     }
 
     private void loadSessionData() {
-        currentSession = repository.getSessionForDay(level, dayIndex);
-        if (currentSession != null) {
-            tvDayTitle.setText("NGÀY " + dayIndex);
-            tvDaySubtitle.setText(repository.getDayTypeName(dayIndex) + " - " + repository.getLevelTitleVi(level));
-            tvDuration.setText(currentSession.duration_min + " phút");
+        com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
+            com.homefit.app.data.local.AppDatabase db = com.homefit.app.data.local.AppDatabase.getInstance(requireContext().getApplicationContext());
+            var allWorkouts = db.workoutDao().getAllNow();
+            com.homefit.app.data.local.entity.WorkoutEntity matched = null;
+            if (allWorkouts != null) {
+                String lvlVi = level.contains("easy") ? "dễ" : (level.contains("hard") ? "khó" : "trung bình");
+                for (var w : allWorkouts) {
+                    String wTitle = w.titleVi.toLowerCase(java.util.Locale.US);
+                    if (wTitle.contains("ngày " + dayIndex) && (wTitle.contains(lvlVi) || w.level.equalsIgnoreCase(level))) {
+                        matched = w;
+                        break;
+                    }
+                }
+            }
 
-            int count = currentSession.workouts != null ? currentSession.workouts.size() : 0;
-            tvCount.setText(count + " Bài tập");
+            java.util.List<LocalExerciseGroupDto.LocalWorkoutDto> syncedList = null;
+            if (matched != null) {
+                var items = db.workoutItemDao().getByWorkoutIdNow(matched.id);
+                if (items != null && !items.isEmpty()) {
+                    syncedList = new java.util.ArrayList<>();
+                    for (var item : items) {
+                        LocalExerciseGroupDto.LocalWorkoutDto dto = new LocalExerciseGroupDto.LocalWorkoutDto();
+                        dto.id = String.valueOf(item.exerciseId);
+                        dto.name = item.exerciseName;
+                        dto.mediaUrl = item.exerciseMediaUrl;
+                        dto.reps_sets = "time".equalsIgnoreCase(item.measure) ? item.value + "s" : item.value + " lần";
+                        dto.target = "Nghỉ " + item.restAfterSec + "s";
+                        syncedList.add(dto);
+                    }
+                }
+            }
 
-            adapter.submitList(currentSession.workouts);
-        }
+            final java.util.List<LocalExerciseGroupDto.LocalWorkoutDto> finalSynced = syncedList;
+
+            com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
+                if (!isAdded()) return;
+                currentSession = repository.getSessionForDay(level, dayIndex);
+                if (currentSession != null) {
+                    tvDayTitle.setText("NGÀY " + dayIndex);
+                    tvDaySubtitle.setText(repository.getDayTypeName(dayIndex) + " - " + repository.getLevelTitleVi(level));
+
+                    if (finalSynced != null && !finalSynced.isEmpty()) {
+                        currentSession.workouts = finalSynced;
+                    }
+
+                    tvDuration.setText(currentSession.duration_min + " phút");
+                    int count = currentSession.workouts != null ? currentSession.workouts.size() : 0;
+                    tvCount.setText(count + " Bài tập");
+
+                    adapter.submitList(currentSession.workouts);
+                }
+            });
+        });
     }
 
     private void startWorkoutPlayer() {
