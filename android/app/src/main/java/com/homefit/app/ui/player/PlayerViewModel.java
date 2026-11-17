@@ -8,11 +8,13 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.homefit.app.data.local.AppDatabase;
 import com.homefit.app.data.local.AssetExerciseRepository;
 import com.homefit.app.data.local.dto.LocalExerciseGroupDto;
 import com.homefit.app.data.local.dto.LocalExerciseGroupDto.LocalWorkoutDto;
 import com.homefit.app.data.local.model.CustomWorkout;
 import com.homefit.app.data.repository.CustomWorkoutRepository;
+import com.homefit.app.util.AppExecutors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,12 +35,27 @@ public class PlayerViewModel extends AndroidViewModel {
     private int remainingSeconds = 0;
     private int totalWorkoutSeconds = 0;
 
+    private int currentExerciseActiveSeconds = 0;
+    private int totalActiveDurationSec = 0;
+    private double totalCaloriesBurned = 0.0;
+    private double cachedWeightKg = 65.0;
+
     private String currentGroupKey = null;
     private String currentDifficulty = null;
 
     public PlayerViewModel(@NonNull Application application) {
         super(application);
         exerciseRepository = new AssetExerciseRepository(application);
+        loadUserWeight();
+    }
+
+    private void loadUserWeight() {
+        AppExecutors.diskIO().execute(() -> {
+            var user = AppDatabase.getInstance(getApplication()).userProfileDao().getNow();
+            if (user != null && user.weightKg != null && user.weightKg > 0) {
+                cachedWeightKg = user.weightKg;
+            }
+        });
     }
 
     public LiveData<PlayerUiState> getUiState() {
@@ -47,6 +64,14 @@ public class PlayerViewModel extends AndroidViewModel {
 
     public void loadCustomWorkout(String customWorkoutId, int resumeIndex) {
         if (customWorkoutId == null) return;
+        List<LocalWorkoutDto> activeList = ActiveWorkoutHolder.getInstance().getAndClearActiveWorkouts();
+        if (activeList != null && !activeList.isEmpty()) {
+            this.currentGroupKey = "custom";
+            this.currentDifficulty = customWorkoutId;
+            this.exercises = activeList;
+            startWorkout(resumeIndex);
+            return;
+        }
         CustomWorkoutRepository customRepo = new CustomWorkoutRepository(getApplication());
         CustomWorkout customWorkout = customRepo.getWorkoutById(customWorkoutId);
         if (customWorkout != null && customWorkout.items != null && !customWorkout.items.isEmpty()) {
@@ -58,6 +83,15 @@ public class PlayerViewModel extends AndroidViewModel {
     }
 
     public void loadExercises(String groupKey, String difficulty, String groupName, int resumeIndex) {
+        List<LocalWorkoutDto> activeList = ActiveWorkoutHolder.getInstance().getAndClearActiveWorkouts();
+        if (activeList != null && !activeList.isEmpty()) {
+            this.currentGroupKey = groupKey;
+            this.currentDifficulty = difficulty;
+            this.exercises = activeList;
+            startWorkout(resumeIndex);
+            return;
+        }
+
         if (groupKey.equals(currentGroupKey) && difficulty.equals(currentDifficulty) && !exercises.isEmpty()) {
             return; 
         }
@@ -71,6 +105,25 @@ public class PlayerViewModel extends AndroidViewModel {
                 targetGroup = g;
                 break;
             }
+        }
+
+        // Handle 28-day challenge dynamically if targetGroup is null
+        if (targetGroup == null && groupKey.startsWith("challenge_")) {
+            String level = groupKey.replace("challenge_", "");
+            try {
+                int dayIndex = Integer.parseInt(difficulty);
+                com.homefit.app.data.repository.ChallengeRepository challengeRepo = new com.homefit.app.data.repository.ChallengeRepository(getApplication());
+                targetGroup = challengeRepo.getSessionForDay(level, dayIndex);
+            } catch (Exception ignored) {}
+        }
+
+        // Handle category workouts if groupKey is category_ID
+        if (targetGroup == null && groupKey.startsWith("category_")) {
+            try {
+                long categoryId = Long.parseLong(groupKey.replace("category_", ""));
+                loadCategoryExercisesFromDb(categoryId, resumeIndex);
+                return;
+            } catch (Exception ignored) {}
         }
 
         // Handle generated goals dynamically
@@ -90,10 +143,35 @@ public class PlayerViewModel extends AndroidViewModel {
             }
         }
 
-        if (targetGroup != null && targetGroup.workouts != null) {
+        if (targetGroup != null && targetGroup.workouts != null && !targetGroup.workouts.isEmpty()) {
             this.exercises = targetGroup.workouts;
             startWorkout(resumeIndex);
         }
+    }
+
+    private void loadCategoryExercisesFromDb(long categoryId, int resumeIndex) {
+        AppExecutors.diskIO().execute(() -> {
+            var dbList = AppDatabase.getInstance(getApplication()).exerciseDao().getByCategoryNow(categoryId);
+            if (dbList != null && !dbList.isEmpty()) {
+                List<LocalWorkoutDto> workouts = new ArrayList<>();
+                for (var e : dbList) {
+                    LocalWorkoutDto dto = new LocalWorkoutDto();
+                    dto.id = String.valueOf(e.id);
+                    dto.name = e.name;
+                    dto.mediaUrl = e.mediaUrl;
+                    dto.target = e.description != null ? e.description : "";
+                    dto.reps_sets = e.durationSec != null ? e.durationSec + "s" : (e.reps != null ? e.reps + " lần" : "12 lần");
+                    dto.instructions = new ArrayList<>();
+                    if (e.description != null) dto.instructions.add(e.description);
+                    dto.tips = "Giữ tư thế chuẩn.";
+                    workouts.add(dto);
+                }
+                AppExecutors.mainThread().execute(() -> {
+                    this.exercises = workouts;
+                    startWorkout(resumeIndex);
+                });
+            }
+        });
     }
 
     public void startWorkout(int resumeIndex) {
@@ -104,21 +182,30 @@ public class PlayerViewModel extends AndroidViewModel {
             currentIndex = 0;
         }
         totalWorkoutSeconds = 0;
+        totalActiveDurationSec = 0;
+        totalCaloriesBurned = 0.0;
+        currentExerciseActiveSeconds = 0;
         enrichExercisesFromDb();
         startPreparing();
     }
 
+    private String stripAccents(String s) {
+        if (s == null) return "";
+        String normalized = java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFD);
+        return java.util.regex.Pattern.compile("\\p{InCombiningDiacriticalMarks}+").matcher(normalized).replaceAll("").replace('đ', 'd').replace('Đ', 'D');
+    }
+
     private void enrichExercisesFromDb() {
-        com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
-            var dbList = com.homefit.app.data.local.AppDatabase.getInstance(getApplication()).exerciseDao().getAllNow();
+        AppExecutors.diskIO().execute(() -> {
+            var dbList = AppDatabase.getInstance(getApplication()).exerciseDao().getAllNow();
             if (dbList == null || dbList.isEmpty()) return;
             boolean changed = false;
             for (LocalWorkoutDto dto : exercises) {
                 if (dto.name == null) continue;
-                String normDto = dto.name.toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                String normDto = stripAccents(dto.name).toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
                 for (var e : dbList) {
                     if (e.name == null) continue;
-                    String normE = e.name.toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                    String normE = stripAccents(e.name).toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
                     if (e.name.equalsIgnoreCase(dto.name)
                             || (!normE.isEmpty() && normDto.contains(normE))
                             || (!normDto.isEmpty() && normE.contains(normDto))) {
@@ -128,13 +215,18 @@ public class PlayerViewModel extends AndroidViewModel {
                         }
                         if (e.description != null && !e.description.isBlank()) {
                             dto.target = e.description;
+                            if (dto.instructions == null || dto.instructions.isEmpty()) {
+                                dto.instructions = new ArrayList<>();
+                                dto.instructions.add(e.description);
+                                changed = true;
+                            }
                         }
                         break;
                     }
                 }
             }
             if (changed) {
-                com.homefit.app.util.AppExecutors.mainThread().execute(this::updateUi);
+                AppExecutors.mainThread().execute(this::updateUi);
             }
         });
     }
@@ -169,11 +261,76 @@ public class PlayerViewModel extends AndroidViewModel {
     }
 
     private void startResting() {
+        calculateAndAccumulateExerciseStats();
         currentState = PlayerState.RESTING;
         remainingSeconds = 25; // 25s rest
         currentIndex++;
         updateUi();
         startTimer();
+    }
+
+    private void calculateAndAccumulateExerciseStats() {
+        if (currentIndex >= 0 && currentIndex < exercises.size()) {
+            LocalWorkoutDto exercise = exercises.get(currentIndex);
+            int duration = parseDurationInSeconds(exercise.reps_sets);
+            int activeSec = currentExerciseActiveSeconds;
+            if (duration > 0) {
+                if (activeSec <= 0) activeSec = duration;
+            } else {
+                int reps = parseReps(exercise.reps_sets);
+                int minRepsSec = Math.max(1, (int) Math.ceil(reps * 2.5));
+                activeSec = Math.max(activeSec, minRepsSec);
+            }
+            totalActiveDurationSec += activeSec;
+            double met = getMetForExercise(exercise.name, exercise.target);
+            double kcal = (met * 3.5 * cachedWeightKg * (activeSec / 60.0)) / 200.0;
+            totalCaloriesBurned += kcal;
+        }
+        currentExerciseActiveSeconds = 0;
+    }
+
+    private double getMetForExercise(String name, String target) {
+        String combined = ((name != null ? name : "") + " " + (target != null ? target : "")).toLowerCase(Locale.US);
+        if (combined.contains("burpee") || combined.contains("jumping jack") || combined.contains("mountain climber")
+                || combined.contains("leo núi") || combined.contains("jump squat") || combined.contains("nhảy")
+                || combined.contains("chạy nâng cao đùi") || combined.contains("đấm bốc")) {
+            return 8.5;
+        }
+        if (combined.contains("hít đất") || combined.contains("chống đẩy") || combined.contains("push-up") || combined.contains("push up")
+                || combined.contains("dips") || combined.contains("nhún tay") || combined.contains("pull-up") || combined.contains("pull up")
+                || combined.contains("hít xà") || combined.contains("shoulder tap")) {
+            return 6.5;
+        }
+        if (combined.contains("squat") || combined.contains("lunge") || combined.contains("chùng chân")
+                || combined.contains("wall sit") || combined.contains("calf raise") || combined.contains("nâng gót")
+                || combined.contains("glute bridge") || combined.contains("bước lên bục")) {
+            return 5.5;
+        }
+        if (combined.contains("plank") || combined.contains("crunch") || combined.contains("gập bụng")
+                || combined.contains("leg raise") || combined.contains("nâng chân") || combined.contains("v-up")
+                || combined.contains("dead bug") || combined.contains("hollow hold") || combined.contains("đạp xe")) {
+            return 4.0;
+        }
+        if (combined.contains("stretch") || combined.contains("giãn cơ") || combined.contains("pose")
+                || combined.contains("tư thế") || combined.contains("circles") || combined.contains("xoay")
+                || combined.contains("cat-cow") || combined.contains("child") || combined.contains("cobra")) {
+            return 2.5;
+        }
+        return 4.0;
+    }
+
+    private int parseReps(String repsSets) {
+        if (repsSets == null || repsSets.isEmpty()) return 10;
+        Matcher m = Pattern.compile("(\\d+)").matcher(repsSets);
+        if (m.find()) {
+            try {
+                String val = m.group(1);
+                if (val != null) {
+                    return Integer.parseInt(val);
+                }
+            } catch (Exception ignored) {}
+        }
+        return 10;
     }
 
     private int parseDurationInSeconds(String repsSets) {
@@ -209,6 +366,7 @@ public class PlayerViewModel extends AndroidViewModel {
 
     private void startExercising() {
         currentState = PlayerState.EXERCISING;
+        currentExerciseActiveSeconds = 0;
         LocalWorkoutDto currentExercise = exercises.get(currentIndex);
 
         int duration = parseDurationInSeconds(currentExercise.reps_sets);
@@ -270,6 +428,7 @@ public class PlayerViewModel extends AndroidViewModel {
     }
 
     private void finishWorkout() {
+        calculateAndAccumulateExerciseStats();
         currentState = PlayerState.FINISHED;
         stopTimer();
         updateUi();
@@ -281,6 +440,9 @@ public class PlayerViewModel extends AndroidViewModel {
             @Override
             public void run() {
                 totalWorkoutSeconds++;
+                if (currentState == PlayerState.EXERCISING) {
+                    currentExerciseActiveSeconds++;
+                }
                 if (remainingSeconds > 0) {
                     remainingSeconds--;
                     updateUi();
@@ -299,6 +461,9 @@ public class PlayerViewModel extends AndroidViewModel {
             @Override
             public void run() {
                 totalWorkoutSeconds++;
+                if (currentState == PlayerState.EXERCISING) {
+                    currentExerciseActiveSeconds++;
+                }
                 updateUi();
                 handler.postDelayed(this, 1000);
             }
@@ -347,7 +512,9 @@ public class PlayerViewModel extends AndroidViewModel {
                 exercises.size(),
                 remainingSeconds,
                 totalWorkoutSeconds,
-                isRepsBased
+                isRepsBased,
+                totalActiveDurationSec,
+                totalCaloriesBurned
         ));
     }
 

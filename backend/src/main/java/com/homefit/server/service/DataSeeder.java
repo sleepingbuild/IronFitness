@@ -52,8 +52,9 @@ public class DataSeeder implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        if (exerciseRepository.count() > 0) {
-            log.info("Database đã có dữ liệu bài tập ({} bài). Bỏ qua quy trình seed và giữ nguyên toàn bộ mediaUrl/coverImageUrl.", exerciseRepository.count());
+        if (exerciseRepository.count() > 0 || workoutRepository.count() > 0) {
+            log.info("Database đã có dữ liệu bài tập ({} bài) hoặc buổi tập ({} buổi). Bỏ qua hoàn toàn quy trình seed để bảo vệ dữ liệu CSV và các thao tác trên Web Admin.",
+                    exerciseRepository.count(), workoutRepository.count());
             return;
         }
 

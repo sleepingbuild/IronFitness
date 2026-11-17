@@ -18,20 +18,20 @@
             </div>
 
             <div class="row">
-                <div class="col-lg-7">
-                    <div class="card">
-                        <div class="card-header bg-white fw-bold py-3"><i class="bi bi-pencil-square text-primary me-2"></i>Cấu hình Bài tập cho Ngày <span th:text="${dayIndex}">1</span></div>
+                <div class="col-lg-7 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white fw-bold py-3"><i class="bi bi-pencil-square text-primary me-2"></i>Cấu hình Buổi tập cho Ngày <span th:text="${dayIndex}">1</span></div>
                         <div class="card-body">
                             <form th:action="@{/admin/challenges/{level}/day/{dayIndex}(level=${level}, dayIndex=${dayIndex})}" method="post">
 
                                 <div class="mb-4 form-check form-switch bg-light p-3 rounded">
-                                    <input class="form-check-input ms-0 me-2" type="checkbox" id="isRestDay" name="isRestDay" th:checked="${challengeSession != null and challengeSession.restDay}">
+                                    <input class="form-check-input ms-0 me-2" type="checkbox" id="isRestDay" name="isRestDay" th:checked="${challengeSession != null and challengeSession.restDay}" onchange="toggleWorkoutSelect()">
                                     <label class="form-check-label fw-bold" for="isRestDay">Đặt là NGÀY NGHỈ (Thả lỏng cơ bắp, không tập)</label>
                                 </div>
 
-                                <div class="mb-3">
+                                <div class="mb-3" id="workoutSelectGroup">
                                     <label class="form-label fw-bold">Gán Buổi tập từ Thư viện Buổi tập</label>
-                                    <select class="form-select" name="workoutId">
+                                    <select class="form-select" name="workoutId" id="workoutSelect" onchange="onWorkoutSelectChanged()">
                                         <option value="">-- Chọn buổi tập gán cho ngày này --</option>
                                         <option th:each="w : ${workouts}" th:value="${w.id}"
                                                 th:text="${w.titleVi + ' (' + w.primaryMuscle + ' - ' + w.level + ')'}"
@@ -46,11 +46,104 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Cột xem trước & Sửa nhanh bài tập -->
+                <div class="col-lg-5 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                            <span class="fw-bold"><i class="bi bi-eye text-info me-2"></i>Xem trước Bài tập Buổi này</span>
+                            <a id="btnEditWorkout" href="#" class="btn btn-outline-primary btn-sm fw-bold" style="display: none;">
+                                <i class="bi bi-pencil-square me-1"></i>Chỉnh sửa danh sách bài tập của buổi này
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <div id="noWorkoutSelected" class="text-muted text-center py-4">
+                                <i class="bi bi-info-circle display-6 d-block mb-2"></i>
+                                Vui lòng chọn một buổi tập để xem danh sách bài tập chi tiết.
+                            </div>
+
+                            <div id="workoutPreviewContainers">
+                                <div th:each="w : ${workouts}" th:id="'workoutPreview-' + ${w.id}" class="workout-preview-box" style="display: none;">
+                                    <div class="d-flex align-items-center mb-3 p-2 bg-light rounded border">
+                                        <img th:src="${w.coverImageUrl != null ? w.coverImageUrl : '/images/muscles/fullbody.png'}" alt="Cover" class="rounded me-3 border" style="width: 54px; height: 54px; object-fit: contain; background: white;">
+                                        <div>
+                                            <h6 class="mb-0 fw-bold" th:text="${w.titleVi}">Tên buổi</h6>
+                                            <small class="text-muted" th:text="${w.primaryMuscle + ' • ' + w.level + ' • ' + (w.items != null ? w.items.size() : 0) + ' bài tập'}">Thông tin</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="list-group list-group-flush border rounded" style="max-height: 450px; overflow-y: auto;">
+                                        <div th:each="item, stat : ${w.items}" class="list-group-item d-flex align-items-center py-2">
+                                            <span class="badge bg-secondary rounded-pill me-2" th:text="${stat.index + 1}">1</span>
+                                            <img th:if="${exerciseMap != null and exerciseMap.get(item.exerciseId) != null}"
+                                                 th:src="${exerciseMap.get(item.exerciseId).mediaUrl != null ? exerciseMap.get(item.exerciseId).mediaUrl : '/images/exercises/crunch.png'}"
+                                                 alt="Thumb" class="rounded border p-1 me-2 bg-white" style="width: 40px; height: 40px; object-fit: contain;">
+                                            <div class="flex-grow-1">
+                                                <div class="fw-bold small" th:text="${exerciseMap != null and exerciseMap.get(item.exerciseId) != null ? exerciseMap.get(item.exerciseId).name : 'Bài tập #' + item.exerciseId}">Tên bài</div>
+                                                <small class="text-muted" th:text="${item.value + ' ' + (item.measure == 'time' ? 'giây' : 'lần') + ' • Nghỉ ' + item.restAfterSec + 's'}">Số lượng</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
 </div>
 
 <div th:replace="~{admin/fragments :: scripts}"></div>
+<script>
+    function toggleWorkoutSelect() {
+        const isRest = document.getElementById('isRestDay').checked;
+        const group = document.getElementById('workoutSelectGroup');
+        if (isRest) {
+            group.style.opacity = '0.5';
+            document.getElementById('workoutSelect').disabled = true;
+        } else {
+            group.style.opacity = '1';
+            document.getElementById('workoutSelect').disabled = false;
+        }
+        onWorkoutSelectChanged();
+    }
+
+    function onWorkoutSelectChanged() {
+        const isRest = document.getElementById('isRestDay').checked;
+        const select = document.getElementById('workoutSelect');
+        const selectedId = select.value;
+        const noWorkout = document.getElementById('noWorkoutSelected');
+        const editBtn = document.getElementById('btnEditWorkout');
+
+        const boxes = document.querySelectorAll('.workout-preview-box');
+        boxes.forEach(box => box.style.display = 'none');
+
+        if (isRest) {
+            noWorkout.style.display = 'block';
+            noWorkout.innerHTML = '<i class="bi bi-moon-stars text-warning display-6 d-block mb-2"></i>Đây là Ngày nghỉ. Không có buổi tập.';
+            editBtn.style.display = 'none';
+            return;
+        }
+
+        if (selectedId) {
+            noWorkout.style.display = 'none';
+            const targetBox = document.getElementById('workoutPreview-' + selectedId);
+            if (targetBox) {
+                targetBox.style.display = 'block';
+            }
+            editBtn.href = '/admin/workouts/' + selectedId + '/edit';
+            editBtn.style.display = 'inline-block';
+        } else {
+            noWorkout.style.display = 'block';
+            noWorkout.innerHTML = '<i class="bi bi-info-circle display-6 d-block mb-2"></i>Vui lòng chọn một buổi tập để xem danh sách bài tập chi tiết.';
+            editBtn.style.display = 'none';
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        toggleWorkoutSelect();
+    });
+</script>
 </body>
 </html>

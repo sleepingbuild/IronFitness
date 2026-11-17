@@ -34,6 +34,10 @@ public class WorkoutLogEntity {
 
     public int totalSeconds;
 
+    public int activeDurationSec;
+
+    public double caloriesBurned;
+
     public int exercisesDone;
 
     /** false cho đến khi server xác nhận. */

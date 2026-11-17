@@ -43,6 +43,10 @@ public class PlayerFragment extends Fragment {
     private String workoutTitle;
     private int resumeIndex = 0;
 
+    private int lastExerciseIndex = -1;
+    private PlayerState lastState = null;
+    private String lastLoadedExerciseName = null;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -201,6 +205,8 @@ public class PlayerFragment extends Fragment {
         Bundle args = new Bundle();
         args.putInt("totalExercises", state.totalExercises);
         args.putInt("totalSeconds", state.totalWorkoutSeconds);
+        args.putInt("activeDurationSec", state.activeDurationSec);
+        args.putDouble("caloriesBurned", state.caloriesBurned);
         args.putString("groupKey", groupKey);
         args.putString("difficulty", difficulty);
         args.putString("groupName", groupName);
@@ -222,38 +228,11 @@ public class PlayerFragment extends Fragment {
             binding.tvNextRepsSubtitle.setText(current != null ? current.reps_sets : "");
             binding.tvRestCounter.setText(formatTime(state.remainingSeconds));
 
-            if (current != null && current.mediaUrl != null && !current.mediaUrl.isEmpty()) {
-                MediaLoader.loadFull(binding.ivNextThumb, current.mediaUrl, "GIF");
-            } else if (current != null && current.name != null) {
-                com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
-                    var list = com.homefit.app.data.local.AppDatabase.getInstance(requireContext()).exerciseDao().getAllNow();
-                    String foundUrl = "";
-                    String normCurrent = current.name.toLowerCase(java.util.Locale.US).replaceAll("[^a-zA-Z0-9]", "");
-                    for (var e : list) {
-                        if (e.name == null) continue;
-                        String normE = e.name.toLowerCase(java.util.Locale.US).replaceAll("[^a-zA-Z0-9]", "");
-                        if (e.name.equalsIgnoreCase(current.name) || (!normE.isEmpty() && normCurrent.contains(normE))) {
-                            foundUrl = e.mediaUrl;
-                            break;
-                        }
-                    }
-                    final String url = foundUrl;
-                    com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
-                        if (binding != null && isAdded()) {
-                            if (!url.isEmpty()) {
-                                MediaLoader.loadFull(binding.ivNextThumb, url, "GIF");
-                            } else {
-                                binding.ivNextThumb.setImageResource(R.drawable.bg_media_placeholder);
-                            }
-                        }
-                    });
-                });
-            } else {
-                binding.ivNextThumb.setImageResource(R.drawable.bg_media_placeholder);
+            if (state.currentExerciseIndex != lastExerciseIndex || state.state != lastState) {
+                loadRestingMedia(current);
+                restBannerAdHelper.attach(binding.adContainerResting);
+                restBannerAdHelper.onResume();
             }
-
-            restBannerAdHelper.attach(binding.adContainerResting);
-            restBannerAdHelper.onResume();
 
         } else {
             binding.clExercisingLayout.setVisibility(View.VISIBLE);
@@ -293,7 +272,51 @@ public class PlayerFragment extends Fragment {
             binding.videoPlayerView.setVisibility(View.GONE);
             binding.ivMedia.setVisibility(View.VISIBLE);
 
-            loadExerciseDetailsAndMedia(current);
+            boolean exerciseChanged = (state.currentExerciseIndex != lastExerciseIndex) ||
+                    (current != null && !current.name.equals(lastLoadedExerciseName)) ||
+                    (lastState == PlayerState.RESTING);
+
+            if (exerciseChanged) {
+                loadExerciseDetailsAndMedia(current);
+                if (current != null) {
+                    lastLoadedExerciseName = current.name;
+                }
+            }
+        }
+
+        lastExerciseIndex = state.currentExerciseIndex;
+        lastState = state.state;
+    }
+
+    private void loadRestingMedia(LocalWorkoutDto current) {
+        if (current != null && current.mediaUrl != null && !current.mediaUrl.isEmpty()) {
+            MediaLoader.loadFull(binding.ivNextThumb, current.mediaUrl, "GIF");
+        } else if (current != null && current.name != null) {
+            com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
+                var list = com.homefit.app.data.local.AppDatabase.getInstance(requireContext()).exerciseDao().getAllNow();
+                String foundUrl = "";
+                String normCurrent = current.name.toLowerCase(java.util.Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                for (var e : list) {
+                    if (e.name == null) continue;
+                    String normE = e.name.toLowerCase(java.util.Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                    if (e.name.equalsIgnoreCase(current.name) || (!normE.isEmpty() && normCurrent.contains(normE))) {
+                        foundUrl = e.mediaUrl;
+                        break;
+                    }
+                }
+                final String url = foundUrl;
+                com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
+                    if (binding != null && isAdded()) {
+                        if (!url.isEmpty()) {
+                            MediaLoader.loadFull(binding.ivNextThumb, url, "GIF");
+                        } else {
+                            binding.ivNextThumb.setImageResource(R.drawable.bg_media_placeholder);
+                        }
+                    }
+                });
+            });
+        } else {
+            binding.ivNextThumb.setImageResource(R.drawable.bg_media_placeholder);
         }
     }
 

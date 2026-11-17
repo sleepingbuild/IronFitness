@@ -71,6 +71,8 @@ public final class Mappers {
         r.startedAt = DateUtils.toIso(e.startedAt);
         r.completedAt = DateUtils.toIso(e.completedAt);
         r.totalSeconds = e.totalSeconds;
+        r.activeDurationSec = e.activeDurationSec;
+        r.caloriesBurned = e.caloriesBurned;
         r.exercisesDone = e.exercisesDone;
         return r;
     }
@@ -85,6 +87,8 @@ public final class Mappers {
         e.startedAt = DateUtils.parseIso(d.startedAt);
         e.completedAt = DateUtils.parseIso(d.completedAt);
         e.totalSeconds = d.totalSeconds;
+        e.activeDurationSec = d.activeDurationSec;
+        e.caloriesBurned = d.caloriesBurned;
         e.exercisesDone = d.exercisesDone;
         e.synced = true;
         return e;

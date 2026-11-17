@@ -242,6 +242,9 @@ public class ExerciseListFragment extends Fragment {
 
     private void startWorkout(int resumeIndex) {
         if (currentGroup == null) return;
+        if (currentGroup.workouts != null && !currentGroup.workouts.isEmpty()) {
+            com.homefit.app.ui.player.ActiveWorkoutHolder.getInstance().setActiveWorkouts(currentGroup.workouts);
+        }
         NavController navController = NavHostFragment.findNavController(this);
         Bundle args = new Bundle();
         args.putString("groupKey", groupKey);

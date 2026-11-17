@@ -100,7 +100,12 @@ public class ChallengeDayFragment extends Fragment {
     }
 
     private void startWorkoutPlayer() {
-        if (currentSession == null) return;
+        if (currentSession == null) {
+            currentSession = repository.getSessionForDay(level, dayIndex);
+        }
+        if (currentSession != null && currentSession.workouts != null && !currentSession.workouts.isEmpty()) {
+            com.homefit.app.ui.player.ActiveWorkoutHolder.getInstance().setActiveWorkouts(currentSession.workouts);
+        }
         NavController navController = NavHostFragment.findNavController(this);
         Bundle args = new Bundle();
         args.putString("groupKey", "challenge_" + level);

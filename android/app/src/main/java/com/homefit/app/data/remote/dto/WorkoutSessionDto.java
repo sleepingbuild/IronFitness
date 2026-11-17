@@ -8,5 +8,7 @@ public class WorkoutSessionDto {
     public String startedAt;
     public String completedAt;
     public int totalSeconds;
+    public int activeDurationSec;
+    public double caloriesBurned;
     public int exercisesDone;
 }

@@ -26,13 +26,16 @@ public class AdminChallengeController {
 
     private final ChallengeProgramRepository challengeProgramRepository;
     private final WorkoutRepository workoutRepository;
+    private final com.homefit.server.repository.ExerciseRepository exerciseRepository;
     private final AuditLoggerService auditLoggerService;
 
     public AdminChallengeController(ChallengeProgramRepository challengeProgramRepository,
                                     WorkoutRepository workoutRepository,
+                                    com.homefit.server.repository.ExerciseRepository exerciseRepository,
                                     AuditLoggerService auditLoggerService) {
         this.challengeProgramRepository = challengeProgramRepository;
         this.workoutRepository = workoutRepository;
+        this.exerciseRepository = exerciseRepository;
         this.auditLoggerService = auditLoggerService;
     }
 
@@ -66,6 +69,13 @@ public class AdminChallengeController {
 
         var workouts = workoutRepository.findAllByOrderBySortOrderAsc();
         model.addAttribute("workouts", workouts != null ? workouts : List.of());
+
+        var allExercises = exerciseRepository.findAll();
+        java.util.Map<Long, com.homefit.server.domain.Exercise> exerciseMap = new java.util.HashMap<>();
+        for (com.homefit.server.domain.Exercise e : allExercises) {
+            exerciseMap.put(e.getId(), e);
+        }
+        model.addAttribute("exerciseMap", exerciseMap);
 
         ChallengeProgram program = challengeProgramRepository.findTopByLevelAndStatusOrderByVersionDesc(lvl, "PUBLISHED").orElse(null);
         ChallengeSession session = null;

@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -46,15 +47,28 @@ public class AdminWorkoutController {
     public String newForm(Model model) {
         model.addAttribute("activeMenu", "workouts");
         model.addAttribute("workout", new Workout());
-        model.addAttribute("exercises", exerciseRepository.findAll());
+        List<com.homefit.server.domain.Exercise> allExercises = exerciseRepository.findAllByOrderByCategoryIdAscSortOrderAscIdAsc();
+        model.addAttribute("exercises", allExercises);
+        Map<Long, com.homefit.server.domain.Exercise> exerciseMap = new HashMap<>();
+        for (com.homefit.server.domain.Exercise e : allExercises) {
+            exerciseMap.put(e.getId(), e);
+        }
+        model.addAttribute("exerciseMap", exerciseMap);
         return "admin/workouts/form";
     }
 
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("activeMenu", "workouts");
-        model.addAttribute("workout", workoutRepository.findById(id).orElseThrow());
-        model.addAttribute("exercises", exerciseRepository.findAll());
+        Workout w = workoutRepository.findById(id).orElseThrow();
+        model.addAttribute("workout", w);
+        List<com.homefit.server.domain.Exercise> allExercises = exerciseRepository.findAllByOrderByCategoryIdAscSortOrderAscIdAsc();
+        model.addAttribute("exercises", allExercises);
+        Map<Long, com.homefit.server.domain.Exercise> exerciseMap = new HashMap<>();
+        for (com.homefit.server.domain.Exercise e : allExercises) {
+            exerciseMap.put(e.getId(), e);
+        }
+        model.addAttribute("exerciseMap", exerciseMap);
         return "admin/workouts/form";
     }
 
@@ -72,11 +86,38 @@ public class AdminWorkoutController {
                 existing.setRestSec(workout.getRestSec());
                 existing.setStatus(workout.getStatus());
                 existing.setCoverImageUrl(workout.getCoverImageUrl());
+                existing.setVersion(existing.getVersion() + 1);
+
+                existing.getItems().clear();
+                if (workout.getItems() != null) {
+                    int pos = 1;
+                    for (com.homefit.server.domain.WorkoutItem item : workout.getItems()) {
+                        if (item.getExerciseId() != null) {
+                            item.setWorkout(existing);
+                            item.setPosition(pos++);
+                            if (item.getBlock() == null || item.getBlock().isBlank()) item.setBlock("B");
+                            if (item.getMeasure() == null || item.getMeasure().isBlank()) item.setMeasure("reps");
+                            existing.getItems().add(item);
+                        }
+                    }
+                }
                 workoutRepository.save(existing);
             });
             auditLoggerService.log("admin@homefit.com", "UPDATE", "Workout", String.valueOf(workout.getId()), "Cập nhật buổi tập " + workout.getTitleVi());
             redirect.addFlashAttribute("message", "Đã cập nhật buổi tập thành công.");
         } else {
+            workout.setVersion(1);
+            if (workout.getItems() != null) {
+                int pos = 1;
+                for (com.homefit.server.domain.WorkoutItem item : workout.getItems()) {
+                    if (item.getExerciseId() != null) {
+                        item.setWorkout(workout);
+                        item.setPosition(pos++);
+                        if (item.getBlock() == null || item.getBlock().isBlank()) item.setBlock("B");
+                        if (item.getMeasure() == null || item.getMeasure().isBlank()) item.setMeasure("reps");
+                    }
+                }
+            }
             Workout saved = workoutRepository.save(workout);
             auditLoggerService.log("admin@homefit.com", "CREATE", "Workout", String.valueOf(saved.getId()), "Tạo mới buổi tập " + saved.getTitleVi());
             redirect.addFlashAttribute("message", "Đã thêm mới buổi tập thành công.");

@@ -31,6 +31,12 @@ public class WorkoutSummaryFragment extends Fragment {
 
         int totalExercises = getArguments() != null ? getArguments().getInt("totalExercises", 1) : 1;
         int totalSeconds = getArguments() != null ? getArguments().getInt("totalSeconds", 0) : 0;
+        int activeDurationSec = getArguments() != null ? getArguments().getInt("activeDurationSec", totalSeconds) : totalSeconds;
+        double caloriesBurned = getArguments() != null ? getArguments().getDouble("caloriesBurned", 0.0) : 0.0;
+        if (caloriesBurned <= 0.0 && activeDurationSec > 0) {
+            caloriesBurned = (4.0 * 3.5 * 65.0 * (activeDurationSec / 60.0)) / 200.0;
+        }
+
         String groupKey = getArguments() != null ? getArguments().getString("groupKey", "") : "";
         String difficulty = getArguments() != null ? getArguments().getString("difficulty", "") : "";
         String groupName = getArguments() != null ? getArguments().getString("groupName", "") : "";
@@ -41,7 +47,7 @@ public class WorkoutSummaryFragment extends Fragment {
         long startedAt = now - (Math.max(totalSeconds, 1) * 1000L);
         com.homefit.app.data.repository.WorkoutLogRepository logRepo =
                 new com.homefit.app.data.repository.WorkoutLogRepository(requireContext());
-        logRepo.saveWorkout(null, startedAt, now, totalSeconds, totalExercises);
+        logRepo.saveWorkout(null, startedAt, now, totalSeconds, activeDurationSec, caloriesBurned, totalExercises);
 
         binding.tvCompletedText.setText(totalExercises + " bài tập đã được hoàn thành.");
 

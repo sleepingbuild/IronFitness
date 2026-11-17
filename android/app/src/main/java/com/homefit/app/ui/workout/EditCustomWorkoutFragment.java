@@ -298,7 +298,8 @@ public class EditCustomWorkoutFragment extends Fragment {
     }
 
     private void startWorkoutPlayer() {
-        if (currentWorkout == null || currentWorkout.items.isEmpty()) return;
+        if (currentWorkout == null || currentWorkout.items == null || currentWorkout.items.isEmpty()) return;
+        com.homefit.app.ui.player.ActiveWorkoutHolder.getInstance().setActiveWorkouts(currentWorkout.toLocalWorkoutDtos());
         Bundle args = new Bundle();
         args.putString("customWorkoutId", currentWorkout.id);
         args.putString("groupKey", "custom");

@@ -79,19 +79,31 @@ public class ReportFragment extends Fragment {
             userProfile = db.userProfileDao().getNow();
 
             final int count = db.workoutLogDao().getCountNow();
-            final int totalSec = db.workoutLogDao().getTotalSecondsNow();
+            int dbActiveSec = db.workoutLogDao().getTotalActiveSecondsNow();
+            if (dbActiveSec <= 0) {
+                dbActiveSec = db.workoutLogDao().getTotalSecondsNow();
+            }
+            double dbCalories = db.workoutLogDao().getTotalCaloriesNow();
+            if (dbCalories <= 0.0 && dbActiveSec > 0) {
+                double weight = (userProfile != null && userProfile.weightKg != null && userProfile.weightKg > 0)
+                        ? userProfile.weightKg : 65.0;
+                dbCalories = (4.0 * 3.5 * weight * (dbActiveSec / 60.0)) / 200.0;
+            }
+
+            final int finalActiveSec = dbActiveSec;
+            final double finalCalories = dbCalories;
 
             AppExecutors.mainThread().execute(() -> {
-                updateUi(count, totalSec);
+                updateUi(count, finalActiveSec, finalCalories);
             });
         });
     }
 
-    private void updateUi(int workoutCount, int totalSeconds) {
+    private void updateUi(int workoutCount, int totalActiveSec, double totalCalories) {
         if (!isAdded()) return;
 
-        int totalMinutes = totalSeconds / 60;
-        int totalKcal = totalMinutes * 6;
+        int totalMinutes = (totalActiveSec > 0) ? (int) Math.ceil(totalActiveSec / 60.0) : 0;
+        int totalKcal = (int) Math.round(totalCalories);
 
         tvWorkoutCount.setText(String.valueOf(workoutCount));
         tvKcalCount.setText(String.valueOf(totalKcal));

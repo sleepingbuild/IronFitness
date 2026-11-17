@@ -43,6 +43,12 @@ public interface WorkoutLogDao {
     @Query("SELECT COALESCE(SUM(totalSeconds), 0) FROM workout_logs")
     int getTotalSecondsNow();
 
+    @Query("SELECT COALESCE(SUM(activeDurationSec), 0) FROM workout_logs")
+    int getTotalActiveSecondsNow();
+
+    @Query("SELECT COALESCE(SUM(caloriesBurned), 0.0) FROM workout_logs")
+    double getTotalCaloriesNow();
+
     @Query("SELECT completedAt FROM workout_logs ORDER BY completedAt DESC")
     List<Long> getAllCompletedTimesNow();
 

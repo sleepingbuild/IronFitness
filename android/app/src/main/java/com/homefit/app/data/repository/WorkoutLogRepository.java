@@ -52,6 +52,11 @@ public class WorkoutLogRepository {
      */
     public LiveData<Resource<String>> saveWorkout(@Nullable Long categoryId, long startedAt, long completedAt,
                                                   int totalSeconds, int exercisesDone) {
+        return saveWorkout(categoryId, startedAt, completedAt, totalSeconds, totalSeconds, totalSeconds / 60.0 * 6.0, exercisesDone);
+    }
+
+    public LiveData<Resource<String>> saveWorkout(@Nullable Long categoryId, long startedAt, long completedAt,
+                                                  int totalSeconds, int activeDurationSec, double caloriesBurned, int exercisesDone) {
         MutableLiveData<Resource<String>> result = new MutableLiveData<>(Resource.loading());
         AppExecutors.diskIO().execute(() -> {
             long userId = tokenStore.getUserId();
@@ -66,6 +71,8 @@ public class WorkoutLogRepository {
             log.startedAt = startedAt;
             log.completedAt = completedAt;
             log.totalSeconds = totalSeconds;
+            log.activeDurationSec = activeDurationSec;
+            log.caloriesBurned = caloriesBurned;
             log.exercisesDone = exercisesDone;
             log.synced = false;
             db.workoutLogDao().insert(log);

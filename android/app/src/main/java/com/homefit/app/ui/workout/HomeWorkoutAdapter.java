@@ -105,34 +105,17 @@ public class HomeWorkoutAdapter extends RecyclerView.Adapter<HomeWorkoutAdapter.
                 coverUrl = getDefaultCoverForGroup(dto.group, dto.group_name);
             }
 
-            if (coverUrl != null && !coverUrl.trim().isEmpty()) {
-                binding.ivCoverImage.setVisibility(View.VISIBLE);
-                binding.ivIcon.setVisibility(View.GONE);
-                String fullUrl = com.homefit.app.ui.common.MediaLoader.resolveUrl(coverUrl);
-                Glide.with(binding.ivCoverImage)
-                        .load(fullUrl)
-                        .fitCenter()
-                        .placeholder(R.drawable.bg_media_placeholder)
-                        .listener(new com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable>() {
-                            @Override
-                            public boolean onLoadFailed(@androidx.annotation.Nullable com.bumptech.glide.load.engine.GlideException e, Object model, com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target, boolean isFirstResource) {
-                                binding.ivCoverImage.setVisibility(View.GONE);
-                                binding.ivIcon.setVisibility(View.VISIBLE);
-                                return false;
-                            }
+            binding.ivCoverImage.setVisibility(View.VISIBLE);
+            binding.ivIcon.setVisibility(View.GONE);
+            String fullUrl = com.homefit.app.ui.common.MediaLoader.resolveUrl(coverUrl);
+            final String fallbackUrl = getDefaultCoverForGroup(dto.group, dto.group_name);
 
-                            @Override
-                            public boolean onResourceReady(android.graphics.drawable.Drawable resource, Object model, com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target, com.bumptech.glide.load.DataSource dataSource, boolean isFirstResource) {
-                                binding.ivCoverImage.setVisibility(View.VISIBLE);
-                                binding.ivIcon.setVisibility(View.GONE);
-                                return false;
-                            }
-                        })
-                        .into(binding.ivCoverImage);
-            } else {
-                binding.ivCoverImage.setVisibility(View.GONE);
-                binding.ivIcon.setVisibility(View.VISIBLE);
-            }
+            Glide.with(binding.ivCoverImage)
+                    .load(fullUrl)
+                    .fitCenter()
+                    .placeholder(R.drawable.bg_media_placeholder)
+                    .error(Glide.with(binding.ivCoverImage).load(com.homefit.app.ui.common.MediaLoader.resolveUrl(fallbackUrl)).fitCenter())
+                    .into(binding.ivCoverImage);
 
             binding.llDifficulty.removeAllViews();
             int diffIcons = 2; // Default Medium
