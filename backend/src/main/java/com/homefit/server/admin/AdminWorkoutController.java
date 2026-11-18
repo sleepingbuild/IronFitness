@@ -1,10 +1,15 @@
 package com.homefit.server.admin;
 
+import com.homefit.server.domain.ContentRelease;
 import com.homefit.server.domain.Workout;
+import com.homefit.server.domain.WorkoutItem;
+import com.homefit.server.repository.ContentReleaseRepository;
 import com.homefit.server.repository.ExerciseRepository;
+import com.homefit.server.repository.WorkoutItemRepository;
 import com.homefit.server.repository.WorkoutRepository;
 import com.homefit.server.service.AuditLoggerService;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -16,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,18 +31,24 @@ import java.util.Map;
 public class AdminWorkoutController {
 
     private final WorkoutRepository workoutRepository;
+    private final WorkoutItemRepository workoutItemRepository;
     private final ExerciseRepository exerciseRepository;
+    private final ContentReleaseRepository contentReleaseRepository;
     private final AuditLoggerService auditLoggerService;
     private final com.homefit.server.service.DataSeeder dataSeeder;
     private final com.homefit.server.service.WorkoutDataMigrationService migrationService;
 
     public AdminWorkoutController(WorkoutRepository workoutRepository,
+                                  WorkoutItemRepository workoutItemRepository,
                                   ExerciseRepository exerciseRepository,
+                                  ContentReleaseRepository contentReleaseRepository,
                                   AuditLoggerService auditLoggerService,
                                   com.homefit.server.service.DataSeeder dataSeeder,
                                   com.homefit.server.service.WorkoutDataMigrationService migrationService) {
         this.workoutRepository = workoutRepository;
+        this.workoutItemRepository = workoutItemRepository;
         this.exerciseRepository = exerciseRepository;
+        this.contentReleaseRepository = contentReleaseRepository;
         this.auditLoggerService = auditLoggerService;
         this.dataSeeder = dataSeeder;
         this.migrationService = migrationService;
@@ -54,6 +66,7 @@ public class AdminWorkoutController {
     }
 
     @GetMapping
+    @Transactional(readOnly = true)
     public String list(Model model) {
         model.addAttribute("activeMenu", "workouts");
         model.addAttribute("workouts", workoutRepository.findAllByOrderBySortOrderAsc());
@@ -61,9 +74,11 @@ public class AdminWorkoutController {
     }
 
     @GetMapping({"/new", "/create"})
+    @Transactional(readOnly = true)
     public String newForm(Model model) {
         model.addAttribute("activeMenu", "workouts");
         model.addAttribute("workout", new Workout());
+        model.addAttribute("workoutItems", List.of());
         List<com.homefit.server.domain.Exercise> allExercises = exerciseRepository.findAllByOrderByCategoryIdAscSortOrderAscIdAsc();
         model.addAttribute("exercises", allExercises);
         Map<Long, com.homefit.server.domain.Exercise> exerciseMap = new HashMap<>();
@@ -75,10 +90,15 @@ public class AdminWorkoutController {
     }
 
     @GetMapping("/{id}/edit")
+    @Transactional(readOnly = true)
     public String editForm(@PathVariable Long id, Model model) {
         model.addAttribute("activeMenu", "workouts");
         Workout w = workoutRepository.findById(id).orElseThrow();
+        List<WorkoutItem> items = workoutItemRepository.findByWorkoutIdOrderByPositionAsc(id);
+        w.setItems(items);
         model.addAttribute("workout", w);
+        model.addAttribute("workoutItems", items);
+
         List<com.homefit.server.domain.Exercise> allExercises = exerciseRepository.findAllByOrderByCategoryIdAscSortOrderAscIdAsc();
         model.addAttribute("exercises", allExercises);
         Map<Long, com.homefit.server.domain.Exercise> exerciseMap = new HashMap<>();
@@ -90,6 +110,7 @@ public class AdminWorkoutController {
     }
 
     @PostMapping
+    @Transactional
     public String save(@ModelAttribute Workout workout, RedirectAttributes redirect) {
         boolean isNew = workout.getId() == null;
         if (!isNew) {
@@ -105,37 +126,59 @@ public class AdminWorkoutController {
                 existing.setCoverImageUrl(workout.getCoverImageUrl());
                 existing.setVersion(existing.getVersion() + 1);
 
-                existing.getItems().clear();
+                workoutItemRepository.deleteByWorkoutId(existing.getId());
+                workoutItemRepository.flush();
+
+                List<WorkoutItem> newItems = new ArrayList<>();
                 if (workout.getItems() != null) {
                     int pos = 1;
-                    for (com.homefit.server.domain.WorkoutItem item : workout.getItems()) {
+                    for (WorkoutItem item : workout.getItems()) {
                         if (item.getExerciseId() != null) {
                             item.setWorkout(existing);
                             item.setPosition(pos++);
                             if (item.getBlock() == null || item.getBlock().isBlank()) item.setBlock("B");
                             if (item.getMeasure() == null || item.getMeasure().isBlank()) item.setMeasure("reps");
-                            existing.getItems().add(item);
+                            newItems.add(item);
                         }
                     }
                 }
-                workoutRepository.save(existing);
+                if (!newItems.isEmpty()) {
+                    workoutItemRepository.saveAllAndFlush(newItems);
+                }
+                workoutRepository.saveAndFlush(existing);
+
+                try {
+                    int latestVer = contentReleaseRepository.findTopByOrderByVersionDesc()
+                            .map(ContentRelease::getVersion)
+                            .orElse(1);
+                    ContentRelease release = new ContentRelease();
+                    release.setVersion(latestVer + 1);
+                    release.setNotes("Admin cập nhật buổi tập " + existing.getTitleVi());
+                    release.setCreatedBy("admin@homefit.com");
+                    contentReleaseRepository.saveAndFlush(release);
+                } catch (Exception ignored) {}
             });
             auditLoggerService.log("admin@homefit.com", "UPDATE", "Workout", String.valueOf(workout.getId()), "Cập nhật buổi tập " + workout.getTitleVi());
             redirect.addFlashAttribute("message", "Đã cập nhật buổi tập thành công.");
         } else {
             workout.setVersion(1);
+            Workout saved = workoutRepository.saveAndFlush(workout);
+            List<WorkoutItem> newItems = new ArrayList<>();
             if (workout.getItems() != null) {
                 int pos = 1;
-                for (com.homefit.server.domain.WorkoutItem item : workout.getItems()) {
+                for (WorkoutItem item : workout.getItems()) {
                     if (item.getExerciseId() != null) {
-                        item.setWorkout(workout);
+                        item.setWorkout(saved);
                         item.setPosition(pos++);
                         if (item.getBlock() == null || item.getBlock().isBlank()) item.setBlock("B");
                         if (item.getMeasure() == null || item.getMeasure().isBlank()) item.setMeasure("reps");
+                        newItems.add(item);
                     }
                 }
             }
-            Workout saved = workoutRepository.save(workout);
+            if (!newItems.isEmpty()) {
+                workoutItemRepository.saveAllAndFlush(newItems);
+            }
             auditLoggerService.log("admin@homefit.com", "CREATE", "Workout", String.valueOf(saved.getId()), "Tạo mới buổi tập " + saved.getTitleVi());
             redirect.addFlashAttribute("message", "Đã thêm mới buổi tập thành công.");
         }
