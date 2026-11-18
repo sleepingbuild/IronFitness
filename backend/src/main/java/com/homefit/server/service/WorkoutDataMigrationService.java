@@ -6,6 +6,7 @@ import com.homefit.server.domain.Workout;
 import com.homefit.server.domain.WorkoutItem;
 import com.homefit.server.repository.ContentReleaseRepository;
 import com.homefit.server.repository.ExerciseRepository;
+import com.homefit.server.repository.WorkoutItemRepository;
 import com.homefit.server.repository.WorkoutRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
@@ -26,15 +28,18 @@ public class WorkoutDataMigrationService {
     private static final Logger log = LoggerFactory.getLogger(WorkoutDataMigrationService.class);
 
     private final WorkoutRepository workoutRepository;
+    private final WorkoutItemRepository workoutItemRepository;
     private final ExerciseRepository exerciseRepository;
     private final ContentReleaseRepository contentReleaseRepository;
     private final DataSeeder dataSeeder;
 
     public WorkoutDataMigrationService(WorkoutRepository workoutRepository,
+                                       WorkoutItemRepository workoutItemRepository,
                                        ExerciseRepository exerciseRepository,
                                        ContentReleaseRepository contentReleaseRepository,
                                        DataSeeder dataSeeder) {
         this.workoutRepository = workoutRepository;
+        this.workoutItemRepository = workoutItemRepository;
         this.exerciseRepository = exerciseRepository;
         this.contentReleaseRepository = contentReleaseRepository;
         this.dataSeeder = dataSeeder;
@@ -50,7 +55,7 @@ public class WorkoutDataMigrationService {
 
     @Transactional
     public int populateAllEmptyWorkouts() {
-        // Đảm bảo bảng exercises đã có đủ 95 bài tập mẫu trước
+        // 1. Đảm bảo bảng exercises đã có đủ 95 bài tập mẫu
         try {
             dataSeeder.run(null);
         } catch (Exception e) {
@@ -63,7 +68,12 @@ public class WorkoutDataMigrationService {
             return 0;
         }
 
-        // Phân loại danh sách bài tập theo nhóm cơ để làm fallback
+        List<Workout> allWorkouts = workoutRepository.findAll();
+        if (allWorkouts.isEmpty()) {
+            return 0;
+        }
+
+        // Phân loại danh sách bài tập theo nhóm cơ làm fallback
         List<Exercise> absFallback = new ArrayList<>();
         List<Exercise> chestFallback = new ArrayList<>();
         List<Exercise> legFallback = new ArrayList<>();
@@ -90,20 +100,17 @@ public class WorkoutDataMigrationService {
         if (backFallback.isEmpty()) backFallback = allDbExercises;
         if (fullFallback.isEmpty()) fullFallback = allDbExercises;
 
-        List<Workout> allWorkouts = workoutRepository.findAll();
-        if (allWorkouts.isEmpty()) {
-            return 0;
-        }
-
         int updatedCount = 0;
         for (Workout w : allWorkouts) {
-            if (w.getItems() != null && !w.getItems().isEmpty()) {
-                continue; // Bỏ qua nếu buổi tập này đã có bài tập
+            // Kiểm tra chính xác số bài tập con trong bảng workout_items của TiDB Cloud
+            long count = workoutItemRepository.countByWorkoutId(w.getId());
+            if (count > 0) {
+                continue; // Bỏ qua những buổi tập đã có dữ liệu
             }
 
             List<Exercise> exList = generateExercisesForWorkout(w, allDbExercises, absFallback, chestFallback, legFallback, backFallback, fullFallback);
             if (exList != null && !exList.isEmpty()) {
-                populateItemsForWorkout(w, exList);
+                saveItemsForWorkout(w, exList);
                 w.setVersion(w.getVersion() + 1);
                 workoutRepository.save(w);
                 updatedCount++;
@@ -121,7 +128,7 @@ public class WorkoutDataMigrationService {
                 release.setCreatedBy("admin@homefit.com");
                 contentReleaseRepository.save(release);
             } catch (Exception e) {
-                log.warn("Không thể tạo bản ghi content_release: " + e.getMessage());
+                log.warn("Không thể tăng content_release: " + e.getMessage());
             }
         }
 
@@ -129,15 +136,10 @@ public class WorkoutDataMigrationService {
         return updatedCount;
     }
 
-    private void populateItemsForWorkout(Workout w, List<Exercise> exList) {
-        List<WorkoutItem> items = w.getItems();
-        if (items == null) {
-            items = new ArrayList<>();
-            w.setItems(items);
-        } else {
-            items.clear();
-        }
+    private void saveItemsForWorkout(Workout w, List<Exercise> exList) {
+        workoutItemRepository.deleteByWorkoutId(w.getId());
 
+        List<WorkoutItem> itemsToSave = new ArrayList<>();
         int restSec = w.getRestSec() > 0 ? w.getRestSec() : 15;
         int pos = 1;
         for (Exercise e : exList) {
@@ -156,7 +158,11 @@ public class WorkoutDataMigrationService {
                 item.setValue(e.getReps() != null ? e.getReps() : 12);
             }
             item.setRestAfterSec(restSec);
-            items.add(item);
+            itemsToSave.add(item);
+        }
+
+        if (!itemsToSave.isEmpty()) {
+            workoutItemRepository.saveAll(itemsToSave);
         }
     }
 
@@ -181,22 +187,19 @@ public class WorkoutDataMigrationService {
             int posInWeek = (dayIndex - 1) % 7 + 1;
             boolean isCycle2 = posInWeek > 3;
 
-            if ((posInWeek - 1) % 3 == 0) {
-                // Ngực & Tay
+            if (title.contains("nguc") || title.contains("tay") || (csDayTypeMatches(posInWeek, 0))) {
                 if (!isCycle2) {
                     targetNames = List.of("Arm Circles", "Cat-Cow", "Hít đất vào tường", "Hít đất quỳ gối (Knee Push-up)", "Triceps Dips trên sàn", "Hít đất kim cương (Diamond Push-up)", "Plank chạm vai", "Chest Opener", "Child's Pose");
                 } else {
                     targetNames = List.of("Arm Circles", "Cat-Cow", "Hít đất tiêu chuẩn (Standard Push-up)", "Hít đất lệch tay", "Nhún tay sau trên ghế (Chair Dips)", "Pike Push-up", "Plank khuỷu tay", "Chest Opener", "Child's Pose");
                 }
-            } else if ((posInWeek - 1) % 3 == 1) {
-                // Lưng & Bụng
+            } else if (title.contains("lung") || title.contains("bung") || (csDayTypeMatches(posInWeek, 1))) {
                 if (!isCycle2) {
                     targetNames = List.of("Arm Circles", "Cat-Cow", "Chó chim (Bird Dog)", "Tư thế siêu nhân (Superman)", "Bọ chết (Dead Bug)", "Chạm gót chân (Heel Taps)", "Gập bụng cơ bản (Crunches)", "Child's Pose");
                 } else {
                     targetNames = List.of("Arm Circles", "Cat-Cow", "Gập bụng đạp xe (Bicycle Crunches)", "Leo núi tại chỗ (Mountain Climber)", "Plank cao giữ thẳng tay", "Nâng chân nằm ngửa (Leg Raise)", "Plank nghiêng nâng hông", "Child's Pose");
                 }
             } else {
-                // Chân
                 if (!isCycle2) {
                     targetNames = List.of("Hip Circles", "Cat-Cow", "Squat gánh thân người (Bodyweight Squat)", "Sumo Squat", "Chùng chân bước lùi (Reverse Lunge)", "Nâng gót chân (Calf Raise)", "Cầu mông (Glute Bridge)", "Standing Quad Stretch", "Child's Pose");
                 } else {
@@ -268,6 +271,10 @@ public class WorkoutDataMigrationService {
         return result;
     }
 
+    private boolean csDayTypeMatches(int posInWeek, int modType) {
+        return ((posInWeek - 1) % 3) == modType;
+    }
+
     private Exercise findExercise(String name, List<Exercise> allDbExercises, List<Exercise> categoryFallback) {
         if (allDbExercises == null || allDbExercises.isEmpty()) return null;
 
@@ -303,7 +310,7 @@ public class WorkoutDataMigrationService {
 
     private int extractDayIndex(String text) {
         if (text == null) return 1;
-        var matcher = Pattern.compile("ngay\\s*(\\d+)").matcher(text);
+        Matcher matcher = Pattern.compile("ngay\\s*(\\d+)").matcher(text);
         if (matcher.find()) {
             try { return Integer.parseInt(matcher.group(1)); } catch (Exception ignored) {}
         }
