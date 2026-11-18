@@ -19,7 +19,6 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
@@ -49,272 +48,181 @@ public class WorkoutDataMigrationService {
     @Transactional
     public void onApplicationReady() {
         log.info("Bắt đầu kiểm tra và bổ sung tự động bài tập con cho toàn bộ các buổi tập trống trên TiDB Cloud...");
-        int count = populateAllEmptyWorkouts();
-        log.info("Hoàn tất tự động bổ sung bài tập con! Đã nạp dữ liệu cho {} buổi tập.", count);
+        try {
+            populateAllEmptyWorkouts();
+        } catch (Exception e) {
+            log.error("Lỗi khi tự động bổ sung bài tập con: " + e.getMessage(), e);
+        }
     }
 
     @Transactional
-    public int populateAllEmptyWorkouts() {
-        // 1. Đảm bảo bảng exercises đã có đủ 95 bài tập mẫu
+    public String populateAllEmptyWorkouts() {
+        // 1. Đảm bảo bảng exercises đã được nạp dữ liệu mẫu
         try {
             dataSeeder.run(null);
         } catch (Exception e) {
-            log.warn("Lỗi chạy dataSeeder: " + e.getMessage());
+            log.warn("Cảnh báo DataSeeder: " + e.getMessage());
         }
 
-        List<Exercise> allDbExercises = exerciseRepository.findAll();
-        if (allDbExercises.isEmpty()) {
-            log.warn("Bảng exercises rỗng. Không thể phân bổ bài tập con.");
-            return 0;
+        List<Exercise> allExercises = exerciseRepository.findAll();
+        if (allExercises.isEmpty()) {
+            throw new IllegalStateException("Thư viện bài tập (exercises) đang rỗng! Vui lòng nạp dữ liệu bài tập mẫu trước.");
         }
 
-        List<Workout> allWorkouts = workoutRepository.findAll();
-        if (allWorkouts.isEmpty()) {
-            return 0;
+        List<Workout> workouts = workoutRepository.findAll();
+        if (workouts.isEmpty()) {
+            return "Không tìm thấy buổi tập nào trong cơ sở dữ liệu.";
         }
 
-        // Phân loại danh sách bài tập theo nhóm cơ làm fallback
-        List<Exercise> absFallback = new ArrayList<>();
-        List<Exercise> chestFallback = new ArrayList<>();
-        List<Exercise> legFallback = new ArrayList<>();
-        List<Exercise> backFallback = new ArrayList<>();
-        List<Exercise> fullFallback = new ArrayList<>();
+        // Phân loại danh sách bài tập theo nhóm cơ
+        List<Exercise> absExercises = new ArrayList<>();
+        List<Exercise> chestArmExercises = new ArrayList<>();
+        List<Exercise> legExercises = new ArrayList<>();
+        List<Exercise> backExercises = new ArrayList<>();
+        List<Exercise> warmUpCoolDown = new ArrayList<>();
 
-        for (Exercise e : allDbExercises) {
-            String name = stripAccents(e.getName()).toLowerCase(Locale.US);
-            if (name.contains("bung") || name.contains("crunch") || name.contains("plank") || name.contains("leg raise") || name.contains("v-up")) {
-                absFallback.add(e);
-            } else if (name.contains("nguc") || name.contains("push-up") || name.contains("hit dat") || name.contains("dips") || name.contains("tay")) {
-                chestFallback.add(e);
-            } else if (name.contains("chan") || name.contains("squat") || name.contains("lunge") || name.contains("mong") || name.contains("calf")) {
-                legFallback.add(e);
-            } else if (name.contains("lung") || name.contains("superman") || name.contains("bird dog") || name.contains("back")) {
-                backFallback.add(e);
-            } else {
-                fullFallback.add(e);
+        for (Exercise e : allExercises) {
+            String nameNorm = stripAccents(e.getName()).toLowerCase(Locale.US);
+            if (nameNorm.contains("warm") || nameNorm.contains("circle") || nameNorm.contains("cat-cow") || nameNorm.contains("stretch") || nameNorm.contains("child") || nameNorm.contains("opener")) {
+                warmUpCoolDown.add(e);
+            }
+            if (nameNorm.contains("bung") || nameNorm.contains("crunch") || nameNorm.contains("plank") || nameNorm.contains("leg raise") || nameNorm.contains("v-up") || nameNorm.contains("heel tap")) {
+                absExercises.add(e);
+            } else if (nameNorm.contains("nguc") || nameNorm.contains("tay") || nameNorm.contains("hit dat") || nameNorm.contains("push-up") || nameNorm.contains("dips") || nameNorm.contains("pike")) {
+                chestArmExercises.add(e);
+            } else if (nameNorm.contains("chan") || nameNorm.contains("mong") || nameNorm.contains("squat") || nameNorm.contains("lunge") || nameNorm.contains("calf") || nameNorm.contains("bridge")) {
+                legExercises.add(e);
+            } else if (nameNorm.contains("lung") || nameNorm.contains("superman") || nameNorm.contains("bird dog") || nameNorm.contains("back")) {
+                backExercises.add(e);
             }
         }
-        if (absFallback.isEmpty()) absFallback = allDbExercises;
-        if (chestFallback.isEmpty()) chestFallback = allDbExercises;
-        if (legFallback.isEmpty()) legFallback = allDbExercises;
-        if (backFallback.isEmpty()) backFallback = allDbExercises;
-        if (fullFallback.isEmpty()) fullFallback = allDbExercises;
 
-        int updatedCount = 0;
-        for (Workout w : allWorkouts) {
-            // Kiểm tra chính xác số bài tập con trong bảng workout_items của TiDB Cloud
+        if (absExercises.isEmpty()) absExercises = allExercises;
+        if (chestArmExercises.isEmpty()) chestArmExercises = allExercises;
+        if (legExercises.isEmpty()) legExercises = allExercises;
+        if (backExercises.isEmpty()) backExercises = allExercises;
+
+        int updatedWorkouts = 0;
+        int totalItemsCreated = 0;
+
+        for (Workout w : workouts) {
             long count = workoutItemRepository.countByWorkoutId(w.getId());
-            if (count > 0) {
-                continue; // Bỏ qua những buổi tập đã có dữ liệu
+            if (count >= 1) {
+                continue; // Đã có bài tập con -> Bỏ qua
             }
 
-            List<Exercise> exList = generateExercisesForWorkout(w, allDbExercises, absFallback, chestFallback, legFallback, backFallback, fullFallback);
-            if (exList != null && !exList.isEmpty()) {
-                saveItemsForWorkout(w, exList);
+            // Lọc danh sách bài tập phù hợp cho workout w
+            List<Exercise> exList = selectExercisesForWorkout(w, allExercises, absExercises, chestArmExercises, legExercises, backExercises, warmUpCoolDown);
+            if (exList.isEmpty()) {
+                exList = new ArrayList<>(allExercises.subList(0, Math.min(10, allExercises.size())));
+            }
+
+            // Xóa sạch items cũ (nếu có) và tạo mới
+            workoutItemRepository.deleteByWorkoutId(w.getId());
+            workoutItemRepository.flush();
+
+            List<WorkoutItem> newItems = new ArrayList<>();
+            int restSec = w.getRestSec() > 0 ? w.getRestSec() : 15;
+            int pos = 1;
+            for (Exercise e : exList) {
+                if (e == null) continue;
+                WorkoutItem item = new WorkoutItem();
+                item.setWorkout(w);
+                item.setPosition(pos++);
+                item.setExerciseId(e.getId());
+                item.setBlock(pos <= 3 ? "A" : (pos > exList.size() - 2 ? "C" : "B"));
+                item.setRoundNum(1);
+                if (e.getDurationSec() != null && e.getDurationSec() > 0) {
+                    item.setMeasure("time");
+                    item.setValue(e.getDurationSec());
+                } else {
+                    item.setMeasure("reps");
+                    item.setValue(e.getReps() != null ? e.getReps() : 12);
+                }
+                item.setRestAfterSec(restSec);
+                newItems.add(item);
+            }
+
+            if (!newItems.isEmpty()) {
+                workoutItemRepository.saveAllAndFlush(newItems);
                 w.setVersion(w.getVersion() + 1);
-                workoutRepository.save(w);
-                updatedCount++;
+                workoutRepository.saveAndFlush(w);
+                updatedWorkouts++;
+                totalItemsCreated += newItems.size();
             }
         }
 
-        if (updatedCount > 0) {
+        if (updatedWorkouts > 0) {
             try {
                 int latestVer = contentReleaseRepository.findTopByOrderByVersionDesc()
                         .map(ContentRelease::getVersion)
                         .orElse(1);
                 ContentRelease release = new ContentRelease();
                 release.setVersion(latestVer + 1);
-                release.setNotes("Tự động đồng bộ bài tập khởi tạo cho " + updatedCount + " buổi tập.");
+                release.setNotes("Đồng bộ bài tập khởi tạo cho " + updatedWorkouts + " buổi tập.");
                 release.setCreatedBy("admin@homefit.com");
-                contentReleaseRepository.save(release);
+                contentReleaseRepository.saveAndFlush(release);
             } catch (Exception e) {
-                log.warn("Không thể tăng content_release: " + e.getMessage());
+                log.warn("Cảnh báo cập nhật contentRelease: " + e.getMessage());
             }
         }
 
-        log.info("Đã nạp bài tập khởi tạo thành công cho {} buổi tập trống.", updatedCount);
-        return updatedCount;
+        String msg = String.format(Locale.US, "Đã nạp bài tập cho %d / %d buổi tập (Tổng %d bài tập con được tạo)!",
+                updatedWorkouts, workouts.size(), totalItemsCreated);
+        log.info(msg);
+        return msg;
     }
 
-    private void saveItemsForWorkout(Workout w, List<Exercise> exList) {
-        workoutItemRepository.deleteByWorkoutId(w.getId());
-
-        List<WorkoutItem> itemsToSave = new ArrayList<>();
-        int restSec = w.getRestSec() > 0 ? w.getRestSec() : 15;
-        int pos = 1;
-        for (Exercise e : exList) {
-            if (e == null) continue;
-            WorkoutItem item = new WorkoutItem();
-            item.setWorkout(w);
-            item.setPosition(pos++);
-            item.setExerciseId(e.getId());
-            item.setBlock(pos <= 3 ? "A" : (pos > exList.size() - 2 ? "C" : "B"));
-            item.setRoundNum(1);
-            if (e.getDurationSec() != null && e.getDurationSec() > 0) {
-                item.setMeasure("time");
-                item.setValue(e.getDurationSec());
-            } else {
-                item.setMeasure("reps");
-                item.setValue(e.getReps() != null ? e.getReps() : 12);
-            }
-            item.setRestAfterSec(restSec);
-            itemsToSave.add(item);
-        }
-
-        if (!itemsToSave.isEmpty()) {
-            workoutItemRepository.saveAll(itemsToSave);
-        }
-    }
-
-    private List<Exercise> generateExercisesForWorkout(Workout w,
-                                                      List<Exercise> allDbExercises,
-                                                      List<Exercise> absFallback,
-                                                      List<Exercise> chestFallback,
-                                                      List<Exercise> legFallback,
-                                                      List<Exercise> backFallback,
-                                                      List<Exercise> fullFallback) {
-        String title = stripAccents(w.getTitleVi()).toLowerCase(Locale.US);
-        String goal = stripAccents(w.getGoal() != null ? w.getGoal() : "").toLowerCase(Locale.US);
+    private List<Exercise> selectExercisesForWorkout(Workout w,
+                                                      List<Exercise> allExercises,
+                                                      List<Exercise> absExercises,
+                                                      List<Exercise> chestArmExercises,
+                                                      List<Exercise> legExercises,
+                                                      List<Exercise> backExercises,
+                                                      List<Exercise> warmUpCoolDown) {
+        String title = stripAccents(w.getTitleVi() != null ? w.getTitleVi() : "").toLowerCase(Locale.US);
         String muscle = stripAccents(w.getPrimaryMuscle() != null ? w.getPrimaryMuscle() : "").toLowerCase(Locale.US);
-        String level = stripAccents(w.getLevel() != null ? w.getLevel() : "").toLowerCase(Locale.US);
-        String type = stripAccents(w.getType() != null ? w.getType() : "").toLowerCase(Locale.US);
-
-        List<String> targetNames;
-
-        // 1. Thử thách hoặc Tên chứa Ngày
-        if (type.contains("challenge") || goal.contains("challenge") || title.contains("thu thach") || title.contains("ngay ")) {
-            int dayIndex = extractDayIndex(title);
-            int posInWeek = (dayIndex - 1) % 7 + 1;
-            boolean isCycle2 = posInWeek > 3;
-
-            if (title.contains("nguc") || title.contains("tay") || (csDayTypeMatches(posInWeek, 0))) {
-                if (!isCycle2) {
-                    targetNames = List.of("Arm Circles", "Cat-Cow", "Hít đất vào tường", "Hít đất quỳ gối (Knee Push-up)", "Triceps Dips trên sàn", "Hít đất kim cương (Diamond Push-up)", "Plank chạm vai", "Chest Opener", "Child's Pose");
-                } else {
-                    targetNames = List.of("Arm Circles", "Cat-Cow", "Hít đất tiêu chuẩn (Standard Push-up)", "Hít đất lệch tay", "Nhún tay sau trên ghế (Chair Dips)", "Pike Push-up", "Plank khuỷu tay", "Chest Opener", "Child's Pose");
-                }
-            } else if (title.contains("lung") || title.contains("bung") || (csDayTypeMatches(posInWeek, 1))) {
-                if (!isCycle2) {
-                    targetNames = List.of("Arm Circles", "Cat-Cow", "Chó chim (Bird Dog)", "Tư thế siêu nhân (Superman)", "Bọ chết (Dead Bug)", "Chạm gót chân (Heel Taps)", "Gập bụng cơ bản (Crunches)", "Child's Pose");
-                } else {
-                    targetNames = List.of("Arm Circles", "Cat-Cow", "Gập bụng đạp xe (Bicycle Crunches)", "Leo núi tại chỗ (Mountain Climber)", "Plank cao giữ thẳng tay", "Nâng chân nằm ngửa (Leg Raise)", "Plank nghiêng nâng hông", "Child's Pose");
-                }
-            } else {
-                if (!isCycle2) {
-                    targetNames = List.of("Hip Circles", "Cat-Cow", "Squat gánh thân người (Bodyweight Squat)", "Sumo Squat", "Chùng chân bước lùi (Reverse Lunge)", "Nâng gót chân (Calf Raise)", "Cầu mông (Glute Bridge)", "Standing Quad Stretch", "Child's Pose");
-                } else {
-                    targetNames = List.of("Hip Circles", "Cat-Cow", "Squat bật nhảy (Jump Squat)", "Lateral Lunge", "Wall Sit", "Bulgarian Split Squat", "Đá chân sau (Donkey Kick)", "Standing Quad Stretch", "Child's Pose");
-                }
-            }
-        }
-        // 2. Bụng (Abs)
-        else if (muscle.contains("bung") || goal.contains("abs") || title.contains("bung")) {
-            if (level.contains("hard") || title.contains("kho")) {
-                targetNames = List.of("Cat-Cow", "Gập bụng đạp xe (Bicycle Crunches)", "V-up gập bụng", "Hollow Hold", "Plank nghiêng nâng hông", "Plank cao giữ thẳng tay", "Bọ chết (Dead Bug)", "Child's Pose");
-            } else if (level.contains("medium") || title.contains("trung binh")) {
-                targetNames = List.of("Cat-Cow", "Gập bụng đạp xe (Bicycle Crunches)", "Nâng chân nằm ngửa (Leg Raise)", "Gập bụng ngược (Reverse Crunch)", "Plank khuỷu tay", "Plank nghiêng", "Child's Pose");
-            } else {
-                targetNames = List.of("Cat-Cow", "Gập bụng cơ bản (Crunches)", "Chạm gót chân (Heel Taps)", "Bọ chết (Dead Bug)", "Plank quỳ gối", "Arm Circles", "Child's Pose");
-            }
-        }
-        // 3. Ngực & Tay
-        else if (muscle.contains("nguc") || muscle.contains("tay") || title.contains("nguc") || title.contains("tay")) {
-            targetNames = List.of("Arm Circles", "Cat-Cow", "Hít đất tiêu chuẩn (Standard Push-up)", "Hít đất kim cương (Diamond Push-up)", "Hít đất tay rộng (Wide Push-up)", "Nhún tay sau trên ghế (Chair Dips)", "Pike Push-up", "Plank chạm vai", "Chest Opener", "Child's Pose");
-        }
-        // 4. Chân & Mông
-        else if (muscle.contains("chan") || muscle.contains("mong") || title.contains("chan") || title.contains("mong")) {
-            targetNames = List.of("Hip Circles", "Cat-Cow", "Squat gánh thân người (Bodyweight Squat)", "Bulgarian Split Squat", "Chùng chân bước lùi (Reverse Lunge)", "Sumo Squat", "Nâng gót chân (Calf Raise)", "Cầu mông (Glute Bridge)", "Standing Quad Stretch", "Child's Pose");
-        }
-        // 5. Tabata
-        else if (type.contains("tabata") || goal.contains("tabata") || title.contains("tabata")) {
-            targetNames = List.of("Nhảy dang tay chân (Jumping Jacks)", "Squat bật nhảy (Jump Squat)", "Leo núi tại chỗ (Mountain Climber)", "Burpees", "Arm Circles", "Child's Pose");
-        }
-        // 6. Stretch
-        else if (type.contains("stretch") || goal.contains("stretch") || title.contains("keo gian")) {
-            targetNames = List.of("Cat-Cow", "Child's Pose", "Chest Opener", "Standing Hamstring Stretch", "Standing Quad Stretch", "Hip Circles");
-        }
-        // 7. Fat Loss / HIIT / Toàn thân / Calo
-        else {
-            if (level.contains("hard") || title.contains("cao")) {
-                targetNames = List.of("Nhảy dang tay chân (Jumping Jacks)", "Squat bật nhảy (Jump Squat)", "Hít đất tiêu chuẩn (Standard Push-up)", "Leo núi tại chỗ (Mountain Climber)", "Burpees", "Gập bụng đạp xe (Bicycle Crunches)", "Plank khuỷu tay", "Standing Quad Stretch", "Child's Pose");
-            } else if (level.contains("medium") || title.contains("vua")) {
-                targetNames = List.of("Nhảy dang tay chân (Jumping Jacks)", "Arm Circles", "Squat bật nhảy (Jump Squat)", "Hít đất tiêu chuẩn (Standard Push-up)", "Chùng chân bước lùi (Reverse Lunge)", "Leo núi tại chỗ (Mountain Climber)", "Gập bụng đạp xe (Bicycle Crunches)", "Tư thế siêu nhân (Superman)", "Burpees", "Child's Pose");
-            } else {
-                targetNames = List.of("Arm Circles", "Hip Circles", "Cat-Cow", "Squat gánh thân người (Bodyweight Squat)", "Hít đất quỳ gối (Knee Push-up)", "Chùng chân bước lùi (Reverse Lunge)", "Cầu mông (Glute Bridge)", "Plank khuỷu tay", "Standing Quad Stretch", "Child's Pose");
-            }
-        }
 
         List<Exercise> result = new ArrayList<>();
-        List<Exercise> fallbackCategory = fullFallback;
-        if (muscle.contains("bung") || goal.contains("abs")) fallbackCategory = absFallback;
-        else if (muscle.contains("nguc") || muscle.contains("tay")) fallbackCategory = chestFallback;
-        else if (muscle.contains("chan") || muscle.contains("mong")) fallbackCategory = legFallback;
-        else if (muscle.contains("lung")) fallbackCategory = backFallback;
 
-        for (String name : targetNames) {
-            Exercise ex = findExercise(name, allDbExercises, fallbackCategory);
-            if (ex != null && !result.contains(ex)) {
-                result.add(ex);
-            }
+        // Lấy 2 bài khởi động
+        for (Exercise e : warmUpCoolDown) {
+            if (!result.contains(e)) result.add(e);
+            if (result.size() >= 2) break;
         }
 
-        // Đảm bảo mỗi buổi tập rỗng luôn được nạp đủ từ 7 đến 14 bài
-        if (result.size() < 7) {
-            for (Exercise ex : fallbackCategory) {
-                if (!result.contains(ex)) {
-                    result.add(ex);
+        // Chọn danh sách bài tập chính theo từ khóa
+        List<Exercise> targetPool;
+        if (title.contains("bung") || muscle.contains("bung") || title.contains("abs")) {
+            targetPool = absExercises;
+        } else if (title.contains("nguc") || title.contains("tay") || muscle.contains("nguc") || muscle.contains("tay") || muscle.contains("chest") || muscle.contains("arm")) {
+            targetPool = chestArmExercises;
+        } else if (title.contains("chan") || title.contains("mong") || muscle.contains("chan") || muscle.contains("mong") || muscle.contains("leg")) {
+            targetPool = legExercises;
+        } else if (title.contains("lung") || muscle.contains("lung") || muscle.contains("back")) {
+            targetPool = backExercises;
+        } else {
+            targetPool = allExercises;
+        }
+
+        for (Exercise e : targetPool) {
+            if (!result.contains(e)) {
+                result.add(e);
+            }
+            if (result.size() >= 10) break;
+        }
+
+        // Nếu chưa đủ 8 bài, lấy thêm từ allExercises
+        if (result.size() < 8) {
+            for (Exercise e : allExercises) {
+                if (!result.contains(e)) {
+                    result.add(e);
                 }
-                if (result.size() >= 8) break;
+                if (result.size() >= 10) break;
             }
         }
 
         return result;
-    }
-
-    private boolean csDayTypeMatches(int posInWeek, int modType) {
-        return ((posInWeek - 1) % 3) == modType;
-    }
-
-    private Exercise findExercise(String name, List<Exercise> allDbExercises, List<Exercise> categoryFallback) {
-        if (allDbExercises == null || allDbExercises.isEmpty()) return null;
-
-        String targetNorm = stripAccents(name).toLowerCase(Locale.US).replaceAll("[^a-z0-9]", "");
-
-        for (Exercise e : allDbExercises) {
-            String dbNorm = stripAccents(e.getName()).toLowerCase(Locale.US).replaceAll("[^a-z0-9]", "");
-            if (dbNorm.equalsIgnoreCase(targetNorm) || dbNorm.contains(targetNorm) || targetNorm.contains(dbNorm)) {
-                return e;
-            }
-        }
-
-        for (Exercise e : allDbExercises) {
-            String dbNorm = stripAccents(e.getName()).toLowerCase(Locale.US);
-            if (targetNorm.contains("squat") && dbNorm.contains("squat")) return e;
-            if (targetNorm.contains("hit dat") && (dbNorm.contains("hit dat") || dbNorm.contains("push-up") || dbNorm.contains("chong day"))) return e;
-            if (targetNorm.contains("gap bung") && (dbNorm.contains("gap bung") || dbNorm.contains("crunch"))) return e;
-            if (targetNorm.contains("plank") && dbNorm.contains("plank")) return e;
-            if (targetNorm.contains("lunge") && dbNorm.contains("lunge")) return e;
-            if (targetNorm.contains("burpee") && dbNorm.contains("burpee")) return e;
-            if (targetNorm.contains("jump") && (dbNorm.contains("jump") || dbNorm.contains("nhay"))) return e;
-            if (targetNorm.contains("stretch") && (dbNorm.contains("stretch") || dbNorm.contains("gian"))) return e;
-        }
-
-        if (categoryFallback != null && !categoryFallback.isEmpty()) {
-            int hash = Math.abs(name.hashCode());
-            return categoryFallback.get(hash % categoryFallback.size());
-        }
-
-        int hash = Math.abs(name.hashCode());
-        return allDbExercises.get(hash % allDbExercises.size());
-    }
-
-    private int extractDayIndex(String text) {
-        if (text == null) return 1;
-        Matcher matcher = Pattern.compile("ngay\\s*(\\d+)").matcher(text);
-        if (matcher.find()) {
-            try { return Integer.parseInt(matcher.group(1)); } catch (Exception ignored) {}
-        }
-        return 1;
     }
 
     private String stripAccents(String s) {
