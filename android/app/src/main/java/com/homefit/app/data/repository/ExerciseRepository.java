@@ -136,6 +136,11 @@ public class ExerciseRepository {
                         if (!workoutEntities.isEmpty()) {
                             db.workoutDao().upsertAll(workoutEntities);
                         }
+                        for (com.homefit.app.data.remote.dto.WorkoutDto d : body) {
+                            if (d.id != null) {
+                                db.workoutItemDao().deleteByWorkoutId(d.id);
+                            }
+                        }
                         if (!itemEntities.isEmpty()) {
                             db.workoutItemDao().upsertAll(itemEntities);
                         }

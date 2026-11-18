@@ -28,22 +28,26 @@ public class AdminWorkoutController {
     private final ExerciseRepository exerciseRepository;
     private final AuditLoggerService auditLoggerService;
     private final com.homefit.server.service.DataSeeder dataSeeder;
+    private final com.homefit.server.service.WorkoutDataMigrationService migrationService;
 
     public AdminWorkoutController(WorkoutRepository workoutRepository,
                                   ExerciseRepository exerciseRepository,
                                   AuditLoggerService auditLoggerService,
-                                  com.homefit.server.service.DataSeeder dataSeeder) {
+                                  com.homefit.server.service.DataSeeder dataSeeder,
+                                  com.homefit.server.service.WorkoutDataMigrationService migrationService) {
         this.workoutRepository = workoutRepository;
         this.exerciseRepository = exerciseRepository;
         this.auditLoggerService = auditLoggerService;
         this.dataSeeder = dataSeeder;
+        this.migrationService = migrationService;
     }
 
     @PostMapping("/seed-missing")
     public String seedMissing(RedirectAttributes redirect) {
         try {
             dataSeeder.run(null);
-            redirect.addFlashAttribute("message", "Đã nạp thành công các bài tập khởi tạo cho các buổi tập rỗng.");
+            int count = migrationService.populateAllEmptyWorkouts();
+            redirect.addFlashAttribute("message", "Đã đồng bộ thành công bài tập khởi tạo cho " + count + " buổi tập rỗng!");
         } catch (Exception e) {
             redirect.addFlashAttribute("errorMessage", "Lỗi nạp bài tập: " + e.getMessage());
         }
