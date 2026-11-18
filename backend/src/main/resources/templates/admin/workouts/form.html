@@ -4,6 +4,23 @@
 <body>
 <div th:replace="~{admin/fragments :: navbar}"></div>
 
+<style>
+    @media (min-width: 1024px) {
+        .workout-form-row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .workout-left-col {
+            flex: 0 0 38%;
+            max-width: 38%;
+        }
+        .workout-right-col {
+            flex: 0 0 62%;
+            max-width: 62%;
+        }
+    }
+</style>
+
 <div class="container-fluid">
     <div class="row">
         <nav th:replace="~{admin/fragments :: sidebar}"></nav>
@@ -17,9 +34,9 @@
             <form th:action="@{/admin/workouts}" th:object="${workout}" method="post" id="workoutForm">
                 <input type="hidden" th:field="*{id}">
 
-                <div class="row">
-                    <!-- Cột thông tin chung -->
-                    <div class="col-lg-5 mb-4">
+                <div class="row workout-form-row">
+                    <!-- Cột thông tin chung (38% trên Desktop) -->
+                    <div class="col-12 col-lg-5 workout-left-col mb-4">
                         <div class="card shadow-sm h-100">
                             <div class="card-header bg-white fw-bold py-3"><i class="bi bi-info-circle text-primary me-2"></i>Thông tin Buổi tập</div>
                             <div class="card-body">
@@ -122,56 +139,56 @@
                         </div>
                     </div>
 
-                    <!-- Cột danh sách bài tập con -->
-                    <div class="col-lg-7 mb-4">
+                    <!-- Cột danh sách bài tập con (62% trên Desktop) -->
+                    <div class="col-12 col-lg-7 workout-right-col mb-4">
                         <div class="card shadow-sm h-100">
                             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                                <span class="fw-bold"><i class="bi bi-list-check text-success me-2"></i>Danh sách Bài tập trong Buổi tập này (<span id="itemCountDisplay">0</span> bài)</span>
+                                <span class="fw-bold"><i class="bi bi-list-check text-success me-2"></i>Danh sách Bài tập trong Buổi tập này (<span id="itemCountDisplay" th:text="${workoutItems != null ? workoutItems.size() : (workout.items != null ? workout.items.size() : 0)}">0</span> bài)</span>
                                 <button type="button" class="btn btn-success btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#addExerciseModal">
                                     <i class="bi bi-plus-lg me-1"></i>+ Thêm bài tập
                                 </button>
                             </div>
-                            <div class="card-body p-0 table-responsive" style="max-height: 650px; overflow-y: auto;">
-                                <table class="table table-hover align-middle mb-0" id="workoutItemsTable">
+                            <div class="card-body p-0 table-responsive" style="max-height: 650px; overflow-y: auto; overflow-x: hidden;">
+                                <table class="table table-hover align-middle mb-0" id="workoutItemsTable" style="table-layout: fixed; width: 100%;">
                                     <thead class="table-light sticky-top">
                                     <tr>
-                                        <th style="width: 50px;">STT</th>
-                                        <th style="width: 60px;">Ảnh 2D</th>
+                                        <th style="width: 40px;" class="text-center">STT</th>
+                                        <th style="width: 60px;" class="text-center">Ảnh</th>
                                         <th>Tên bài tập</th>
-                                        <th style="width: 100px;">Đơn vị</th>
-                                        <th style="width: 90px;">Số lượng</th>
-                                        <th style="width: 90px;">Nghỉ (s)</th>
-                                        <th style="width: 110px;" class="text-center">Thao tác</th>
+                                        <th style="width: 95px;">Đơn vị</th>
+                                        <th style="width: 75px;" class="text-center">Số lượng</th>
+                                        <th style="width: 70px;" class="text-center">Nghỉ (s)</th>
+                                        <th style="width: 105px;" class="text-center">Thao tác</th>
                                     </tr>
                                     </thead>
                                     <tbody id="workoutItemsBody">
-                                    <tr th:each="item, stat : ${workout.items}" th:data-ex-id="${item.exerciseId}">
-                                        <td class="row-stt fw-bold text-center" th:text="${stat.index + 1}">1</td>
-                                        <td>
+                                    <tr th:each="item, stat : ${workoutItems != null ? workoutItems : workout.items}" th:data-ex-id="${item.exerciseId}">
+                                        <td class="row-stt fw-bold text-center" style="width: 40px; vertical-align: middle;" th:text="${stat.index + 1}">1</td>
+                                        <td class="text-center" style="width: 60px; vertical-align: middle;">
                                             <input type="hidden" th:name="'items[' + ${stat.index} + '].exerciseId'" th:value="${item.exerciseId}" class="input-ex-id">
                                             <input type="hidden" th:name="'items[' + ${stat.index} + '].position'" th:value="${item.position}" class="input-pos">
                                             <input type="hidden" th:name="'items[' + ${stat.index} + '].block'" th:value="${item.block != null ? item.block : 'B'}" class="input-block">
 
                                             <img th:if="${exerciseMap != null and exerciseMap.get(item.exerciseId) != null}"
                                                  th:src="${exerciseMap.get(item.exerciseId).mediaUrl != null ? exerciseMap.get(item.exerciseId).mediaUrl : '/images/exercises/crunch.png'}"
-                                                 alt="Thumb" class="rounded border bg-white p-1" style="width: 48dp; height: 48dp; object-fit: contain;">
+                                                 alt="Thumb" style="width: 48px; height: 48px; min-width: 48px; object-fit: contain; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 2px;">
                                             <img th:unless="${exerciseMap != null and exerciseMap.get(item.exerciseId) != null}"
-                                                 src="/images/exercises/crunch.png" alt="Thumb" class="rounded border bg-white p-1" style="width: 48dp; height: 48dp; object-fit: contain;">
+                                                 src="/images/exercises/crunch.png" alt="Thumb" style="width: 48px; height: 48px; min-width: 48px; object-fit: contain; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 2px;">
                                         </td>
-                                        <td class="fw-bold small" th:text="${exerciseMap != null and exerciseMap.get(item.exerciseId) != null ? exerciseMap.get(item.exerciseId).name : 'Bài tập #' + item.exerciseId}">Tên bài</td>
-                                        <td>
-                                            <select class="form-select form-select-sm input-measure" th:name="'items[' + ${stat.index} + '].measure'">
+                                        <td class="fw-bold small" style="vertical-align: middle; word-wrap: break-word;" th:text="${exerciseMap != null and exerciseMap.get(item.exerciseId) != null ? exerciseMap.get(item.exerciseId).name : 'Bài tập #' + item.exerciseId}">Tên bài</td>
+                                        <td style="width: 95px; vertical-align: middle;">
+                                            <select class="form-select form-select-sm input-measure" th:name="'items[' + ${stat.index} + '].measure'" style="padding: 0.25rem 0.3rem;">
                                                 <option value="reps" th:selected="${item.measure == 'reps'}">lần</option>
                                                 <option value="time" th:selected="${item.measure == 'time'}">giây</option>
                                             </select>
                                         </td>
-                                        <td>
-                                            <input type="number" class="form-control form-control-sm input-value" th:name="'items[' + ${stat.index} + '].value'" th:value="${item.value}" min="1" required>
+                                        <td style="width: 75px; vertical-align: middle;" class="text-center">
+                                            <input type="number" class="form-control form-control-sm input-value text-center px-1" th:name="'items[' + ${stat.index} + '].value'" th:value="${item.value}" min="1" required>
                                         </td>
-                                        <td>
-                                            <input type="number" class="form-control form-control-sm input-rest" th:name="'items[' + ${stat.index} + '].restAfterSec'" th:value="${item.restAfterSec}" min="0" required>
+                                        <td style="width: 70px; vertical-align: middle;" class="text-center">
+                                            <input type="number" class="form-control form-control-sm input-rest text-center px-1" th:name="'items[' + ${stat.index} + '].restAfterSec'" th:value="${item.restAfterSec}" min="0" required>
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center" style="width: 105px; vertical-align: middle; white-space: nowrap;">
                                             <div class="btn-group btn-group-sm">
                                                 <button type="button" class="btn btn-outline-secondary btn-move-up" title="Lên"><i class="bi bi-arrow-up"></i></button>
                                                 <button type="button" class="btn btn-outline-secondary btn-move-down" title="Xuống"><i class="bi bi-arrow-down"></i></button>
@@ -225,7 +242,7 @@
                            th:data-ex-measure="${ex.durationSec != null ? 'time' : 'reps'}"
                            th:data-ex-rest="${ex.restSec != null ? ex.restSec : 15}">
                         <input class="form-check-input me-3 modal-ex-checkbox" type="checkbox" th:value="${ex.id}">
-                        <img th:src="${ex.mediaUrl != null ? ex.mediaUrl : '/images/exercises/crunch.png'}" alt="Thumb" class="rounded border p-1 me-3 bg-white" style="width: 48px; height: 48px; object-fit: contain;">
+                        <img th:src="${ex.mediaUrl != null ? ex.mediaUrl : '/images/exercises/crunch.png'}" alt="Thumb" style="width: 48px; height: 48px; min-width: 48px; object-fit: contain; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 2px;" class="me-3">
                         <div class="flex-grow-1">
                             <h6 class="mb-0 fw-bold" th:text="${ex.name}">Tên bài</h6>
                             <small class="text-muted" th:text="${ex.description != null ? ex.description : 'Bài tập thể hình'}">Mô tả bài tập</small>
@@ -378,27 +395,27 @@
             const tr = document.createElement('tr');
             tr.setAttribute('data-ex-id', exId);
             tr.innerHTML = `
-                <td class="row-stt fw-bold text-center">0</td>
-                <td>
+                <td class="row-stt fw-bold text-center" style="width: 40px; vertical-align: middle;">0</td>
+                <td class="text-center" style="width: 60px; vertical-align: middle;">
                     <input type="hidden" name="items[0].exerciseId" value="${exId}" class="input-ex-id">
                     <input type="hidden" name="items[0].position" value="1" class="input-pos">
                     <input type="hidden" name="items[0].block" value="B" class="input-block">
-                    <img src="${exMedia}" alt="Thumb" class="rounded border bg-white p-1" style="width: 48px; height: 48px; object-fit: contain;">
+                    <img src="${exMedia}" alt="Thumb" style="width: 48px; height: 48px; min-width: 48px; object-fit: contain; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 2px;">
                 </td>
-                <td class="fw-bold small">${exName}</td>
-                <td>
-                    <select class="form-select form-select-sm input-measure" name="items[0].measure">
+                <td class="fw-bold small" style="vertical-align: middle; word-wrap: break-word;">${exName}</td>
+                <td style="width: 95px; vertical-align: middle;">
+                    <select class="form-select form-select-sm input-measure" name="items[0].measure" style="padding: 0.25rem 0.3rem;">
                         <option value="reps" ${exMeasure === 'reps' ? 'selected' : ''}>lần</option>
                         <option value="time" ${exMeasure === 'time' ? 'selected' : ''}>giây</option>
                     </select>
                 </td>
-                <td>
-                    <input type="number" class="form-control form-control-sm input-value" name="items[0].value" value="${exVal}" min="1" required>
+                <td style="width: 75px; vertical-align: middle;" class="text-center">
+                    <input type="number" class="form-control form-control-sm input-value text-center px-1" name="items[0].value" value="${exVal}" min="1" required>
                 </td>
-                <td>
-                    <input type="number" class="form-control form-control-sm input-rest" name="items[0].restAfterSec" value="${exRest}" min="0" required>
+                <td style="width: 70px; vertical-align: middle;" class="text-center">
+                    <input type="number" class="form-control form-control-sm input-rest text-center px-1" name="items[0].restAfterSec" value="${exRest}" min="0" required>
                 </td>
-                <td class="text-center">
+                <td class="text-center" style="width: 105px; vertical-align: middle; white-space: nowrap;">
                     <div class="btn-group btn-group-sm">
                         <button type="button" class="btn btn-outline-secondary btn-move-up" title="Lên"><i class="bi bi-arrow-up"></i></button>
                         <button type="button" class="btn btn-outline-secondary btn-move-down" title="Xuống"><i class="bi bi-arrow-down"></i></button>
