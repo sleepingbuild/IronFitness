@@ -45,7 +45,7 @@ public class AdminWorkoutController {
     @PostMapping("/seed-missing")
     public String seedMissing(RedirectAttributes redirect) {
         try {
-            String resultMsg = migrationService.populateAllEmptyWorkouts();
+            String resultMsg = migrationService.populateAllWorkoutsForce(true);
             redirect.addFlashAttribute("message", resultMsg);
         } catch (Exception e) {
             redirect.addFlashAttribute("errorMessage", "Lỗi nạp bài tập: " + e.getMessage());

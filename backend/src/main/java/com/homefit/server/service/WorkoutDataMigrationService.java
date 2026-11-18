@@ -47,16 +47,16 @@ public class WorkoutDataMigrationService {
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void onApplicationReady() {
-        log.info("Bắt đầu kiểm tra và bổ sung tự động bài tập con cho toàn bộ các buổi tập trống trên TiDB Cloud...");
+        log.info("Bắt đầu kiểm tra và bổ sung tự động bài tập con cho toàn bộ các buổi tập trên TiDB Cloud...");
         try {
-            populateAllEmptyWorkouts();
+            populateAllWorkoutsForce(false);
         } catch (Exception e) {
             log.error("Lỗi khi tự động bổ sung bài tập con: " + e.getMessage(), e);
         }
     }
 
     @Transactional
-    public String populateAllEmptyWorkouts() {
+    public String populateAllWorkoutsForce(boolean forceReseed) {
         // 1. Đảm bảo bảng exercises đã được nạp dữ liệu mẫu
         try {
             dataSeeder.run(null);
@@ -72,6 +72,13 @@ public class WorkoutDataMigrationService {
         List<Workout> workouts = workoutRepository.findAll();
         if (workouts.isEmpty()) {
             return "Không tìm thấy buổi tập nào trong cơ sở dữ liệu.";
+        }
+
+        // Nếu forceReseed = true (khi bấm từ Web Admin), xóa sạch toàn bộ workout_items cũ để chèn mới từ đầu
+        if (forceReseed) {
+            log.info("Thực hiện xóa sạch toàn bộ bản ghi workout_items cũ theo yêu cầu nạp lại...");
+            workoutItemRepository.deleteAllInBatch();
+            workoutItemRepository.flush();
         }
 
         // Phân loại danh sách bài tập theo nhóm cơ
@@ -106,18 +113,16 @@ public class WorkoutDataMigrationService {
         int totalItemsCreated = 0;
 
         for (Workout w : workouts) {
-            long count = workoutItemRepository.countByWorkoutId(w.getId());
-            if (count >= 1) {
-                continue; // Đã có bài tập con -> Bỏ qua
+            if (!forceReseed) {
+                long count = workoutItemRepository.countByWorkoutId(w.getId());
+                if (count >= 1) {
+                    continue; // Nếu chạy tự động lúc khởi động và buổi tập đã có bài thì bỏ qua
+                }
             }
 
             // Lọc danh sách bài tập phù hợp cho workout w
             List<Exercise> exList = selectExercisesForWorkout(w, allExercises, absExercises, chestArmExercises, legExercises, backExercises, warmUpCoolDown);
-            if (exList.isEmpty()) {
-                exList = new ArrayList<>(allExercises.subList(0, Math.min(10, allExercises.size())));
-            }
 
-            // Xóa sạch items cũ (nếu có) và tạo mới
             workoutItemRepository.deleteByWorkoutId(w.getId());
             workoutItemRepository.flush();
 
@@ -182,18 +187,19 @@ public class WorkoutDataMigrationService {
                                                       List<Exercise> warmUpCoolDown) {
         String title = stripAccents(w.getTitleVi() != null ? w.getTitleVi() : "").toLowerCase(Locale.US);
         String muscle = stripAccents(w.getPrimaryMuscle() != null ? w.getPrimaryMuscle() : "").toLowerCase(Locale.US);
+        String goal = stripAccents(w.getGoal() != null ? w.getGoal() : "").toLowerCase(Locale.US);
 
         List<Exercise> result = new ArrayList<>();
 
         // Lấy 2 bài khởi động
         for (Exercise e : warmUpCoolDown) {
-            if (!result.contains(e)) result.add(e);
+            if (e != null && !result.contains(e)) result.add(e);
             if (result.size() >= 2) break;
         }
 
         // Chọn danh sách bài tập chính theo từ khóa
         List<Exercise> targetPool;
-        if (title.contains("bung") || muscle.contains("bung") || title.contains("abs")) {
+        if (title.contains("bung") || muscle.contains("bung") || goal.contains("abs")) {
             targetPool = absExercises;
         } else if (title.contains("nguc") || title.contains("tay") || muscle.contains("nguc") || muscle.contains("tay") || muscle.contains("chest") || muscle.contains("arm")) {
             targetPool = chestArmExercises;
@@ -206,7 +212,7 @@ public class WorkoutDataMigrationService {
         }
 
         for (Exercise e : targetPool) {
-            if (!result.contains(e)) {
+            if (e != null && !result.contains(e)) {
                 result.add(e);
             }
             if (result.size() >= 10) break;
@@ -215,7 +221,7 @@ public class WorkoutDataMigrationService {
         // Nếu chưa đủ 8 bài, lấy thêm từ allExercises
         if (result.size() < 8) {
             for (Exercise e : allExercises) {
-                if (!result.contains(e)) {
+                if (e != null && !result.contains(e)) {
                     result.add(e);
                 }
                 if (result.size() >= 10) break;
