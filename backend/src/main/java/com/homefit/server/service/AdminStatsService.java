@@ -37,6 +37,6 @@ public class AdminStatsService {
 
     @Transactional(readOnly = true)
     public long countPremiumUsers() {
-        return users.countByRoleAndPremiumTrue(Role.USER);
+        return users.countByPremiumTrue();
     }
 }

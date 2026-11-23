@@ -47,6 +47,11 @@ public class WorkoutDataMigrationService {
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void onApplicationReady() {
+        if (workoutItemRepository.count() > 0) {
+            log.info("Cơ sở dữ liệu TiDB Cloud đã có {} chi tiết bài tập con (workout_items), bỏ qua tự động bổ sung để giữ nguyên dữ liệu.",
+                    workoutItemRepository.count());
+            return;
+        }
         log.info("Bắt đầu kiểm tra và bổ sung tự động bài tập con cho toàn bộ các buổi tập trên TiDB Cloud...");
         try {
             populateAllWorkoutsForce(false);

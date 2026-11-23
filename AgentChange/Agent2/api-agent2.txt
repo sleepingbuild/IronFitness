@@ -1,0 +1,421 @@
+﻿##### Toan bo endpoint + phan quyen
+origin/master:src/main/java/com/gym/management/controller/AuthController.java:19:@RequestMapping("/api/v1/auth")
+origin/master:src/main/java/com/gym/management/controller/AuthController.java:26:    @PostMapping("/register")
+origin/master:src/main/java/com/gym/management/controller/AuthController.java:32:    @PostMapping("/login")
+origin/master:src/main/java/com/gym/management/controller/AuthController.java:38:    @PostMapping("/refresh")
+origin/master:src/main/java/com/gym/management/controller/AuthController.java:44:    @PostMapping("/logout")
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:24:@RequestMapping("/api/v1/bookings")
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:30:    @PostMapping
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:31:    @PreAuthorize("hasAnyRole('MEMBER', 'RECEPTIONIST', 'SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:38:    @PutMapping("/{id}")
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:39:    @PreAuthorize("hasAnyRole('MEMBER', 'RECEPTIONIST', 'SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:46:    @PostMapping("/{id}/confirm")
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:47:    @PreAuthorize("hasRole('TRAINER')")
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:54:    @PostMapping("/{id}/complete")
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:55:    @PreAuthorize("hasRole('TRAINER')")
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:62:    @PutMapping("/{id}/early-leave-reason")
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:63:    @PreAuthorize("hasRole('TRAINER')")
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:70:    @PostMapping("/{id}/cancel")
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:71:    @PreAuthorize("hasAnyRole('MEMBER', 'TRAINER', 'RECEPTIONIST', 'SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:78:    @GetMapping("/me")
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:79:    @PreAuthorize("hasAnyRole('MEMBER', 'TRAINER')")
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:85:    @GetMapping
+origin/master:src/main/java/com/gym/management/controller/BookingController.java:86:    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/FaceAttendanceController.java:16:@RequestMapping("/api/v1/face-attendance")
+origin/master:src/main/java/com/gym/management/controller/FaceAttendanceController.java:25:    @PostMapping("/kiosk")
+origin/master:src/main/java/com/gym/management/controller/FaceAttendanceController.java:26:    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/FaceAttendanceController.java:33:    @PostMapping("/self")
+origin/master:src/main/java/com/gym/management/controller/FaceAttendanceController.java:34:    @PreAuthorize("hasAnyRole('MEMBER', 'TRAINER', 'RECEPTIONIST', 'SALES')")
+origin/master:src/main/java/com/gym/management/controller/FaceProfileController.java:18:@RequestMapping("/api/v1/face-profiles")
+origin/master:src/main/java/com/gym/management/controller/FaceProfileController.java:26:    @PostMapping("/me")
+origin/master:src/main/java/com/gym/management/controller/FaceProfileController.java:27:    @PreAuthorize("hasAnyRole('MEMBER', 'TRAINER', 'RECEPTIONIST', 'SALES')")
+origin/master:src/main/java/com/gym/management/controller/FaceProfileController.java:35:    @PostMapping("/{userId}")
+origin/master:src/main/java/com/gym/management/controller/FaceProfileController.java:36:    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/FaceProfileController.java:44:    @GetMapping("/{userId}")
+origin/master:src/main/java/com/gym/management/controller/FaceProfileController.java:45:    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/FaceProfileController.java:51:    @DeleteMapping("/{userId}")
+origin/master:src/main/java/com/gym/management/controller/FaceProfileController.java:52:    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/LeadController.java:30:@RequestMapping("/api/v1/leads")
+origin/master:src/main/java/com/gym/management/controller/LeadController.java:37:    @GetMapping
+origin/master:src/main/java/com/gym/management/controller/LeadController.java:38:    @PreAuthorize("hasAnyRole('SALES','SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/LeadController.java:53:    @PostMapping
+origin/master:src/main/java/com/gym/management/controller/LeadController.java:55:    @PreAuthorize("hasAnyRole('SALES','SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/LeadController.java:65:    @GetMapping("/{id}")
+origin/master:src/main/java/com/gym/management/controller/LeadController.java:66:    @PreAuthorize("hasAnyRole('SALES','SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/LeadController.java:74:    @PutMapping("/{id}")
+origin/master:src/main/java/com/gym/management/controller/LeadController.java:75:    @PreAuthorize("hasAnyRole('SALES','SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/LeadController.java:85:    @PatchMapping("/{id}/status")
+origin/master:src/main/java/com/gym/management/controller/LeadController.java:86:    @PreAuthorize("hasAnyRole('SALES','SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/LeadController.java:98:    @PostMapping("/{id}/convert")
+origin/master:src/main/java/com/gym/management/controller/LeadController.java:99:    @PreAuthorize("hasAnyRole('SALES','SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/MembershipController.java:30:@RequestMapping("/api/v1/member-packages")
+origin/master:src/main/java/com/gym/management/controller/MembershipController.java:37:    @PostMapping
+origin/master:src/main/java/com/gym/management/controller/MembershipController.java:38:    @PreAuthorize("hasAnyRole('MEMBER','RECEPTIONIST','SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/MembershipController.java:47:    @PostMapping("/{id}/upgrade")
+origin/master:src/main/java/com/gym/management/controller/MembershipController.java:48:    @PreAuthorize("hasAnyRole('MEMBER','RECEPTIONIST','SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/MembershipController.java:59:    @PostMapping("/{id}/downgrade")
+origin/master:src/main/java/com/gym/management/controller/MembershipController.java:60:    @PreAuthorize("hasAnyRole('MEMBER','RECEPTIONIST','SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/MembershipController.java:71:    @GetMapping("/me")
+origin/master:src/main/java/com/gym/management/controller/MembershipController.java:72:    @PreAuthorize("hasAnyRole('MEMBER','TRAINER','RECEPTIONIST','SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/MembershipController.java:78:    @GetMapping("/me/history")
+origin/master:src/main/java/com/gym/management/controller/MembershipController.java:79:    @PreAuthorize("hasAnyRole('MEMBER','TRAINER','RECEPTIONIST','SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/PackageController.java:38:@RequestMapping("/api/v1/packages")
+origin/master:src/main/java/com/gym/management/controller/PackageController.java:45:    @GetMapping
+origin/master:src/main/java/com/gym/management/controller/PackageController.java:54:    @GetMapping("/admin")
+origin/master:src/main/java/com/gym/management/controller/PackageController.java:55:    @PreAuthorize("hasRole('SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/PackageController.java:64:    @GetMapping("/admin/{id}")
+origin/master:src/main/java/com/gym/management/controller/PackageController.java:65:    @PreAuthorize("hasRole('SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/PackageController.java:71:    @GetMapping("/{id}")
+origin/master:src/main/java/com/gym/management/controller/PackageController.java:77:    @PostMapping
+origin/master:src/main/java/com/gym/management/controller/PackageController.java:78:    @PreAuthorize("hasRole('SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/PackageController.java:84:    @PutMapping("/{id}")
+origin/master:src/main/java/com/gym/management/controller/PackageController.java:85:    @PreAuthorize("hasRole('SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/PackageController.java:91:    @DeleteMapping("/{id}")
+origin/master:src/main/java/com/gym/management/controller/PackageController.java:92:    @PreAuthorize("hasRole('SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/PaymentController.java:36:@RequestMapping("/api/v1/payments")
+origin/master:src/main/java/com/gym/management/controller/PaymentController.java:43:    @PostMapping("/{transactionId}/confirm")
+origin/master:src/main/java/com/gym/management/controller/PaymentController.java:44:    @PreAuthorize("hasAnyRole('RECEPTIONIST','SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/PaymentController.java:52:    @GetMapping("/me")
+origin/master:src/main/java/com/gym/management/controller/PaymentController.java:53:    @PreAuthorize("hasAnyRole('MEMBER','TRAINER','RECEPTIONIST','SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/PaymentController.java:62:    @GetMapping
+origin/master:src/main/java/com/gym/management/controller/PaymentController.java:63:    @PreAuthorize("hasAnyRole('RECEPTIONIST','SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/ProfileController.java:27:@RequestMapping("/api/v1/profile")
+origin/master:src/main/java/com/gym/management/controller/ProfileController.java:37:    @GetMapping("/me")
+origin/master:src/main/java/com/gym/management/controller/ProfileController.java:43:    @PutMapping("/me")
+origin/master:src/main/java/com/gym/management/controller/ProfileController.java:50:    @PostMapping(value = "/me/avatar", consumes = "multipart/form-data")
+origin/master:src/main/java/com/gym/management/controller/ReportController.java:24:@RequestMapping("/api/v1/reports")
+origin/master:src/main/java/com/gym/management/controller/ReportController.java:26:@PreAuthorize("hasRole('SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/ReportController.java:35:    @GetMapping("/revenue")
+origin/master:src/main/java/com/gym/management/controller/ReportController.java:50:    @GetMapping("/renewal-rate")
+origin/master:src/main/java/com/gym/management/controller/ReportController.java:67:    @GetMapping("/checkin-traffic")
+origin/master:src/main/java/com/gym/management/controller/ReportController.java:83:    @GetMapping("/top-packages")
+origin/master:src/main/java/com/gym/management/controller/ScheduleController.java:22:@RequestMapping("/api/v1/trainer-schedules")
+origin/master:src/main/java/com/gym/management/controller/ScheduleController.java:28:    @PostMapping
+origin/master:src/main/java/com/gym/management/controller/ScheduleController.java:29:    @PreAuthorize("hasAnyRole('TRAINER', 'SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/ScheduleController.java:36:    @PutMapping("/{id}")
+origin/master:src/main/java/com/gym/management/controller/ScheduleController.java:37:    @PreAuthorize("hasAnyRole('TRAINER', 'SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/ScheduleController.java:44:    @DeleteMapping("/{id}")
+origin/master:src/main/java/com/gym/management/controller/ScheduleController.java:45:    @PreAuthorize("hasAnyRole('TRAINER', 'SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/ScheduleController.java:52:    @GetMapping
+origin/master:src/main/java/com/gym/management/controller/ScheduleController.java:53:    @PreAuthorize("hasAnyRole('TRAINER', 'SUPER_ADMIN')")
+origin/master:src/main/java/com/gym/management/controller/ScheduleController.java:63:    @GetMapping("/available")
+origin/master:src/main/java/com/gym/management/controller/StaffAttendanceController.java:17:@RequestMapping("/api/v1/staff-attendance")
+origin/master:src/main/java/com/gym/management/controller/StaffAttendanceController.java:26:    @GetMapping("/me")
+origin/master:src/main/java/com/gym/management/controller/StaffAttendanceController.java:27:    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'SALES')")
+origin/master:src/main/java/com/gym/management/controller/StaffAttendanceController.java:33:    @GetMapping
+origin/master:src/main/java/com/gym/management/controller/StaffAttendanceController.java:34:    @PreAuthorize("hasRole('SUPER_ADMIN')")
+##### controller/MembershipController.java
+package com.gym.management.controller;
+
+import com.gym.management.dto.request.RegisterPackageRequest;
+import com.gym.management.dto.request.UpgradeDowngradeRequest;
+import com.gym.management.dto.response.MemberPackageResponse;
+import com.gym.management.dto.response.PackagePurchaseResponse;
+import com.gym.management.dto.response.PageResponse;
+import com.gym.management.exception.ApiResponse;
+import com.gym.management.security.CurrentUserId;
+import com.gym.management.service.MembershipService;
+import com.gym.management.util.PageableUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/v1/member-packages")
+@RequiredArgsConstructor
+@Tag(name = "Membership", description = "Đăng ký / nâng cấp / hạ cấp gói tập (Agent 2)")
+public class MembershipController {
+
+    private final MembershipService membershipService;
+
+    @PostMapping
+    @PreAuthorize("hasAnyRole('MEMBER','RECEPTIONIST','SUPER_ADMIN')")
+    @Operation(summary = "Đăng ký gói tập MỚI — Member tự mua hoặc Lễ tân bán hộ (không phải nâng/hạ cấp)")
+    public ApiResponse<PackagePurchaseResponse> register(@Valid @RequestBody RegisterPackageRequest request,
+                                                         Authentication authentication) {
+        UUID targetUserId = resolveTargetUserId(request.getUserId(), authentication);
+        return ApiResponse.success("Đăng ký gói tập thành công, chờ xác nhận thanh toán",
+                membershipService.registerNewPackage(targetUserId, request.getPackageId(), request.getBranchId()));
+    }
+
+    @PostMapping("/{id}/upgrade")
+    @PreAuthorize("hasAnyRole('MEMBER','RECEPTIONIST','SUPER_ADMIN')")
+    @Operation(summary = "Nâng cấp gói tập — {id} là member_package đang ACTIVE muốn đổi")
+    public ApiResponse<PackagePurchaseResponse> upgrade(@PathVariable UUID id,
+                                                        @Valid @RequestBody UpgradeDowngradeRequest request,
+                                                        Authentication authentication) {
+        boolean isStaff = isStaffRole(authentication, "RECEPTIONIST", "SUPER_ADMIN");
+        return ApiResponse.success("Nâng cấp gói tập thành công, chờ xác nhận thanh toán",
+                membershipService.upgradePackage(id, request.getNewPackageId(), request.getBranchId(),
+                        CurrentUserId.get(), isStaff));
+    }
+
+    @PostMapping("/{id}/downgrade")
+    @PreAuthorize("hasAnyRole('MEMBER','RECEPTIONIST','SUPER_ADMIN')")
+    @Operation(summary = "Hạ cấp gói tập — {id} là member_package đang ACTIVE muốn đổi")
+    public ApiResponse<PackagePurchaseResponse> downgrade(@PathVariable UUID id,
+                                                          @Valid @RequestBody UpgradeDowngradeRequest request,
+                                                          Authentication authentication) {
+        boolean isStaff = isStaffRole(authentication, "RECEPTIONIST", "SUPER_ADMIN");
+        return ApiResponse.success("Đã lên lịch hạ cấp gói tập",
+                membershipService.downgradePackage(id, request.getNewPackageId(), request.getBranchId(),
+                        CurrentUserId.get(), isStaff));
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasAnyRole('MEMBER','TRAINER','RECEPTIONIST','SUPER_ADMIN')")
+    @Operation(summary = "Gói tập hiện tại của tôi (dùng getCurrentMembership — nguồn chân lý duy nhất)")
+    public ApiResponse<MemberPackageResponse> getMyCurrentMembership() {
+        return ApiResponse.success(membershipService.getCurrentMembershipResponse(CurrentUserId.get()));
+    }
+
+    @GetMapping("/me/history")
+    @PreAuthorize("hasAnyRole('MEMBER','TRAINER','RECEPTIONIST','SUPER_ADMIN')")
+    @Operation(summary = "Lịch sử toàn bộ gói tập đã đăng ký của tôi, phân trang")
+    public ApiResponse<PageResponse<MemberPackageResponse>> getMyHistory(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String sort) {
+        return ApiResponse.success(membershipService.getHistory(CurrentUserId.get(), PageableUtils.of(page, size, sort)));
+    }
+
+    private UUID resolveTargetUserId(UUID requestedUserId, Authentication authentication) {
+        UUID callerId = CurrentUserId.get();
+        if (requestedUserId == null || requestedUserId.equals(callerId)) {
+            return callerId;
+        }
+        if (!isStaffRole(authentication, "RECEPTIONIST", "SUPER_ADMIN")) {
+            throw new AccessDeniedException("Chỉ Lễ tân/Admin mới được đăng ký gói hộ người khác");
+        }
+        return requestedUserId;
+    }
+
+
+    private boolean isStaffRole(Authentication authentication, String... roles) {
+        if (authentication == null) {
+            return false;
+        }
+        for (String role : roles) {
+            String authority = "ROLE_" + role;
+            for (var grantedAuthority : authentication.getAuthorities()) {
+                if (grantedAuthority.getAuthority().equals(authority)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}
+##### controller/PaymentController.java
+package com.gym.management.controller;
+
+import com.gym.management.dto.request.PaymentConfirmRequest;
+import com.gym.management.dto.response.PageResponse;
+import com.gym.management.dto.response.PaymentTransactionResponse;
+import com.gym.management.exception.ApiResponse;
+import com.gym.management.security.CurrentUserId;
+import com.gym.management.service.PaymentService;
+import com.gym.management.util.PageableUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
+import java.util.UUID;
+
+/**
+ * Agent 2 - Membership, Package & Payment Module.
+ * confirmPayment ở đây gọi PaymentService (interface DÙNG CHUNG — xem Javadoc PaymentService)
+ * — Agent 5 (POS, từ M4) sẽ tái sử dụng đúng service này, không viết controller/service riêng.
+ *
+ * GET /payments?branchId=... trong API_DESIGN.md gốc đã HOÃN theo quyết định Phi
+ * (payment_transactions không có branch_id) — thay bằng GET /payments?from=&to= theo khoảng ngày.
+ */
+@RestController
+@RequestMapping("/api/v1/payments")
+@RequiredArgsConstructor
+@Tag(name = "Payments", description = "Xác nhận thanh toán tại chỗ — dùng chung Membership & POS (Agent 2)")
+public class PaymentController {
+
+    private final PaymentService paymentService;
+
+    @PostMapping("/{transactionId}/confirm")
+    @PreAuthorize("hasAnyRole('RECEPTIONIST','SUPER_ADMIN')")
+    @Operation(summary = "Lễ tân/Admin xác nhận đã thu tiền tại chỗ — chuyển giao dịch PENDING → SUCCESS")
+    public ApiResponse<PaymentTransactionResponse> confirm(@PathVariable UUID transactionId,
+                                                            @Valid @RequestBody(required = false) PaymentConfirmRequest request) {
+        String method = request != null ? request.getPaymentMethod() : null;
+        return ApiResponse.success("Xác nhận thanh toán thành công", paymentService.confirmPayment(transactionId, method));
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasAnyRole('MEMBER','TRAINER','RECEPTIONIST','SUPER_ADMIN')")
+    @Operation(summary = "Lịch sử thanh toán của tôi, phân trang")
+    public ApiResponse<PageResponse<PaymentTransactionResponse>> myPayments(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String sort) {
+        return ApiResponse.success(paymentService.getMyPayments(CurrentUserId.get(), PageableUtils.of(page, size, sort)));
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('RECEPTIONIST','SUPER_ADMIN')")
+    @Operation(summary = "Toàn bộ giao dịch theo khoảng ngày [from, to] — mặc định hôm nay nếu không truyền (Lễ tân/Admin)")
+    public ApiResponse<PageResponse<PaymentTransactionResponse>> getAll(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String sort) {
+        return ApiResponse.success(paymentService.getAllPayments(from, to, PageableUtils.of(page, size, sort)));
+    }
+}
+##### dto/request/UpgradeDowngradeRequest.java
+package com.gym.management.dto.request;
+
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.UUID;
+
+/**
+ * Dùng cho cả POST /member-packages/{id}/upgrade và /downgrade.
+ * {id} trên URL = member_package đang ACTIVE muốn đổi; newPackageId = gói muốn đổi sang.
+ */
+@Getter
+@Setter
+public class UpgradeDowngradeRequest {
+
+    @NotNull(message = "newPackageId không được để trống")
+    private UUID newPackageId;
+
+    private UUID branchId; // để trống = giữ nguyên branch của gói hiện tại
+}
+##### dto/response/PackagePurchaseResponse.java
+package com.gym.management.dto.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+/**
+ * Kết quả trả về của mọi thao tác tạo/đổi member_package (đăng ký mới, nâng cấp, hạ cấp) —
+ * gộp cả bản ghi member_package vừa tạo VÀ payment_transaction tương ứng, để FE không cần
+ * gọi thêm request lấy transactionId dùng cho bước confirm thanh toán.
+ */
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PackagePurchaseResponse {
+    private MemberPackageResponse memberPackage;
+    private PaymentTransactionResponse paymentTransaction;
+}
+##### dto/response/PaymentTransactionResponse.java
+package com.gym.management.dto.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PaymentTransactionResponse {
+    private UUID id;
+    private UUID userId;
+    private String relatedType;
+    private UUID relatedId;
+    private BigDecimal amount;
+    private String paymentMethod;
+    private String status;
+    private String transactionCode;
+    private LocalDateTime createdAt;
+}
+##### dto/response/PageResponse.java
+package com.gym.management.dto.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
+import java.util.function.Function;
+
+/**
+ * Agent 2 - Membership, Package & Payment Module.
+ * Wrapper chuẩn cho danh sách phân trang — khớp API_DESIGN.md mục 2
+ * ("?page=0&size=20&sort=createdAt,desc" → PageResponse<T>").
+ *
+ * Không đặt trong package dùng chung của Agent 1 vì file đó không nằm trong danh sách
+ * SHARED được liệt kê ở TASK_ASSIGNMENT.md — nếu Agent 1 hoặc agent khác đã có sẵn 1 bản
+ * tương đương, xoá bản này và trỏ lại import cho khớp (tránh 2 class cùng vai trò).
+ */
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class PageResponse<T> {
+    private List<T> content;
+    private int page;
+    private int size;
+    private long totalElements;
+    private int totalPages;
+
+    public static <S, T> PageResponse<T> from(Page<S> source, Function<S, T> mapper) {
+        return new PageResponse<>(
+                source.getContent().stream().map(mapper).toList(),
+                source.getNumber(),
+                source.getSize(),
+                source.getTotalElements(),
+                source.getTotalPages()
+        );
+    }
+}
+##### API_DESIGN.md: member-packages, payments, users, branches
+
+- Prefix: `/api/v1/...`, danh từ số nhiều (`/api/v1/bookings`, `/api/v1/member-packages`).
+| POST | `/api/v1/member-packages` | Receptionist (bán gói) hoặc Member (tự mua) |
+| GET | `/api/v1/member-packages/me` | Member — dùng `getCurrentMembership` |
+| POST | `/api/v1/member-packages/{id}/upgrade` | Receptionist/Member |
+| POST | `/api/v1/member-packages/{id}/downgrade` | Receptionist/Member |
+| POST | `/api/v1/payments/{transactionId}/confirm` | Receptionist — xác nhận thanh toán tại chỗ |
+| GET | `/api/v1/payments/me` | Member — lịch sử thanh toán |
+| GET | `/api/v1/payments?from=...&to=...` | Receptionist/Admin |
+
+

@@ -1,0 +1,424 @@
+diff --git a/src/main/java/com/gym/management/config/SecurityConfig.java b/src/main/java/com/gym/management/config/SecurityConfig.java
+index 4f03d43..88e8c22 100644
+--- a/src/main/java/com/gym/management/config/SecurityConfig.java
++++ b/src/main/java/com/gym/management/config/SecurityConfig.java
+@@ -4,6 +4,7 @@ import com.gym.management.security.JwtAuthenticationFilter;
+ import com.gym.management.security.RestAccessDeniedHandler;
+ import com.gym.management.security.RestAuthenticationEntryPoint;
+ import lombok.RequiredArgsConstructor;
++import org.springframework.beans.factory.annotation.Value;
+ import org.springframework.context.annotation.Bean;
+ import org.springframework.context.annotation.Configuration;
+ import org.springframework.http.HttpMethod;
+@@ -23,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
+ import org.springframework.web.cors.CorsConfigurationSource;
+ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+ 
++import java.util.Arrays;
+ import java.util.List;
+ 
+ /**
+@@ -42,6 +44,13 @@ public class SecurityConfig {
+     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+     private final RestAccessDeniedHandler restAccessDeniedHandler;
+ 
++    /**
++     * Các origin được gọi API, cách nhau bằng dấu phẩy (biến môi trường GMS_CORS_ALLOWED_ORIGINS).
++     * Mặc định * để chạy máy cá nhân và Docker demo. Khi triển khai thật phải đặt đúng địa chỉ web, ví dụ https://gms.vercel.app.
++     */
++    @Value("${gms.cors.allowed-origins:*}")
++    private String allowedOrigins;
++
+     private static final String[] PUBLIC_ENDPOINTS = {
+             "/api/v1/auth/**",
+             "/api/v1/payments/webhook",
+@@ -49,8 +58,8 @@ public class SecurityConfig {
+             "/swagger-ui/**", "/swagger-ui.html",
+             "/v3/api-docs/**",
+             "/actuator/health",
+-            // Số liệu cho Prometheus. Mặc định endpoint này KHÔNG được mở (trả 404); chỉ có khi đặt
+-            // management.endpoints.web.exposure.include có "prometheus" (xem docker-compose.monitoring.yml).
++            // Số liệu cho Prometheus: mặc định endpoint này không được mở và trả 404. Chỉ có khi cấu hình
++            // exposure của management bật prometheus, xem docker-compose.monitoring.yml.
+             "/actuator/prometheus"
+     };
+ 
+@@ -66,8 +75,8 @@ public class SecurityConfig {
+                 .authorizeHttpRequests(auth -> auth
+                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                         // Story G3 (Agent 2): khách chưa đăng nhập xem được gói tập đang mở bán.
+-                        // Rule "/admin" PHẢI đứng trước vì "/{id}" cũng khớp chữ "admin";
+-                        // phần phân quyền Super Admin vẫn do @PreAuthorize ở PackageController đảm nhiệm.
++                        // Quy tắc cho đường dẫn admin phải đứng trước, vì mẫu theo id cũng khớp chữ admin.
++                        // Phân quyền Super Admin vẫn do PreAuthorize ở PackageController đảm nhiệm.
+                         .requestMatchers(HttpMethod.GET,
+                                 "/api/v1/packages/admin",
+                                 "/api/v1/packages/admin/**").authenticated()
+@@ -84,7 +93,7 @@ public class SecurityConfig {
+     @Bean
+     public CorsConfigurationSource corsConfigurationSource() {
+         CorsConfiguration config = new CorsConfiguration();
+-        config.setAllowedOriginPatterns(List.of("*")); // TODO: siết lại domain thật khi có frontend
++        config.setAllowedOriginPatterns(parseOrigins(allowedOrigins));
+         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+         config.setAllowedHeaders(List.of("*"));
+         config.setAllowCredentials(true);
+@@ -94,6 +103,15 @@ public class SecurityConfig {
+         return source;
+     }
+ 
++    /** Tách danh sách origin theo dấu phẩy, bỏ khoảng trắng và mục rỗng. Rỗng hoặc thiếu thì coi như * (cho phép mọi origin). */
++    static List<String> parseOrigins(String raw) {
++        List<String> origins = Arrays.stream((raw == null ? "" : raw).split(","))
++                .map(String::trim)
++                .filter(origin -> !origin.isEmpty())
++                .toList();
++        return origins.isEmpty() ? List.of("*") : origins;
++    }
++
+     @Bean
+     public PasswordEncoder passwordEncoder() {
+         return new BCryptPasswordEncoder();
+diff --git a/src/main/java/com/gym/management/controller/MembershipController.java b/src/main/java/com/gym/management/controller/MembershipController.java
+index e626259..6199b08 100644
+--- a/src/main/java/com/gym/management/controller/MembershipController.java
++++ b/src/main/java/com/gym/management/controller/MembershipController.java
+@@ -32,6 +32,9 @@ import java.util.UUID;
+ @Tag(name = "Membership", description = "Đăng ký / nâng cấp / hạ cấp gói tập (Agent 2)")
+ public class MembershipController {
+ 
++    private static final String ROLE_RECEPTIONIST = "RECEPTIONIST";
++    private static final String ROLE_SUPER_ADMIN = "SUPER_ADMIN";
++
+     private final MembershipService membershipService;
+ 
+     @PostMapping
+@@ -50,7 +53,7 @@ public class MembershipController {
+     public ApiResponse<PackagePurchaseResponse> upgrade(@PathVariable UUID id,
+                                                         @Valid @RequestBody UpgradeDowngradeRequest request,
+                                                         Authentication authentication) {
+-        boolean isStaff = isStaffRole(authentication, "RECEPTIONIST", "SUPER_ADMIN");
++        boolean isStaff = isStaffRole(authentication, ROLE_RECEPTIONIST, ROLE_SUPER_ADMIN);
+         return ApiResponse.success("Nâng cấp gói tập thành công, chờ xác nhận thanh toán",
+                 membershipService.upgradePackage(id, request.getNewPackageId(), request.getBranchId(),
+                         CurrentUserId.get(), isStaff));
+@@ -62,7 +65,7 @@ public class MembershipController {
+     public ApiResponse<PackagePurchaseResponse> downgrade(@PathVariable UUID id,
+                                                           @Valid @RequestBody UpgradeDowngradeRequest request,
+                                                           Authentication authentication) {
+-        boolean isStaff = isStaffRole(authentication, "RECEPTIONIST", "SUPER_ADMIN");
++        boolean isStaff = isStaffRole(authentication, ROLE_RECEPTIONIST, ROLE_SUPER_ADMIN);
+         return ApiResponse.success("Đã lên lịch hạ cấp gói tập",
+                 membershipService.downgradePackage(id, request.getNewPackageId(), request.getBranchId(),
+                         CurrentUserId.get(), isStaff));
+@@ -113,7 +116,7 @@ public class MembershipController {
+         if (requestedUserId == null || requestedUserId.equals(callerId)) {
+             return callerId;
+         }
+-        if (!isStaffRole(authentication, "RECEPTIONIST", "SUPER_ADMIN")) {
++        if (!isStaffRole(authentication, ROLE_RECEPTIONIST, ROLE_SUPER_ADMIN)) {
+             throw new AccessDeniedException("Chỉ Lễ tân/Admin mới được đăng ký gói hộ người khác");
+         }
+         return requestedUserId;
+diff --git a/src/main/resources/application.yml b/src/main/resources/application.yml
+index 49bdc02..8fc2886 100644
+--- a/src/main/resources/application.yml
++++ b/src/main/resources/application.yml
+@@ -55,6 +55,10 @@ springdoc:
+ 
+ # ==== Cấu hình riêng GMS ====
+ gms:
++  cors:
++    # Các origin được gọi API, cách nhau bằng dấu phẩy. Khi triển khai (Render + Vercel) đặt GMS_CORS_ALLOWED_ORIGINS
++    # thành địa chỉ web, ví dụ https://gms.vercel.app. Mặc định * chỉ để chạy máy cá nhân.
++    allowed-origins: "${GMS_CORS_ALLOWED_ORIGINS:*}"
+   jwt:
+     # Bắt buộc phải cung cấp (application-local.yml hoặc biến môi trường GMS_JWT_SECRET). Cố ý KHÔNG có giá trị mặc định.
+     secret: "${GMS_JWT_SECRET}"
+diff --git a/src/test/java/com/gym/management/config/SecurityConfigCorsTest.java b/src/test/java/com/gym/management/config/SecurityConfigCorsTest.java
+new file mode 100644
+index 0000000..700e4b3
+--- /dev/null
++++ b/src/test/java/com/gym/management/config/SecurityConfigCorsTest.java
+@@ -0,0 +1,39 @@
++package com.gym.management.config;
++
++import org.junit.jupiter.api.Test;
++import org.springframework.test.util.ReflectionTestUtils;
++import org.springframework.web.cors.CorsConfiguration;
++import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
++
++import java.util.List;
++
++import static org.assertj.core.api.Assertions.assertThat;
++
++class SecurityConfigCorsTest {
++
++    @Test
++    void parseOrigins_missingOrBlankMeansAnyOrigin() {
++        assertThat(SecurityConfig.parseOrigins(null)).containsExactly("*");
++        assertThat(SecurityConfig.parseOrigins("   ")).containsExactly("*");
++        assertThat(SecurityConfig.parseOrigins(" , ,")).containsExactly("*");
++    }
++
++    @Test
++    void parseOrigins_splitsOnCommaAndTrims() {
++        assertThat(SecurityConfig.parseOrigins(" https://gms.vercel.app , https://gms.example.com,"))
++                .containsExactly("https://gms.vercel.app", "https://gms.example.com");
++    }
++
++    @Test
++    void corsConfigurationSource_usesTheConfiguredOrigins() {
++        SecurityConfig config = new SecurityConfig(null, null, null, null);
++        ReflectionTestUtils.setField(config, "allowedOrigins", "https://gms.vercel.app");
++
++        UrlBasedCorsConfigurationSource source = (UrlBasedCorsConfigurationSource) config.corsConfigurationSource();
++        CorsConfiguration cors = source.getCorsConfigurations().get("/**");
++
++        assertThat(cors.getAllowedOriginPatterns()).isEqualTo(List.of("https://gms.vercel.app"));
++        assertThat(cors.getAllowCredentials()).isTrue();
++        assertThat(cors.getAllowedMethods()).contains("PATCH", "OPTIONS");
++    }
++}
+diff --git a/src/test/java/com/gym/management/controller/AdminUserControllerTest.java b/src/test/java/com/gym/management/controller/AdminUserControllerTest.java
+new file mode 100644
+index 0000000..f2285ea
+--- /dev/null
++++ b/src/test/java/com/gym/management/controller/AdminUserControllerTest.java
+@@ -0,0 +1,104 @@
++package com.gym.management.controller;
++
++import com.gym.management.dto.request.AdminUserCreateRequest;
++import com.gym.management.dto.request.AdminUserRolesRequest;
++import com.gym.management.dto.request.AdminUserStatusRequest;
++import com.gym.management.dto.request.AdminUserUpdateRequest;
++import com.gym.management.dto.response.AdminUserResponse;
++import com.gym.management.dto.response.PageResponse;
++import com.gym.management.exception.ApiResponse;
++import com.gym.management.service.UserAdminService;
++import org.junit.jupiter.api.Test;
++import org.junit.jupiter.api.extension.ExtendWith;
++import org.mockito.InjectMocks;
++import org.mockito.Mock;
++import org.mockito.junit.jupiter.MockitoExtension;
++import org.springframework.security.access.prepost.PreAuthorize;
++import org.springframework.web.bind.annotation.GetMapping;
++import org.springframework.web.bind.annotation.PostMapping;
++import org.springframework.web.bind.annotation.PutMapping;
++
++import java.lang.reflect.Method;
++import java.util.Arrays;
++import java.util.List;
++import java.util.Set;
++import java.util.UUID;
++
++import static org.assertj.core.api.Assertions.assertThat;
++import static org.mockito.Mockito.mock;
++import static org.mockito.Mockito.verify;
++import static org.mockito.Mockito.when;
++
++@ExtendWith(MockitoExtension.class)
++class AdminUserControllerTest {
++
++    @Mock private UserAdminService userAdminService;
++    @InjectMocks private AdminUserController controller;
++
++    private final AdminUserResponse sample =
++            new AdminUserResponse(UUID.randomUUID(), "An", "an@gym.local", null, "ACTIVE", List.of("TRAINER"));
++
++    @Test
++    void everyEndpointIsSuperAdminOnly() {
++        List<Method> endpoints = Arrays.stream(AdminUserController.class.getDeclaredMethods())
++                .filter(m -> m.isAnnotationPresent(GetMapping.class) || m.isAnnotationPresent(PostMapping.class)
++                        || m.isAnnotationPresent(PutMapping.class))
++                .toList();
++
++        assertThat(endpoints).hasSize(5);
++        for (Method m : endpoints) {
++            assertThat(m.getAnnotation(PreAuthorize.class).value()).as(m.getName()).isEqualTo("hasRole('SUPER_ADMIN')");
++        }
++    }
++
++    @SuppressWarnings("unchecked")
++    @Test
++    void search_forwardsAllFilters() {
++        PageResponse<AdminUserResponse> page = mock(PageResponse.class);
++        when(userAdminService.search("STAFF", "an", "ACTIVE", 1, 10)).thenReturn(page);
++
++        ApiResponse<PageResponse<AdminUserResponse>> response = controller.search("STAFF", "an", "ACTIVE", 1, 10);
++
++        assertThat(response.getData()).isSameAs(page);
++    }
++
++    @Test
++    void createStaff_delegatesToTheService() {
++        AdminUserCreateRequest request = new AdminUserCreateRequest();
++        when(userAdminService.createStaff(request)).thenReturn(sample);
++
++        assertThat(controller.createStaff(request).getData()).isSameAs(sample);
++    }
++
++    @Test
++    void update_delegatesToTheService() {
++        UUID id = UUID.randomUUID();
++        AdminUserUpdateRequest request = new AdminUserUpdateRequest();
++        when(userAdminService.update(id, request)).thenReturn(sample);
++
++        assertThat(controller.update(id, request).getData()).isSameAs(sample);
++    }
++
++    @Test
++    void setRoles_passesTheCallerAsActor() {
++        UUID actor = UUID.randomUUID();
++        UUID id = UUID.randomUUID();
++        AdminUserRolesRequest request = new AdminUserRolesRequest();
++        request.setRoles(Set.of("TRAINER"));
++        when(userAdminService.setRoles(actor, id, Set.of("TRAINER"))).thenReturn(sample);
++
++        assertThat(controller.setRoles(actor, id, request).getData()).isSameAs(sample);
++        verify(userAdminService).setRoles(actor, id, Set.of("TRAINER"));
++    }
++
++    @Test
++    void setStatus_passesTheCallerAsActor() {
++        UUID actor = UUID.randomUUID();
++        UUID id = UUID.randomUUID();
++        AdminUserStatusRequest request = new AdminUserStatusRequest();
++        request.setStatus("INACTIVE");
++        when(userAdminService.setStatus(actor, id, "INACTIVE")).thenReturn(sample);
++
++        assertThat(controller.setStatus(actor, id, request).getData()).isSameAs(sample);
++    }
++}
+diff --git a/src/test/java/com/gym/management/controller/LeadAssignmentControllerTest.java b/src/test/java/com/gym/management/controller/LeadAssignmentControllerTest.java
+new file mode 100644
+index 0000000..54ea492
+--- /dev/null
++++ b/src/test/java/com/gym/management/controller/LeadAssignmentControllerTest.java
+@@ -0,0 +1,57 @@
++package com.gym.management.controller;
++
++import com.gym.management.dto.request.AssignLeadRequest;
++import com.gym.management.dto.response.LeadResponse;
++import com.gym.management.dto.response.SalesUserResponse;
++import com.gym.management.exception.ApiResponse;
++import com.gym.management.service.LeadAssignmentService;
++import org.junit.jupiter.api.Test;
++import org.junit.jupiter.api.extension.ExtendWith;
++import org.mockito.InjectMocks;
++import org.mockito.Mock;
++import org.mockito.junit.jupiter.MockitoExtension;
++import org.springframework.security.access.prepost.PreAuthorize;
++
++import java.util.List;
++import java.util.UUID;
++
++import static org.assertj.core.api.Assertions.assertThat;
++import static org.mockito.Mockito.verify;
++import static org.mockito.Mockito.when;
++
++@ExtendWith(MockitoExtension.class)
++class LeadAssignmentControllerTest {
++
++    @Mock private LeadAssignmentService leadAssignmentService;
++    @InjectMocks private LeadAssignmentController controller;
++
++    @Test
++    void salesUsers_returnsWhatTheServiceListsAndIsSuperAdminOnly() throws NoSuchMethodException {
++        List<SalesUserResponse> sales = List.of(new SalesUserResponse(UUID.randomUUID(), "An", "0900000001"));
++        when(leadAssignmentService.listSalesUsers()).thenReturn(sales);
++
++        ApiResponse<List<SalesUserResponse>> response = controller.salesUsers();
++
++        assertThat(response.isSuccess()).isTrue();
++        assertThat(response.getData()).isEqualTo(sales);
++        assertThat(LeadAssignmentController.class.getMethod("salesUsers").getAnnotation(PreAuthorize.class).value())
++                .isEqualTo("hasRole('SUPER_ADMIN')");
++    }
++
++    @Test
++    void assign_passesIdAndRequestToTheServiceAndIsSuperAdminOnly() throws NoSuchMethodException {
++        UUID leadId = UUID.randomUUID();
++        AssignLeadRequest request = new AssignLeadRequest();
++        request.setSalesId(UUID.randomUUID());
++        LeadResponse lead = new LeadResponse();
++        when(leadAssignmentService.assign(leadId, request)).thenReturn(lead);
++
++        ApiResponse<LeadResponse> response = controller.assign(leadId, request);
++
++        assertThat(response.isSuccess()).isTrue();
++        assertThat(response.getData()).isSameAs(lead);
++        verify(leadAssignmentService).assign(leadId, request);
++        assertThat(LeadAssignmentController.class.getMethod("assign", UUID.class, AssignLeadRequest.class)
++                .getAnnotation(PreAuthorize.class).value()).isEqualTo("hasRole('SUPER_ADMIN')");
++    }
++}
+diff --git a/src/test/java/com/gym/management/repository/SalesUserRepositoryTest.java b/src/test/java/com/gym/management/repository/SalesUserRepositoryTest.java
+new file mode 100644
+index 0000000..ea1e3ac
+--- /dev/null
++++ b/src/test/java/com/gym/management/repository/SalesUserRepositoryTest.java
+@@ -0,0 +1,63 @@
++package com.gym.management.repository;
++
++import com.gym.management.dto.response.SalesUserResponse;
++import org.junit.jupiter.api.Test;
++import org.junit.jupiter.api.extension.ExtendWith;
++import org.mockito.ArgumentCaptor;
++import org.mockito.InjectMocks;
++import org.mockito.Mock;
++import org.mockito.junit.jupiter.MockitoExtension;
++import org.springframework.jdbc.core.RowMapper;
++import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
++import org.springframework.jdbc.core.namedparam.SqlParameterSource;
++
++import java.sql.ResultSet;
++import java.sql.SQLException;
++import java.util.List;
++import java.util.UUID;
++
++import static org.assertj.core.api.Assertions.assertThat;
++import static org.mockito.ArgumentMatchers.any;
++import static org.mockito.ArgumentMatchers.anyString;
++import static org.mockito.ArgumentMatchers.eq;
++import static org.mockito.Mockito.mock;
++import static org.mockito.Mockito.verify;
++import static org.mockito.Mockito.when;
++
++@ExtendWith(MockitoExtension.class)
++class SalesUserRepositoryTest {
++
++    @Mock private NamedParameterJdbcTemplate jdbc;
++    @InjectMocks private SalesUserRepository repository;
++
++    @SuppressWarnings("unchecked")
++    @Test
++    void findActiveSales_queriesActiveSalesSortedByNameAndMapsRows() throws SQLException {
++        UUID id = UUID.randomUUID();
++        when(jdbc.query(anyString(), any(RowMapper.class))).thenReturn(List.of());
++
++        repository.findActiveSales();
++
++        ArgumentCaptor<String> sql = ArgumentCaptor.forClass(String.class);
++        ArgumentCaptor<RowMapper<SalesUserResponse>> mapper = ArgumentCaptor.forClass(RowMapper.class);
++        verify(jdbc).query(sql.capture(), mapper.capture());
++        assertThat(sql.getValue()).contains("r.name = 'SALES'", "u.status = 'ACTIVE'", "ORDER BY u.full_name ASC");
++
++        ResultSet rs = mock(ResultSet.class);
++        when(rs.getString("id")).thenReturn(id.toString());
++        when(rs.getString("full_name")).thenReturn("An");
++        when(rs.getString("phone")).thenReturn("0900000001");
++        assertThat(mapper.getValue().mapRow(rs, 0)).isEqualTo(new SalesUserResponse(id, "An", "0900000001"));
++    }
++
++    @Test
++    void isActiveSales_trueOnlyWhenTheCountIsPositive() {
++        UUID id = UUID.randomUUID();
++        when(jdbc.queryForObject(anyString(), any(SqlParameterSource.class), eq(Integer.class)))
++                .thenReturn(1, 0, null);
++
++        assertThat(repository.isActiveSales(id)).isTrue();
++        assertThat(repository.isActiveSales(id)).isFalse();
++        assertThat(repository.isActiveSales(id)).isFalse();
++    }
++}

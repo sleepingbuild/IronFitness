@@ -36,6 +36,11 @@ public class MeController {
         return userService.updateProfile(userId(jwt), request);
     }
 
+    @org.springframework.web.bind.annotation.PostMapping("/upgrade-pro")
+    public UserResponse upgradePro(@AuthenticationPrincipal Jwt jwt) {
+        return userService.upgradePro(userId(jwt));
+    }
+
     private static Long userId(Jwt jwt) {
         return Long.valueOf(jwt.getSubject());
     }

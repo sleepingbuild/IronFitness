@@ -52,7 +52,13 @@ public class DataSeeder implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        log.info("Bắt đầu quy trình nạp đồng bộ dữ liệu chuẩn từ Android sang Backend (Idempotent Sync)...");
+        if (exerciseRepository.count() > 0 && workoutRepository.count() > 0) {
+            log.info("Cơ sở dữ liệu TiDB Cloud đã có bài tập ({} bài) và buổi tập ({} buổi), bỏ qua DataSeeder để giữ nguyên dữ liệu.",
+                    exerciseRepository.count(), workoutRepository.count());
+            return;
+        }
+
+        log.info("Cơ sở dữ liệu trống, bắt đầu khởi tạo dữ liệu ban đầu...");
 
         Map<String, Category> categories = seedCategories();
         Map<String, Exercise> exerciseMap = seedExercises(categories);
@@ -65,7 +71,7 @@ public class DataSeeder implements ApplicationRunner {
 
         autoAssignRealFitnessImages();
 
-        log.info("Đã đồng bộ hóa dữ liệu thành công! Tổng bài tập: {}, Tổng buổi tập: {}",
+        log.info("Đã đồng bộ hóa dữ liệu ban đầu thành công! Tổng bài tập: {}, Tổng buổi tập: {}",
                 exerciseRepository.count(), workoutRepository.count());
     }
 
@@ -100,36 +106,35 @@ public class DataSeeder implements ApplicationRunner {
     }
 
     private String getRealFitnessMediaUrlForExercise(String name, Long categoryId) {
-        String base = "https://ironfitness-et3g.onrender.com/images/exercises/";
+        String base = "https://raw.githubusercontent.com/sleepingbuild/homefit-media/main/";
         String n = name != null ? name.toLowerCase() : "";
         
         if (n.contains("plank")) {
-            return base + "plank.png";
+            return base + "abs/plank.png";
         }
         if (n.contains("gập bụng") || n.contains("crunch") || n.contains("sit-up") || n.contains("leg raise") || n.contains("dead bug") || n.contains("hollow") || n.contains("heel tap") || n.contains("v-up")) {
-            return base + "crunch.png";
+            return base + "abs/crunches.png";
         }
         if (n.contains("hít đất") || n.contains("push-up") || n.contains("pushup") || n.contains("chống đẩy")) {
-            if (n.contains("kim cương")) return base + "pushup.png";
-            return base + "pushup.png";
+            return base + "arm/pushup.png";
         }
         if (n.contains("dip") || n.contains("nhún tay") || n.contains("tricep")) {
-            return base + "dips.png";
+            return base + "arm/dips.png";
         }
         if (n.contains("curl") || n.contains("tay") || n.contains("bicep")) {
-            return base + "bicep_curl.png";
+            return base + "arm/biceps_curl.png";
         }
         if (n.contains("pike")) {
-            return base + "pike_pushup.png";
+            return base + "arm/pike_pushp.png";
         }
         if (n.contains("squat") || n.contains("ngồi xổm") || n.contains("wall sit")) {
-            return base + "squat.png";
+            return base + "leg/squat.png";
         }
         if (n.contains("lunge") || n.contains("chùng chân") || n.contains("step-up")) {
-            return base + "lunge.png";
+            return base + "leg/lunge.png";
         }
         if (n.contains("bridge") || n.contains("cầu mông")) {
-            return base + "glute_bridge.png";
+            return base + "leg/glute_bridge.png";
         }
         if (n.contains("donkey") || n.contains("đá chân")) {
             return base + "donkey_kick.png";

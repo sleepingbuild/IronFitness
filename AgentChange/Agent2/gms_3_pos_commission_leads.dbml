@@ -1,0 +1,99 @@
+// GMS - 3. POS, COMMISSION & LEADS (V5, V6 - moi la thiet ke, chua co migration) - 6 bang day du + 3 bang tham chieu
+// Mau header: #4A6B94 xanh = da merge master | #B7791F vang = migration tren nhanh rieng, chua merge |
+//            #7B5EA7 tim = chi la thiet ke, chua co migration | #8A8F9C xam = bang tham chieu (khong day du cot)
+
+Table users [headercolor: #8A8F9C, note: 'Chi de noi quan he - day du cot o diagram 1'] {
+  id uniqueidentifier [pk]
+  full_name nvarchar(150)
+}
+
+Table branches [headercolor: #8A8F9C, note: 'Chi de noi quan he - day du cot o diagram 1'] {
+  id uniqueidentifier [pk]
+  name nvarchar(150)
+}
+
+Table bookings [headercolor: #8A8F9C, note: 'Chi de noi quan he - day du cot o diagram 2'] {
+  id uniqueidentifier [pk]
+  status varchar(20)
+}
+
+Table pos_orders [headercolor: #7B5EA7] {
+  id uniqueidentifier [pk, default: `NEWID()`]
+  member_id uniqueidentifier [null, note: 'NULL = khach vang lai']
+  staff_id uniqueidentifier [not null]
+  branch_id uniqueidentifier [null]
+  total_amount decimal(12,2) [not null]
+  payment_method varchar(20) [not null]
+  status varchar(20) [not null, default: 'PENDING', note: 'De xuat: PENDING / COMPLETED / CANCELLED (Agent 5 xac nhan)']
+  created_at datetime2 [not null, default: `SYSUTCDATETIME()`]
+  updated_at datetime2 [null]
+}
+
+Table pos_order_items [headercolor: #7B5EA7] {
+  id uniqueidentifier [pk, default: `NEWID()`]
+  order_id uniqueidentifier [not null]
+  product_id uniqueidentifier [not null]
+  quantity int [not null, note: '> 0']
+  unit_price decimal(12,2) [not null, note: 'Gia tai thoi diem ban']
+  subtotal decimal(12,2) [not null]
+  created_at datetime2 [not null, default: `SYSUTCDATETIME()`]
+  updated_at datetime2 [null]
+}
+
+Table products [headercolor: #7B5EA7] {
+  id uniqueidentifier [pk, default: `NEWID()`]
+  name nvarchar(150) [not null]
+  category varchar(50) [not null, note: 'DRINK / SUPPLEMENT / ACCESSORY']
+  price decimal(12,2) [not null]
+  stock_quantity int [not null, default: 0]
+  unit nvarchar(20) [null]
+  is_active bit [not null, default: 1]
+  created_at datetime2 [not null, default: `SYSUTCDATETIME()`]
+  updated_at datetime2 [null]
+}
+
+Table commissions [headercolor: #7B5EA7] {
+  id uniqueidentifier [pk, default: `NEWID()`]
+  staff_id uniqueidentifier [not null, note: 'Chi con PT (hoa hong Sales da bo)']
+  booking_id uniqueidentifier [not null, unique, note: 'Moi buoi toi da 1 ban ghi (chong tinh hai lan)']
+  outcome varchar(20) [not null, note: 'COMPLETED / MEMBER_NO_SHOW / LATE_CANCEL']
+  amount decimal(12,2) [not null, note: 'Lay tu trainer_pay_rates tai thoi diem chot buoi']
+  status varchar(20) [not null, default: 'PENDING', note: 'PENDING / PAID']
+  paid_at datetime2 [null]
+  created_at datetime2 [not null, default: `SYSUTCDATETIME()`]
+  updated_at datetime2 [null]
+}
+
+Table trainer_pay_rates [headercolor: #7B5EA7] {
+  id uniqueidentifier [pk, default: `NEWID()`]
+  trainer_id uniqueidentifier [not null, unique, note: '1 PT 1 muc luong']
+  amount_per_session decimal(12,2) [not null]
+  created_at datetime2 [not null, default: `SYSUTCDATETIME()`]
+  updated_at datetime2 [null]
+}
+
+Table leads [headercolor: #7B5EA7] {
+  id uniqueidentifier [pk, default: `NEWID()`]
+  full_name nvarchar(150) [not null]
+  phone varchar(20) [not null]
+  source nvarchar(50) [null]
+  status varchar(20) [not null, default: 'NEW', note: 'NEW / CONTACTED / CONVERTED / LOST']
+  assigned_sales_id uniqueidentifier [null]
+  converted_user_id uniqueidentifier [null, note: 'Set khi CONVERTED']
+  notes nvarchar(500) [null]
+  created_at datetime2 [not null, default: `SYSUTCDATETIME()`]
+  updated_at datetime2 [null]
+}
+
+// ---------------- QUAN HE ----------------
+
+Ref: pos_orders.member_id > users.id
+Ref: pos_orders.staff_id > users.id
+Ref: pos_orders.branch_id > branches.id
+Ref: pos_order_items.order_id > pos_orders.id [delete: cascade]
+Ref: pos_order_items.product_id > products.id
+Ref: trainer_pay_rates.trainer_id - users.id
+Ref: commissions.staff_id > users.id
+Ref: commissions.booking_id - bookings.id
+Ref: leads.assigned_sales_id > users.id
+Ref: leads.converted_user_id > users.id

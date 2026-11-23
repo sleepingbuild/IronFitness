@@ -1,0 +1,466 @@
+===== src/main/java/com/gym/management/config/SecurityConfig.java
+package com.gym.management.config;
+
+import com.gym.management.security.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+
+/**
+ * Agent 1 - SHARED FILE.
+ * Cấu hình bảo mật gốc: stateless JWT, CORS, public endpoints, RBAC theo path.
+ * Các agent khác dùng @PreAuthorize("hasRole('...')") ở tầng Controller/Service
+ * cho các rule chi tiết hơn — KHÔNG thêm path rule mới vào đây mà không báo Agent 1.
+ */
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
+@RequiredArgsConstructor
+public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final UserDetailsService userDetailsService;
+
+    private static final String[] PUBLIC_ENDPOINTS = {
+            "/api/v1/auth/**",
+            "/api/v1/payments/webhook",
+            "/uploads/**",
+            "/swagger-ui/**", "/swagger-ui.html",
+            "/v3/api-docs/**",
+            "/actuator/health"
+    };
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOriginPatterns(List.of("*")); // TODO: siết lại domain thật khi có frontend
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+}
+===== src/main/java/com/gym/management/security/JwtAuthenticationFilter.java
+package com.gym.management.security;
+
+import com.gym.management.repository.UserRepository;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+
+/**
+ * Agent 1 - SHARED FILE.
+ * Đọc Bearer token từ header Authorization, validate, kiểm tra Redis blacklist
+ * (token đã logout thì bị từ chối dù JWT chưa hết hạn tự nhiên), set SecurityContext.
+ */
+@Component
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private final JwtTokenProvider jwtTokenProvider;
+    private final CustomUserDetailsService userDetailsService;
+    private final UserRepository userRepository;
+    private final TokenBlacklistService tokenBlacklistService;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                     HttpServletResponse response,
+                                     FilterChain filterChain) throws ServletException, IOException {
+
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            String token = header.substring(7);
+            if (jwtTokenProvider.validateToken(token) && !tokenBlacklistService.isBlacklisted(token)) {
+                String email = jwtTokenProvider.getEmailFromToken(token);
+                var userDetails = userDetailsService.loadUserByUsername(email);
+                var authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        }
+        filterChain.doFilter(request, response);
+    }
+}
+===== src/main/java/com/gym/management/security/CustomUserDetailsService.java
+package com.gym.management.security;
+
+import com.gym.management.entity.User;
+import com.gym.management.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class CustomUserDetailsService implements UserDetailsService {
+
+    private final UserRepository userRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy user: " + email));
+
+        List<GrantedAuthority> authorities = user.getRoles().stream()
+                .map(role -> (GrantedAuthority) new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                .toList();
+
+        return new GymUserDetails(user.getId(), user.getEmail(), user.getPasswordHash(),
+                "ACTIVE".equals(user.getStatus()), authorities);
+    }
+}
+===== src/main/java/com/gym/management/security/GymUserDetails.java
+package com.gym.management.security;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+
+import java.util.Collection;
+import java.util.UUID;
+
+public class GymUserDetails extends User {
+
+    private final UUID id;
+
+    public GymUserDetails(UUID id, String email, String passwordHash, boolean enabled,
+                          Collection<? extends GrantedAuthority> authorities) {
+        super(email, passwordHash, enabled, true, true, true, authorities);
+        this.id = id;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+}
+===== src/main/java/com/gym/management/security/CurrentUser.java
+package com.gym.management.security;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Agent 1 - SHARED FILE.
+ * Gắn vào tham số controller để tự động lấy UUID của user đang đăng nhập
+ * (parse từ JWT trong SecurityContext), tránh mỗi agent phải tự viết lại
+ * logic "lấy email từ Authentication rồi query User".
+ *
+ * Ví dụ: public ApiResponse<X> foo(@CurrentUser UUID currentUserId) { ... }
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+public @interface CurrentUser {
+}
+===== src/main/java/com/gym/management/entity/BaseEntity.java
+package com.gym.management.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+/**
+ * Base entity dùng chung cho toàn bộ module (Agent 1 sở hữu — SHARED FILE).
+ * Mọi entity nghiệp vụ của các agent khác nên extends class này thay vì
+ * tự khai báo lại id/created_at/updated_at.
+ */
+@Getter
+@Setter
+@MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
+public abstract class BaseEntity {
+
+    @Id
+    @GeneratedValue
+    @UuidGenerator
+    @Column(updatable = false, nullable = false)
+    private UUID id;
+
+    /**
+     * Dùng LocalDateTime (không có Instant) — khớp trực tiếp với kiểu DATETIME2 (không
+     * timezone) trong migration T-SQL. Instant khiến Hibernate 6 mặc định đòi hỏi cột kiểu
+     * datetimeoffset, gây lỗi Schema-validation ngay lúc khởi động (đã gặp thực tế).
+     */
+    @CreatedDate
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+}
+===== src/main/java/com/gym/management/entity/Role.java
+package com.gym.management.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+/**
+ * Role cố định của hệ thống (Agent 1 - SHARED FILE).
+ * Giá trị chuẩn: SUPER_ADMIN, RECEPTIONIST, TRAINER, SALES, MEMBER.
+ * Xem RoleName enum để tham chiếu type-safe trong code (@PreAuthorize).
+ */
+@Entity
+@Table(name = "roles")
+@Getter
+@Setter
+@NoArgsConstructor
+public class Role extends BaseEntity {
+
+    @Column(nullable = false, unique = true, length = 50)
+    private String name;
+
+    @Column(length = 255)
+    private String description;
+}
+===== src/main/java/com/gym/management/entity/RoleName.java
+package com.gym.management.entity;
+
+/**
+ * Enum tham chiếu type-safe cho tên role, dùng trong @PreAuthorize và logic RBAC.
+ * Phải khớp chính xác với dữ liệu seed trong bảng `roles` (V1__init_schema.sql).
+ */
+public enum RoleName {
+    SUPER_ADMIN,
+    RECEPTIONIST,
+    TRAINER,
+    SALES,
+    MEMBER
+}
+===== src/main/java/com/gym/management/entity/Branch.java
+package com.gym.management.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+/**
+ * Agent 1 - SHARED FILE (định nghĩa cùng lúc với bảng branches trong V1).
+ */
+@Entity
+@Table(name = "branches")
+@Getter
+@Setter
+@NoArgsConstructor
+public class Branch extends BaseEntity {
+
+    @Column(nullable = false, length = 150)
+    private String name;
+
+    @Column(length = 255)
+    private String address;
+
+    @Column(length = 20)
+    private String phone;
+
+    @Column(nullable = false, length = 20)
+    private String status = "ACTIVE"; // ACTIVE, CLOSED
+}
+===== src/main/java/com/gym/management/repository/BranchRepository.java
+package com.gym.management.repository;
+
+import com.gym.management.entity.Branch;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.UUID;
+
+public interface BranchRepository extends JpaRepository<Branch, UUID> {
+}
+===== src/main/java/com/gym/management/repository/UserProfileRepository.java
+package com.gym.management.repository;
+
+import com.gym.management.entity.UserProfile;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+public interface UserProfileRepository extends JpaRepository<UserProfile, UUID> {
+    Optional<UserProfile> findByUserId(UUID userId);
+}
+===== src/main/java/com/gym/management/controller/PackageController.java
+package com.gym.management.controller;
+
+import com.gym.management.dto.request.PackageRequest;
+import com.gym.management.dto.response.PackageResponse;
+import com.gym.management.dto.response.PageResponse;
+import com.gym.management.exception.ApiResponse;
+import com.gym.management.service.PackageService;
+import com.gym.management.util.PageableUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
+
+/**
+ * Agent 2 - Membership, Package & Payment Module.
+ *
+ * Đã chốt với Phi (xem Agent2-Respone.md mục 3.1): tách GET (mọi role đã đăng nhập) khỏi
+ * POST/PUT/DELETE (Super Admin) — khác với dòng gộp chung trong API_DESIGN.md bản gốc;
+ * API_DESIGN.md cần cập nhật lại cho khớp (xem AGENT2_README.md).
+ *
+ * Story G3 (DECISIONS_DB_V2.md): GET danh sách và GET chi tiết gói ĐANG MỞ BÁN là công khai,
+ * khách chưa đăng nhập cũng xem được (SecurityConfig mở đúng 2 đường dẫn này, xem PR [shared]).
+ * Xem gói đã ngừng bán chỉ có ở /admin và /admin/{id} (Super Admin).
+ */
+@RestController
+@RequestMapping("/api/v1/packages")
+@RequiredArgsConstructor
+@Tag(name = "Packages", description = "Quản lý gói tập (Agent 2)")
+public class PackageController {
+
+    private final PackageService packageService;
+
+    @GetMapping
+    @Operation(summary = "Danh sách gói tập đang mở bán, phân trang (công khai — không cần đăng nhập)")
+    public ApiResponse<PageResponse<PackageResponse>> listActive(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String sort) {
+        return ApiResponse.success(packageService.listActive(PageableUtils.of(page, size, sort)));
+    }
+
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @Operation(summary = "Danh sách toàn bộ gói tập kể cả đã ngừng bán, phân trang (Super Admin)")
+    public ApiResponse<PageResponse<PackageResponse>> listAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String sort) {
+        return ApiResponse.success(packageService.listAll(PageableUtils.of(page, size, sort)));
+    }
+
+    @GetMapping("/admin/{id}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @Operation(summary = "Chi tiết 1 gói tập bất kể trạng thái, kể cả đã ngừng bán (Super Admin)")
+    public ApiResponse<PackageResponse> getByIdForAdmin(@PathVariable UUID id) {
+        return ApiResponse.success(packageService.getById(id));
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Chi tiết 1 gói tập đang mở bán (công khai — gói đã ngừng bán trả 404)")
+    public ApiResponse<PackageResponse> getById(@PathVariable UUID id) {
+        return ApiResponse.success(packageService.getActiveById(id));
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @Operation(summary = "Tạo gói tập mới (Super Admin)")
+    public ApiResponse<PackageResponse> create(@Valid @RequestBody PackageRequest request) {
+        return ApiResponse.success("Tạo gói tập thành công", packageService.create(request));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @Operation(summary = "Cập nhật gói tập (Super Admin)")
+    public ApiResponse<PackageResponse> update(@PathVariable UUID id, @Valid @RequestBody PackageRequest request) {
+        return ApiResponse.success("Cập nhật gói tập thành công", packageService.update(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @Operation(summary = "Ngừng bán gói tập — soft delete (is_active = false), Super Admin")
+    public ApiResponse<Void> deactivate(@PathVariable UUID id) {
+        packageService.deactivate(id);
+        return ApiResponse.success("Đã ngừng bán gói tập", null);
+    }
+}

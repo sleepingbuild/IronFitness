@@ -1,0 +1,4 @@
+services:
+  backend:
+    environment:
+      DB_URL: "jdbc:sqlserver://sqlserver:1433;databaseName=gms_demo;encrypt=true;trustServerCertificate=true;sendTimeAsDatetime=false"

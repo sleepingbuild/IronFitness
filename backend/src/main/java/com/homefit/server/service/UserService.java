@@ -33,6 +33,13 @@ public class UserService {
         return UserResponse.from(users.save(user));
     }
 
+    @Transactional
+    public UserResponse upgradePro(Long userId) {
+        User user = find(userId);
+        user.setPremium(true);
+        return UserResponse.from(users.save(user));
+    }
+
     private User find(Long userId) {
         return users.findById(userId)
                 .orElseThrow(() -> ApiException.unauthorized("Tài khoản không còn tồn tại."));

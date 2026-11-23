@@ -1,0 +1,159 @@
+﻿"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { useAuth } from "@/lib/auth/AuthContext";
+import { ApiError } from "@/lib/api/errors";
+import { hasAnyRole } from "@/lib/roles";
+import { useToast } from "@/lib/toast";
+import { getPackage, registerPackage } from "./api";
+import { ErrorBlock, LoadingBlock } from "./Feedback";
+import { PACKAGE_TYPE_LABELS, PEAK_TYPE_LABELS, labelOf } from "./labels";
+import { formatVnd, packageSummary, weeklyLimitText } from "./format";
+import { membershipErrorMessage } from "./messages";
+import type { PackageItem, PackagePurchase } from "./types";
+import { useLoad } from "./useLoad";
+
+function RegisterPanel({ pkg }: { pkg: PackageItem }) {
+  const toast = useToast();
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<unknown>(null);
+  const [result, setResult] = useState<PackagePurchase | null>(null);
+
+  async function submit() {
+    setBusy(true);
+    setError(null);
+    try {
+      const purchase = await registerPackage({ packageId: pkg.id });
+      setResult(purchase);
+      toast.success("─É├ú gß╗¡i ─æ─âng k├╜ g├│i.");
+    } catch (e) {
+      setError(e);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (result) {
+    return (
+      <Alert tone="success" title="─É├ú gß╗¡i ─æ─âng k├╜">
+        <p>
+          M├ú giao dß╗ïch <strong className="font-mono">{result.paymentTransaction.transactionCode}</strong>, sß╗æ tiß╗ün{" "}
+          <strong>{formatVnd(result.paymentTransaction.amount)}</strong>.
+        </p>
+        <p className="mt-1">G├│i sß║╜ ─æ╞░ß╗úc k├¡ch hoß║ít sau khi lß╗à t├ón x├íc nhß║¡n bß║ín ─æ├ú thanh to├ín tß║íi quß║ºy.</p>
+        <p className="mt-2">
+          <Link href="/my-membership" className="underline">
+            Xem g├│i cß╗ºa t├┤i
+          </Link>
+        </p>
+      </Alert>
+    );
+  }
+
+  const pendingExists = error instanceof ApiError && error.is("MEMBERSHIP_PENDING_EXISTS");
+
+  return (
+    <div className="space-y-3">
+      {error != null && (
+        <Alert tone="error" title="Ch╞░a ─æ─âng k├╜ ─æ╞░ß╗úc">
+          {membershipErrorMessage(error)}
+          {pendingExists && (
+            <>
+              {" "}
+              <Link href="/my-membership" className="underline">
+                Xem g├│i cß╗ºa t├┤i
+              </Link>
+            </>
+          )}
+        </Alert>
+      )}
+      {!confirming ? (
+        <Button onClick={() => setConfirming(true)}>─É─âng k├╜ g├│i n├áy</Button>
+      ) : (
+        <div className="space-y-3">
+          <Alert tone="info" title={`─É─âng k├╜ ${pkg.name}?`}>
+            Bß║ín sß║╜ thanh to├ín {formatVnd(pkg.price)} tß║íi quß║ºy. G├│i chß╗ë bß║»t ─æß║ºu t├¡nh tß╗½ ng├áy lß╗à t├ón x├íc nhß║¡n thanh to├ín.
+          </Alert>
+          <div className="flex gap-2">
+            <Button loading={busy} onClick={submit}>
+              X├íc nhß║¡n ─æ─âng k├╜
+            </Button>
+            <Button variant="secondary" disabled={busy} onClick={() => setConfirming(false)}>
+              ─Éß╗â sau
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function PackageDetail({ id }: { id: string }) {
+  const { user } = useAuth();
+  const state = useLoad((signal) => getPackage(id, { signal }), [id]);
+
+  const isMember = !!user && hasAnyRole(user.roles, ["MEMBER"]);
+  const isStaff = !!user && hasAnyRole(user.roles, ["RECEPTIONIST", "SUPER_ADMIN"]);
+
+  const back = (
+    <Link href="/packages" className="btn-secondary">
+      Vß╗ü danh s├ích g├│i
+    </Link>
+  );
+
+  if (state.status === "loading" && !state.data) return <LoadingBlock text="─Éang tß║úi g├│i tß║¡pΓÇª" />;
+
+  if (state.status === "error") {
+    if (state.error instanceof ApiError && state.error.is("PACKAGE_NOT_FOUND")) {
+      return (
+        <EmptyState title="Kh├┤ng t├¼m thß║Ñy g├│i tß║¡p" action={back}>
+          G├│i c├│ thß╗â ─æ├ú ngß╗½ng b├ín hoß║╖c ─æ╞░ß╗¥ng dß║½n kh├┤ng ─æ├║ng.
+        </EmptyState>
+      );
+    }
+    return <ErrorBlock error={state.error} onRetry={state.reload} />;
+  }
+
+  const p = state.data;
+  if (!p) return null;
+
+  return (
+    <div>
+      <PageHeader title={p.name} description={p.description ?? undefined} actions={back} />
+      <div className="grid gap-4 lg:grid-cols-3">
+        <dl className="panel grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 p-5 text-sm lg:col-span-2">
+          <dt className="text-steel">Gi├í</dt>
+          <dd className="font-semibold">{formatVnd(p.price)}</dd>
+          <dt className="text-steel">Quyß╗ün lß╗úi</dt>
+          <dd>{packageSummary(p)}</dd>
+          <dt className="text-steel">Loß║íi g├│i</dt>
+          <dd>{labelOf(PACKAGE_TYPE_LABELS, p.packageType)}</dd>
+          <dt className="text-steel">Khung giß╗¥</dt>
+          <dd>{labelOf(PEAK_TYPE_LABELS, p.peakType)}</dd>
+          <dt className="text-steel">─Éß║╖t PT mß╗ùi tuß║ºn</dt>
+          <dd>{weeklyLimitText(p.maxSessionsPerWeek)}</dd>
+        </dl>
+
+        <div className="panel p-5">
+          {isMember && <RegisterPanel pkg={p} />}
+          {isStaff && (
+            <p className="text-sm">
+              ─Éß╗â b├ín g├│i n├áy cho hß╗Öi vi├¬n, v├áo mß╗Ñc{" "}
+              <Link href="/payments" className="underline">
+                Thanh to├ín
+              </Link>
+              , chß╗ìn B├ín g├│i hß╗Ö.
+            </p>
+          )}
+          {!isMember && !isStaff && <p className="text-sm text-steel">T├ái khoß║ún n├áy kh├┤ng ─æ─âng k├╜ g├│i trß╗▒c tiß║┐p.</p>}
+        </div>
+      </div>
+    </div>
+  );
+}

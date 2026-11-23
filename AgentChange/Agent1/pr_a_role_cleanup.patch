@@ -1,0 +1,495 @@
+From 561d02351b5572934c5b0a88b1ac9276fcff86d2 Mon Sep 17 00:00:00 2001
+From: agent1 <a1@gms.local>
+Date: Thu, 12 Nov 2026 12:48:21 +0000
+Subject: [PATCH] feat(frontend): bo trang Tong quan, loc ho so va dat lich
+ theo vai tro
+
+---
+ frontend/README.md                            |   2 +-
+ frontend/src/app/(app)/dashboard/page.tsx     |  54 --------
+ frontend/src/app/page.tsx                     |   9 +-
+ frontend/src/config/navigation.ts             |   5 +-
+ frontend/src/features/auth/RegisterForm.tsx   |   2 +-
+ frontend/src/features/auth/safeNext.test.ts   |  10 +-
+ frontend/src/features/auth/safeNext.ts        |   2 +-
+ .../features/bookings/BookingsWorkspace.tsx   |  17 +--
+ .../src/features/bookings/StaffBookings.tsx   | 126 ------------------
+ frontend/src/features/profile/ProfileForm.tsx |  42 +++---
+ frontend/src/lib/home.test.ts                 |  16 +++
+ frontend/src/lib/home.ts                      |  14 ++
+ 12 files changed, 75 insertions(+), 224 deletions(-)
+ delete mode 100644 frontend/src/app/(app)/dashboard/page.tsx
+ delete mode 100644 frontend/src/features/bookings/StaffBookings.tsx
+ create mode 100644 frontend/src/lib/home.test.ts
+ create mode 100644 frontend/src/lib/home.ts
+
+diff --git a/frontend/README.md b/frontend/README.md
+index 2c685bf..510ed7d 100644
+--- a/frontend/README.md
++++ b/frontend/README.md
+@@ -25,7 +25,7 @@ Tài khoản đăng nhập thử: xem `docs/TEST_ACCOUNTS.md` (Agent 1 sẽ thê
+ src/
+   app/                    Trang (App Router)
+     login/, register/     Công khai
+-    (app)/                Mọi trang cần đăng nhập (có khung menu): dashboard, profile và các module
++    (app)/                Mọi trang cần đăng nhập (có khung menu): profile và các module
+   components/
+     ui/                   Thành phần dùng chung (Agent 1): Button, Field, Alert, PageHeader, EmptyState...
+     layout/               AppShell (kiểm tra phiên + menu theo vai trò), RequireRole
+diff --git a/frontend/src/app/(app)/dashboard/page.tsx b/frontend/src/app/(app)/dashboard/page.tsx
+deleted file mode 100644
+index 4fe08d6..0000000
+--- a/frontend/src/app/(app)/dashboard/page.tsx
++++ /dev/null
+@@ -1,54 +0,0 @@
+-"use client";
+-
+-import Link from "next/link";
+-import { PageHeader } from "@/components/ui/PageHeader";
+-import { NAVIGATION } from "@/config/navigation";
+-import { useAuth } from "@/lib/auth/AuthContext";
+-import { hasAnyRole } from "@/lib/roles";
+-
+-export default function DashboardPage() {
+-  const { user } = useAuth();
+-  if (!user) return null;
+-
+-  const items = NAVIGATION.flatMap((g) => g.items.map((i) => ({ ...i, group: g.title }))).filter(
+-    (i) => i.href !== "/dashboard" && hasAnyRole(user.roles, i.roles),
+-  );
+-
+-  return (
+-    <div>
+-      <PageHeader title={`Xin chào, ${user.fullName}`} description="Các phân hệ dành cho tài khoản của bạn và tình trạng giao diện hiện tại." />
+-      <div className="panel overflow-hidden">
+-        <table className="w-full text-left text-sm">
+-          <thead className="border-b border-line bg-chalk text-xs uppercase tracking-wide text-steel">
+-            <tr>
+-              <th className="px-4 py-2 font-semibold">Phân hệ</th>
+-              <th className="hidden px-4 py-2 font-semibold sm:table-cell">Nhóm</th>
+-              <th className="hidden px-4 py-2 font-semibold sm:table-cell">Phụ trách</th>
+-              <th className="px-4 py-2 font-semibold">Giao diện</th>
+-            </tr>
+-          </thead>
+-          <tbody>
+-            {items.map((i) => (
+-              <tr key={i.href} className="border-b border-line last:border-0">
+-                <td className="px-4 py-3">
+-                  <Link href={i.href} className="font-medium text-plate underline-offset-2 hover:underline">
+-                    {i.label}
+-                  </Link>
+-                </td>
+-                <td className="hidden px-4 py-3 text-steel sm:table-cell">{i.group}</td>
+-                <td className="hidden px-4 py-3 text-steel sm:table-cell">{i.owner}</td>
+-                <td className="px-4 py-3">
+-                  {i.status === "ready" ? (
+-                    <span className="rounded bg-moss-tint px-2 py-0.5 text-xs font-medium text-moss">Đã có</span>
+-                  ) : (
+-                    <span className="rounded bg-chalk px-2 py-0.5 text-xs text-steel">Sắp có</span>
+-                  )}
+-                </td>
+-              </tr>
+-            ))}
+-          </tbody>
+-        </table>
+-      </div>
+-    </div>
+-  );
+-}
+diff --git a/frontend/src/app/page.tsx b/frontend/src/app/page.tsx
+index 13b9663..fa4ff3f 100644
+--- a/frontend/src/app/page.tsx
++++ b/frontend/src/app/page.tsx
+@@ -4,16 +4,17 @@ import { useRouter } from "next/navigation";
+ import { useEffect } from "react";
+ import { Spinner } from "@/components/ui/Button";
+ import { useAuth } from "@/lib/auth/AuthContext";
++import { homePathFor } from "@/lib/home";
+ 
+-/** Trang gốc chỉ điều hướng: đã đăng nhập vào tổng quan, chưa thì tới đăng nhập. */
++/** Trang gốc chỉ điều hướng: đã đăng nhập vào trang đầu theo vai trò, chưa thì tới đăng nhập. */
+ export default function Home() {
+-  const { status } = useAuth();
++  const { status, user } = useAuth();
+   const router = useRouter();
+ 
+   useEffect(() => {
+-    if (status === "authenticated") router.replace("/dashboard");
++    if (status === "authenticated" && user) router.replace(homePathFor(user.roles));
+     if (status === "unauthenticated") router.replace("/login");
+-  }, [status, router]);
++  }, [status, user, router]);
+ 
+   return (
+     <div className="flex min-h-screen items-center justify-center text-steel" role="status" aria-label="Đang tải">
+diff --git a/frontend/src/config/navigation.ts b/frontend/src/config/navigation.ts
+index 9a6acde..ae8de33 100644
+--- a/frontend/src/config/navigation.ts
++++ b/frontend/src/config/navigation.ts
+@@ -24,16 +24,15 @@ export const NAVIGATION: NavGroup[] = [
+   {
+     title: "Chung",
+     items: [
+-      { href: "/dashboard", label: "Tổng quan", status: "ready", owner: "Agent 1" },
+       { href: "/profile", label: "Hồ sơ cá nhân", status: "ready", owner: "Agent 1" },
+     ],
+   },
+   {
+     title: "Gói tập",
+     items: [
+-      { href: "/packages", label: "Gói tập", roles: ["MEMBER", "RECEPTIONIST", "SUPER_ADMIN"], status: "ready", owner: "Agent 2" },
++      { href: "/packages", label: "Gói tập", roles: ["MEMBER", "RECEPTIONIST"], status: "ready", owner: "Agent 2" },
+       { href: "/my-membership", label: "Gói của tôi", roles: ["MEMBER"], status: "ready", owner: "Agent 2" },
+-      { href: "/payments", label: "Thanh toán", roles: ["RECEPTIONIST", "SUPER_ADMIN"], status: "ready", owner: "Agent 2" },
++      { href: "/payments", label: "Thanh toán", roles: ["RECEPTIONIST"], status: "ready", owner: "Agent 2" },
+       { href: "/admin/packages", label: "Quản trị gói", roles: ["SUPER_ADMIN"], status: "ready", owner: "Agent 2" },
+     ],
+   },
+diff --git a/frontend/src/features/auth/RegisterForm.tsx b/frontend/src/features/auth/RegisterForm.tsx
+index a550ed6..c63228c 100644
+--- a/frontend/src/features/auth/RegisterForm.tsx
++++ b/frontend/src/features/auth/RegisterForm.tsx
+@@ -32,7 +32,7 @@ export function RegisterForm() {
+   const [submitting, setSubmitting] = useState(false);
+ 
+   useEffect(() => {
+-    if (status === "authenticated") router.replace("/dashboard");
++    if (status === "authenticated") router.replace("/");
+   }, [status, router]);
+ 
+   function validate(): FieldErrors {
+diff --git a/frontend/src/features/auth/safeNext.test.ts b/frontend/src/features/auth/safeNext.test.ts
+index 92326ee..f3efdf8 100644
+--- a/frontend/src/features/auth/safeNext.test.ts
++++ b/frontend/src/features/auth/safeNext.test.ts
+@@ -3,11 +3,11 @@ import { safeNext } from "./safeNext";
+ 
+ describe("safeNext", () => {
+   it("giữ đường dẫn nội bộ", () => expect(safeNext("/profile")).toBe("/profile"));
+-  it("không có thì dùng mặc định", () => expect(safeNext(null)).toBe("/dashboard"));
++  it("không có thì dùng mặc định", () => expect(safeNext(null)).toBe("/"));
+   it("chặn địa chỉ ngoài", () => {
+-    expect(safeNext("https://evil.example")).toBe("/dashboard");
+-    expect(safeNext("//evil.example")).toBe("/dashboard");
+-    expect(safeNext("/\\evil.example")).toBe("/dashboard");
++    expect(safeNext("https://evil.example")).toBe("/");
++    expect(safeNext("//evil.example")).toBe("/");
++    expect(safeNext("/\\evil.example")).toBe("/");
+   });
+-  it("không quay lại trang đăng nhập", () => expect(safeNext("/login?next=/x")).toBe("/dashboard"));
++  it("không quay lại trang đăng nhập", () => expect(safeNext("/login?next=/x")).toBe("/"));
+ });
+diff --git a/frontend/src/features/auth/safeNext.ts b/frontend/src/features/auth/safeNext.ts
+index b9aadeb..ed7358c 100644
+--- a/frontend/src/features/auth/safeNext.ts
++++ b/frontend/src/features/auth/safeNext.ts
+@@ -1,5 +1,5 @@
+ /** Chỉ cho phép quay lại đường dẫn nội bộ, tránh chuyển hướng ra trang lạ (open redirect). */
+-export function safeNext(next: string | null | undefined, fallback = "/dashboard"): string {
++export function safeNext(next: string | null | undefined, fallback = "/"): string {
+   if (!next) return fallback;
+   if (!next.startsWith("/") || next.startsWith("//") || next.startsWith("/\\")) return fallback;
+   if (next === "/login" || next.startsWith("/login?") || next === "/register") return fallback;
+diff --git a/frontend/src/features/bookings/BookingsWorkspace.tsx b/frontend/src/features/bookings/BookingsWorkspace.tsx
+index 2bc9cb5..39a637a 100644
+--- a/frontend/src/features/bookings/BookingsWorkspace.tsx
++++ b/frontend/src/features/bookings/BookingsWorkspace.tsx
+@@ -5,7 +5,6 @@ import { useAuth } from "@/lib/auth/AuthContext";
+ import { hasAnyRole } from "@/lib/roles";
+ import { BookingCreate } from "./BookingCreate";
+ import { MemberBookings } from "./MemberBookings";
+-import { StaffBookings } from "./StaffBookings";
+ 
+ type TabKey = "mine" | "create";
+ 
+@@ -14,14 +13,9 @@ const MEMBER_TABS: { key: TabKey; label: string }[] = [
+   { key: "create", label: "Đặt lịch" },
+ ];
+ 
+-const STAFF_TABS: { key: TabKey; label: string }[] = [
+-  { key: "mine", label: "Lịch theo ngày" },
+-  { key: "create", label: "Đặt hộ hội viên" },
+-];
+-
+ /**
+  * Hoi vien: tab "Buoi cua toi" va "Dat lich".
+- * Le tan, admin: tab "Lich theo ngay" va "Dat ho hoi vien".
++ * Le tan, admin: chi con man hinh "Dat ho hoi vien" (khong con lich theo ngay).
+  */
+ export function BookingsWorkspace() {
+   const { user } = useAuth();
+@@ -29,7 +23,8 @@ export function BookingsWorkspace() {
+ 
+   if (!user) return null;
+   const isMember = hasAnyRole(user.roles, ["MEMBER"]);
+-  const tabs = isMember ? MEMBER_TABS : STAFF_TABS;
++  if (!isMember) return <BookingCreate staff onBooked={() => undefined} />;
++  const tabs = MEMBER_TABS;
+ 
+   return (
+     <div>
+@@ -51,11 +46,7 @@ export function BookingsWorkspace() {
+           </button>
+         ))}
+       </div>
+-      {tab === "mine" ? (
+-        isMember ? <MemberBookings /> : <StaffBookings />
+-      ) : (
+-        <BookingCreate staff={!isMember} onBooked={() => setTab("mine")} />
+-      )}
++      {tab === "mine" ? <MemberBookings /> : <BookingCreate staff={false} onBooked={() => setTab("mine")} />}
+     </div>
+   );
+ }
+diff --git a/frontend/src/features/bookings/StaffBookings.tsx b/frontend/src/features/bookings/StaffBookings.tsx
+deleted file mode 100644
+index 1047eb9..0000000
+--- a/frontend/src/features/bookings/StaffBookings.tsx
++++ /dev/null
+@@ -1,126 +0,0 @@
+-"use client";
+-
+-import { useEffect, useMemo, useState } from "react";
+-import { Alert } from "@/components/ui/Alert";
+-import { Spinner } from "@/components/ui/Button";
+-import { Field } from "@/components/ui/Field";
+-import { PageHeader } from "@/components/ui/PageHeader";
+-import { errorMessage } from "@/lib/api/errors";
+-import { useToast } from "@/lib/toast";
+-import { cancelBooking } from "@/features/schedule/bookingsApi";
+-import type { Booking } from "@/features/schedule/bookingTypes";
+-import { listBookingsByDate } from "./api";
+-import { toIsoDate } from "./dates";
+-import { cancelDoneMessage, cancelNotice, isOpenBooking } from "./memberBookingRules";
+-import { STAFF_STATUS_LABEL, countByStatus, sortByStartTime } from "./staffBookingRules";
+-
+-const hhmm = (t: string) => t.slice(0, 5);
+-
+-export function StaffBookings() {
+-  const toast = useToast();
+-  const [date, setDate] = useState(() => toIsoDate(new Date()));
+-  const [items, setItems] = useState<Booking[] | null>(null);
+-  const [loadError, setLoadError] = useState<string | null>(null);
+-  const [reloadKey, setReloadKey] = useState(0);
+-  const [error, setError] = useState<string | null>(null);
+-  const [busyId, setBusyId] = useState<string | null>(null);
+-
+-  useEffect(() => {
+-    if (!date) return;
+-    let cancelled = false;
+-    setItems(null);
+-    setLoadError(null);
+-    listBookingsByDate(date)
+-      .then((list) => !cancelled && setItems(list))
+-      .catch((e) => !cancelled && setLoadError(errorMessage(e)));
+-    return () => {
+-      cancelled = true;
+-    };
+-  }, [date, reloadKey]);
+-
+-  const sorted = useMemo(() => sortByStartTime(items ?? []), [items]);
+-  const summary = useMemo(() => countByStatus(items ?? []), [items]);
+-
+-  async function onCancel(b: Booking) {
+-    if (!window.confirm(cancelNotice(b.status))) return;
+-    setError(null);
+-    setBusyId(b.id);
+-    try {
+-      const updated = await cancelBooking(b.id);
+-      toast.success(cancelDoneMessage(updated.status));
+-    } catch (err) {
+-      setError(errorMessage(err));
+-    } finally {
+-      setBusyId(null);
+-      // Tai lai ca khi loi: trang thai co the da doi o phia server.
+-      setReloadKey((k) => k + 1);
+-    }
+-  }
+-
+-  return (
+-    <div>
+-      <PageHeader
+-        title="Lịch buổi tập theo ngày"
+-        description="Các buổi tập với huấn luyện viên của mọi chi nhánh trong ngày đã chọn. Lễ tân và quản trị viên có thể huỷ buổi hộ học viên."
+-      />
+-
+-      <div className="panel mb-6 max-w-xs p-5">
+-        <Field label="Ngày" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+-      </div>
+-
+-      {error && (
+-        <div className="mb-4">
+-          <Alert tone="error">{error}</Alert>
+-        </div>
+-      )}
+-
+-      {loadError ? (
+-        <Alert tone="error">{loadError}</Alert>
+-      ) : items === null ? (
+-        <div className="flex justify-center py-16 text-steel" role="status" aria-label="Đang tải lịch buổi tập">
+-          <Spinner />
+-        </div>
+-      ) : sorted.length === 0 ? (
+-        <div className="panel p-8 text-center">
+-          <p className="text-sm font-medium">Không có buổi tập nào trong ngày này.</p>
+-          <p className="mt-1 text-sm text-steel">Chọn một ngày khác để xem lịch.</p>
+-        </div>
+-      ) : (
+-        <div className="space-y-4">
+-          <p className="text-sm text-steel">
+-            {sorted.length} buổi:{" "}
+-            {summary.map((s) => `${s.count} ${STAFF_STATUS_LABEL[s.status].toLowerCase()}`).join(", ")}
+-          </p>
+-          <ul className="space-y-3">
+-            {sorted.map((b) => (
+-              <li key={b.id} className="panel p-4">
+-                <div className="flex flex-wrap items-start justify-between gap-2">
+-                  <div>
+-                    <p className="text-sm font-medium">
+-                      {hhmm(b.startTime)} - {hhmm(b.endTime)}
+-                    </p>
+-                    <p className="text-sm text-steel">Học viên: {b.memberName ?? "Không rõ"}</p>
+-                    <p className="text-sm text-steel">Huấn luyện viên: {b.trainerName ?? "Không rõ"}</p>
+-                  </div>
+-                  <span className="rounded border px-2 py-0.5 text-xs">{STAFF_STATUS_LABEL[b.status] ?? b.status}</span>
+-                </div>
+-                {isOpenBooking(b) && (
+-                  <div className="mt-3">
+-                    <button
+-                      type="button"
+-                      className="text-sm underline disabled:opacity-50"
+-                      disabled={busyId === b.id}
+-                      onClick={() => void onCancel(b)}
+-                    >
+-                      Huỷ buổi
+-                    </button>
+-                  </div>
+-                )}
+-              </li>
+-            ))}
+-          </ul>
+-        </div>
+-      )}
+-    </div>
+-  );
+-}
+diff --git a/frontend/src/features/profile/ProfileForm.tsx b/frontend/src/features/profile/ProfileForm.tsx
+index 7e97f40..34f17a1 100644
+--- a/frontend/src/features/profile/ProfileForm.tsx
++++ b/frontend/src/features/profile/ProfileForm.tsx
+@@ -6,6 +6,7 @@ import { Button, Spinner } from "@/components/ui/Button";
+ import { Field } from "@/components/ui/Field";
+ import { PageHeader } from "@/components/ui/PageHeader";
+ import { errorMessage } from "@/lib/api/errors";
++import { useAuth } from "@/lib/auth/AuthContext";
+ import { useToast } from "@/lib/toast";
+ import type { Profile } from "@/lib/types";
+ import { getMyProfile, updateMyProfile } from "./api";
+@@ -22,6 +23,8 @@ function toForm(p: Profile): ProfileFormValues {
+ 
+ export function ProfileForm() {
+   const toast = useToast();
++  const { user } = useAuth();
++  const isMember = user?.roles.includes("MEMBER") ?? false;
+   const [profile, setProfile] = useState<Profile | null>(null);
+   const [values, setValues] = useState<ProfileFormValues>({ dateOfBirth: "", weightKg: "", heightCm: "", goal: "" });
+   const [loadError, setLoadError] = useState<string | null>(null);
+@@ -72,7 +75,10 @@ export function ProfileForm() {
+ 
+   return (
+     <div>
+-      <PageHeader title="Hồ sơ cá nhân" description="Thông tin này giúp huấn luyện viên theo dõi tiến độ tập của bạn." />
++      <PageHeader
++        title="Hồ sơ cá nhân"
++        description={isMember ? "Thông tin này giúp huấn luyện viên theo dõi tiến độ tập của bạn." : "Thông tin tài khoản của bạn."}
++      />
+       <form onSubmit={onSubmit} className="panel max-w-xl space-y-4 p-5" noValidate>
+         {saveError && <Alert tone="error">{saveError}</Alert>}
+ 
+@@ -87,22 +93,26 @@ export function ProfileForm() {
+           </div>
+         </div>
+ 
+-        <Field
+-          label="Ngày sinh"
+-          type="date"
+-          value={values.dateOfBirth}
+-          onChange={set("dateOfBirth")}
+-          hint={profile.age !== null ? `Hiện ${profile.age} tuổi. Cần từ 18 tuổi trở lên tính đến ngày đăng ký.` : "Cần từ 18 tuổi trở lên tính đến ngày đăng ký."}
+-        />
+-        <div className="grid gap-4 sm:grid-cols-2">
+-          <Field label="Cân nặng (kg)" inputMode="decimal" value={values.weightKg} onChange={set("weightKg")} />
+-          <Field label="Chiều cao (cm)" inputMode="decimal" value={values.heightCm} onChange={set("heightCm")} />
+-        </div>
+-        <Field label="Mục tiêu" maxLength={255} value={values.goal} onChange={set("goal")} hint="Ví dụ: tăng cơ, giảm mỡ, tăng sức bền." />
++        {isMember && (
++          <>
++            <Field
++              label="Ngày sinh"
++              type="date"
++              value={values.dateOfBirth}
++              onChange={set("dateOfBirth")}
++              hint={profile.age !== null ? `Hiện ${profile.age} tuổi. Cần từ 18 tuổi trở lên tính đến ngày đăng ký.` : "Cần từ 18 tuổi trở lên tính đến ngày đăng ký."}
++            />
++            <div className="grid gap-4 sm:grid-cols-2">
++              <Field label="Cân nặng (kg)" inputMode="decimal" value={values.weightKg} onChange={set("weightKg")} />
++              <Field label="Chiều cao (cm)" inputMode="decimal" value={values.heightCm} onChange={set("heightCm")} />
++            </div>
++            <Field label="Mục tiêu" maxLength={255} value={values.goal} onChange={set("goal")} hint="Ví dụ: tăng cơ, giảm mỡ, tăng sức bền." />
+ 
+-        <Button type="submit" loading={saving}>
+-          Lưu thay đổi
+-        </Button>
++            <Button type="submit" loading={saving}>
++              Lưu thay đổi
++            </Button>
++          </>
++        )}
+       </form>
+     </div>
+   );
+diff --git a/frontend/src/lib/home.test.ts b/frontend/src/lib/home.test.ts
+new file mode 100644
+index 0000000..1ab86ee
+--- /dev/null
++++ b/frontend/src/lib/home.test.ts
+@@ -0,0 +1,16 @@
++import { describe, expect, it } from "vitest";
++import { homePathFor } from "./home";
++
++describe("homePathFor", () => {
++  it("mỗi vai trò có trang đầu riêng", () => {
++    expect(homePathFor(["SUPER_ADMIN"])).toBe("/admin/packages");
++    expect(homePathFor(["RECEPTIONIST"])).toBe("/bookings");
++    expect(homePathFor(["SALES"])).toBe("/leads");
++    expect(homePathFor(["TRAINER"])).toBe("/schedule");
++    expect(homePathFor(["MEMBER"])).toBe("/my-membership");
++  });
++  it("nhiều vai trò thì vai trò cao hơn được ưu tiên", () => {
++    expect(homePathFor(["MEMBER", "SUPER_ADMIN"])).toBe("/admin/packages");
++  });
++  it("không có vai trò nhận diện được thì về hồ sơ", () => expect(homePathFor([])).toBe("/profile"));
++});
+diff --git a/frontend/src/lib/home.ts b/frontend/src/lib/home.ts
+new file mode 100644
+index 0000000..ec0f0dc
+--- /dev/null
++++ b/frontend/src/lib/home.ts
+@@ -0,0 +1,14 @@
++import type { Role } from "./roles";
++
++/** Trang đầu tiên sau đăng nhập theo vai trò (không còn trang Tổng quan). Vai trò cao hơn được xét trước. */
++const HOME_BY_ROLE: [Role, string][] = [
++  ["SUPER_ADMIN", "/admin/packages"],
++  ["RECEPTIONIST", "/bookings"],
++  ["SALES", "/leads"],
++  ["TRAINER", "/schedule"],
++  ["MEMBER", "/my-membership"],
++];
++
++export function homePathFor(roles: readonly string[]): string {
++  return HOME_BY_ROLE.find(([r]) => roles.includes(r))?.[1] ?? "/profile";
++}
+-- 
+2.43.0
+

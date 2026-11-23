@@ -1,0 +1,85 @@
+// GMS - 2. BOOKING & ATTENDANCE (V3, V4 - nhanh rieng, chua merge) - 4 bang day du + 2 bang tham chieu
+// Mau header: #4A6B94 xanh = da merge master | #B7791F vang = migration tren nhanh rieng, chua merge |
+//            #7B5EA7 tim = chi la thiet ke, chua co migration | #8A8F9C xam = bang tham chieu (khong day du cot)
+// trainer_schedules <-> bookings: lien ket logic theo trainer_id + ngay + gio, KHONG co FK cung
+
+Table users [headercolor: #8A8F9C, note: 'Chi de noi quan he - day du cot o diagram 1'] {
+  id uniqueidentifier [pk]
+  full_name nvarchar(150)
+  email varchar(150)
+}
+
+Table branches [headercolor: #8A8F9C, note: 'Chi de noi quan he - day du cot o diagram 1'] {
+  id uniqueidentifier [pk]
+  name nvarchar(150)
+}
+
+Table bookings [headercolor: #B7791F] {
+  id uniqueidentifier [pk, default: `NEWID()`]
+  member_id uniqueidentifier [not null]
+  trainer_id uniqueidentifier [not null]
+  branch_id uniqueidentifier [null]
+  booking_date date [not null]
+  start_time time [not null]
+  end_time time [not null]
+  status varchar(20) [not null, default: 'PENDING', note: 'PENDING / CONFIRMED / COMPLETED / CANCELLED / NO_SHOW / PT_NO_SHOW / LATE_CANCELLED']
+  check_in_time datetime2 [null, note: 'Hoc vien quet mat vao']
+  check_in_method varchar(20) [null, note: 'FACE']
+  check_out_time datetime2 [null, note: 'Hoc vien quet mat ra']
+  check_out_method varchar(20) [null, note: 'FACE']
+  pt_check_in_time datetime2 [null, note: 'PT quet mat vao']
+  pt_check_in_method varchar(20) [null, note: 'FACE']
+  pt_check_out_time datetime2 [null, note: 'PT quet mat ra']
+  pt_check_out_method varchar(20) [null, note: 'FACE']
+  pt_early_leave_reason nvarchar(255) [null, note: 'Ly do PT ra som; trong = khong day du gio -> khong tinh luong']
+  notes nvarchar(500) [null]
+  created_at datetime2 [not null, default: `SYSUTCDATETIME()`]
+  updated_at datetime2 [not null, default: `SYSUTCDATETIME()`]
+}
+
+Table trainer_schedules [headercolor: #B7791F] {
+  id uniqueidentifier [pk, default: `NEWID()`]
+  trainer_id uniqueidentifier [not null]
+  work_date date [not null, note: 'Ngay cu the, khong phai thu lap lai hang tuan']
+  start_time time [not null]
+  end_time time [not null]
+  is_active bit [not null, default: 1, note: '0 = ca tam nghi']
+  created_at datetime2 [not null, default: `SYSUTCDATETIME()`]
+  updated_at datetime2 [not null, default: `SYSUTCDATETIME()`]
+}
+
+Table face_profiles [headercolor: #B7791F] {
+  id uniqueidentifier [pk, default: `NEWID()`]
+  user_id uniqueidentifier [not null, unique]
+  descriptor nvarchar(max) [not null, note: 'JSON array 128 so thuc (vector dac trung khuon mat)']
+  reference_image varchar(255) [null, note: 'Anh goc lam bang chung, khong dung de so khop']
+  registered_by uniqueidentifier [null]
+  created_at datetime2 [not null, default: `SYSUTCDATETIME()`]
+  updated_at datetime2 [null]
+}
+
+Table staff_attendances [headercolor: #B7791F] {
+  id uniqueidentifier [pk, default: `NEWID()`]
+  staff_id uniqueidentifier [not null]
+  "date" date [not null]
+  check_in_time datetime2 [null]
+  check_out_time datetime2 [null]
+  method varchar(20) [not null, default: 'MANUAL', note: 'MANUAL / FACE']
+  notes nvarchar(255) [null]
+  created_at datetime2 [not null, default: `SYSUTCDATETIME()`]
+  updated_at datetime2 [null]
+
+  indexes {
+    (staff_id, "date") [unique]
+  }
+}
+
+// ---------------- QUAN HE ----------------
+
+Ref: trainer_schedules.trainer_id > users.id
+Ref: bookings.member_id > users.id
+Ref: bookings.trainer_id > users.id
+Ref: bookings.branch_id > branches.id
+Ref: face_profiles.user_id - users.id
+Ref: face_profiles.registered_by > users.id
+Ref: staff_attendances.staff_id > users.id
