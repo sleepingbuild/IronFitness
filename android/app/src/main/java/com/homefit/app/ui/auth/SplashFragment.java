@@ -67,6 +67,15 @@ public class SplashFragment extends Fragment {
                 || navController.getCurrentDestination().getId() != R.id.splashFragment) {
             return;
         }
+
+        com.homefit.app.data.prefs.OnboardingStore onboardingStore = new com.homefit.app.data.prefs.OnboardingStore(requireContext());
+        if (!onboardingStore.isOnboardingCompleted()) {
+            android.content.Intent intent = new android.content.Intent(requireContext(), com.homefit.app.ui.onboarding.OnboardingActivity.class);
+            startActivity(intent);
+            requireActivity().finish();
+            return;
+        }
+
         navController.navigate(viewModel.isLoggedIn()
                 ? R.id.action_splash_to_workout
                 : R.id.action_splash_to_login);

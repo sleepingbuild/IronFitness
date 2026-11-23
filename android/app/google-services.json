@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "307679540658",
+    "project_id": "ironfitness-46377",
+    "storage_bucket": "ironfitness-46377.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:307679540658:android:3e332bbeb50e199b2320ab",
+        "android_client_info": {
+          "package_name": "com.homefit.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvoK48yvqYdr29-oQHWBW4Pxfgd_9BZWM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -102,15 +102,15 @@
                      },
                      {
                          "id":  "bung_hard_05",
-                         "name":  "Hanging Leg Raises",
+                         "name":  "Leg Raises (Nâng hai chân)",
                          "target":  "Bụng dưới cực đại",
-                         "reps_sets":  "3 sets x 10 reps",
+                         "reps_sets":  "3 sets x 12 reps",
                          "instructions":  [
-                                              "1. ?u người trên xà đơn.",
-                                              "2. Siết chặt cơ xô và cơ bụng, nâng thẳng hai chân lên đến khi chạm hoặc gần chạm xà.",
-                                              "3. Hạ chân xuống từ từ."
+                                              "1. Nằm ngửa trên thảm, hai tay duỗi thẳng dọc theo thân người.",
+                                              "2. Siết chặt cơ bụng, nâng thẳng hai chân lên vuông góc với sàn.",
+                                              "3. Hạ chân xuống từ từ không chạm sàn."
                                           ],
-                         "tips":  "?ừng vung vẩy người để lấy đà."
+                         "tips":  "Giữ lưng dưới áp sát thảm trong suốt động tác."
                      },
                      {
                          "id":  "bung_hard_06",

@@ -55,9 +55,13 @@ public class ExerciseListAdapter extends RecyclerView.Adapter<ExerciseListAdapte
             binding.tvName.setText(dto.name);
             binding.tvReps.setText(dto.reps_sets);
 
+            // Always show 2D image thumb, never default dumbbell icon
+            binding.ivThumb.setVisibility(View.VISIBLE);
+            binding.ivIcon.setVisibility(View.GONE);
+
             String mediaUrl = dto.mediaUrl;
             if (mediaUrl != null && !mediaUrl.trim().isEmpty()) {
-                loadThumb(mediaUrl);
+                loadThumb(dto.name, mediaUrl);
             } else {
                 com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
                     var list = com.homefit.app.data.local.AppDatabase.getInstance(binding.getRoot().getContext()).exerciseDao().getAllNow();
@@ -75,37 +79,36 @@ public class ExerciseListAdapter extends RecyclerView.Adapter<ExerciseListAdapte
                         }
                     }
                     final String url = foundUrl;
-                    com.homefit.app.util.AppExecutors.mainThread().execute(() -> loadThumb(url));
+                    com.homefit.app.util.AppExecutors.mainThread().execute(() -> loadThumb(dto.name, url));
                 });
             }
         }
 
-        private void loadThumb(String url) {
-            if (url != null && !url.trim().isEmpty()) {
-                String fullUrl = MediaLoader.resolveUrl(url);
-                Glide.with(binding.ivThumb)
-                        .load(fullUrl)
-                        .fitCenter()
-                        .listener(new com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable>() {
-                            @Override
-                            public boolean onLoadFailed(@androidx.annotation.Nullable com.bumptech.glide.load.engine.GlideException e, Object model, com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target, boolean isFirstResource) {
-                                binding.ivThumb.setVisibility(View.GONE);
-                                binding.ivIcon.setVisibility(View.VISIBLE);
-                                return false;
-                            }
+        private void loadThumb(String exerciseName, String url) {
+            String fullUrl = MediaLoader.resolveExerciseMediaUrl(exerciseName, url);
+            binding.ivThumb.setVisibility(View.VISIBLE);
+            binding.ivIcon.setVisibility(View.GONE);
 
-                            @Override
-                            public boolean onResourceReady(android.graphics.drawable.Drawable resource, Object model, com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target, com.bumptech.glide.load.DataSource dataSource, boolean isFirstResource) {
-                                binding.ivThumb.setVisibility(View.VISIBLE);
-                                binding.ivIcon.setVisibility(View.GONE);
-                                return false;
-                            }
-                        })
-                        .into(binding.ivThumb);
-            } else {
-                binding.ivThumb.setVisibility(View.GONE);
-                binding.ivIcon.setVisibility(View.VISIBLE);
-            }
+            Glide.with(binding.ivThumb)
+                    .load(fullUrl)
+                    .fitCenter()
+                    .listener(new com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@androidx.annotation.Nullable com.bumptech.glide.load.engine.GlideException e, Object model, com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target, boolean isFirstResource) {
+                            // Fallback to guaranteed 2D image URL
+                            Glide.with(binding.ivThumb)
+                                    .load(MediaLoader.getFallback2dMediaUrl(exerciseName))
+                                    .fitCenter()
+                                    .into(binding.ivThumb);
+                            return true;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(android.graphics.drawable.Drawable resource, Object model, com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target, com.bumptech.glide.load.DataSource dataSource, boolean isFirstResource) {
+                            return false;
+                        }
+                    })
+                    .into(binding.ivThumb);
         }
     }
 }

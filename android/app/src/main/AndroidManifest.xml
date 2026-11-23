@@ -41,6 +41,11 @@
             android:name=".ui.ads.AdsDemoActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.onboarding.OnboardingActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <receiver android:name=".notification.ReminderReceiver" android:exported="false" />
 
         <receiver android:name=".notification.BootReceiver" android:exported="true">

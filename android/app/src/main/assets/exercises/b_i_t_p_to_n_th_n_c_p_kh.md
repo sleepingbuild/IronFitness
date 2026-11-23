@@ -98,17 +98,16 @@
                      },
                      {
                          "id":  "tt_h_05",
-                         "name":  "Pull-ups (Hít xà đơn)",
-                         "target":  "Lưng/Vai",
-                         "reps_sets":  "3 sets x 8 reps",
+                         "name":  "Bicycle Crunches (Gập bụng đạp xe)",
+                         "target":  "Cơ bụng / Cơ liên sườn",
+                         "reps_sets":  "3 sets x 15 reps mỗi bên",
                          "instructions":  [
-                                              "1. �?u xà.",
-                                              "2. Kéo người lên qua cằm."
+                                              "1. Nằm ngửa, hai tay đặt nhẹ sau đầu.",
+                                              "2. Nâng chân co gối, xoay người lần lượt đưa khuỷu tay chạm gối đối diện."
                                           ],
-                         "tips":  "Nếu không có xà, kéo tạ hoặc dùng dây kháng lực."
+                         "tips":  "Siết chặt cơ bụng và không dùng lực tay kéo cổ."
                      },
-                     {
-                         "id":  "tt_h_06",
+                     "id":  "tt_h_06",
                          "name":  "Handstand Push-ups",
                          "target":  "Lưng/Vai",
                          "reps_sets":  "3 sets x 6 reps",

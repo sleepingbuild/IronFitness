@@ -13,28 +13,40 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.homefit.app.R;
 import com.homefit.app.data.local.AppDatabase;
 import com.homefit.app.data.local.entity.UserProfileEntity;
+import com.homefit.app.data.prefs.OnboardingStore;
 import com.homefit.app.util.AppExecutors;
 import com.homefit.app.util.BmiCalculator;
+import com.homefit.app.util.StreakCalculator;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class ReportFragment extends Fragment {
 
     private TextView tvWorkoutCount;
     private TextView tvKcalCount;
     private TextView tvMinutesCount;
-    private TextView tvStreak;
-    private TextView tvBestStreak;
     private TextView tvCurrentWeight;
-    private TextView tvMaxWeight;
-    private TextView tvMinWeight;
+    private TextView tvTargetWeightText;
+    private TextView tvWeightProgressSubtitle;
+    private LinearProgressIndicator pbWeightProgress;
     private TextView tvBmiValue;
     private TextView tvHeightValue;
+    private TextView tvBarChartHeader;
+
+    private RecyclerView rvBadges;
+    private BadgeAdapter badgeAdapter;
 
     private UserProfileEntity userProfile;
+    private OnboardingStore onboardingStore;
 
     @Nullable
     @Override
@@ -46,23 +58,31 @@ public class ReportFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        onboardingStore = new OnboardingStore(requireContext());
+
         tvWorkoutCount = view.findViewById(R.id.tvWorkoutCount);
         tvKcalCount = view.findViewById(R.id.tvKcalCount);
         tvMinutesCount = view.findViewById(R.id.tvMinutesCount);
-        tvStreak = view.findViewById(R.id.tvStreak);
-        tvBestStreak = view.findViewById(R.id.tvBestStreak);
         tvCurrentWeight = view.findViewById(R.id.tvCurrentWeight);
-        tvMaxWeight = view.findViewById(R.id.tvMaxWeight);
-        tvMinWeight = view.findViewById(R.id.tvMinWeight);
+        tvTargetWeightText = view.findViewById(R.id.tvTargetWeightText);
+        tvWeightProgressSubtitle = view.findViewById(R.id.tvWeightProgressSubtitle);
+        pbWeightProgress = view.findViewById(R.id.pbWeightProgress);
         tvBmiValue = view.findViewById(R.id.tvBmiValue);
         tvHeightValue = view.findViewById(R.id.tvHeightValue);
+        tvBarChartHeader = view.findViewById(R.id.tvBarChartHeader);
 
         MaterialButton btnLogWeight = view.findViewById(R.id.btnLogWeight);
         MaterialButton btnEditBmi = view.findViewById(R.id.btnEditBmi);
 
-        btnLogWeight.setOnClickListener(v -> showWeightDialog());
-        btnEditBmi.setOnClickListener(v -> showHeightDialog());
-        tvHeightValue.setOnClickListener(v -> showHeightDialog());
+        if (btnLogWeight != null) btnLogWeight.setOnClickListener(v -> showWeightDialog());
+        if (btnEditBmi != null) btnEditBmi.setOnClickListener(v -> showHeightDialog());
+        if (tvHeightValue != null) tvHeightValue.setOnClickListener(v -> showHeightDialog());
+
+        rvBadges = view.findViewById(R.id.rvBadges);
+        if (rvBadges != null) {
+            badgeAdapter = new BadgeAdapter();
+            rvBadges.setAdapter(badgeAdapter);
+        }
 
         loadUserData();
     }
@@ -90,66 +110,91 @@ public class ReportFragment extends Fragment {
                 dbCalories = (4.0 * 3.5 * weight * (dbActiveSec / 60.0)) / 200.0;
             }
 
+            List<Long> completedTimes = db.workoutLogDao().getAllCompletedTimesNow();
+            StreakCalculator.Result streakResult = StreakCalculator.calculateStreak(completedTimes);
+
             final int finalActiveSec = dbActiveSec;
             final double finalCalories = dbCalories;
 
             AppExecutors.mainThread().execute(() -> {
-                updateUi(count, finalActiveSec, finalCalories);
+                updateUi(count, finalActiveSec, finalCalories, streakResult);
             });
         });
     }
 
-    private void updateUi(int workoutCount, int totalActiveSec, double totalCalories) {
+    private void updateUi(int workoutCount, int totalActiveSec, double totalCalories, StreakCalculator.Result streakResult) {
         if (!isAdded()) return;
 
         int totalMinutes = (totalActiveSec > 0) ? (int) Math.ceil(totalActiveSec / 60.0) : 0;
         int totalKcal = (int) Math.round(totalCalories);
 
-        tvWorkoutCount.setText(String.valueOf(workoutCount));
-        tvKcalCount.setText(String.valueOf(totalKcal));
-        tvMinutesCount.setText(String.valueOf(totalMinutes));
+        if (tvWorkoutCount != null) tvWorkoutCount.setText(String.valueOf(workoutCount));
+        if (tvKcalCount != null) tvKcalCount.setText(String.valueOf(totalKcal));
+        if (tvMinutesCount != null) tvMinutesCount.setText(String.valueOf(totalMinutes));
 
-        tvStreak.setText(workoutCount > 0 ? "1" : "0");
-        tvBestStreak.setText(workoutCount > 0 ? "1 ngày" : "0 ngày");
+        if (tvBarChartHeader != null) {
+            tvBarChartHeader.setText("Tổng: " + totalMinutes + " phút tập luyện");
+        }
 
+        float currentW = onboardingStore.getWeightKg();
         if (userProfile != null && userProfile.weightKg != null && userProfile.weightKg > 0) {
-            String wStr = String.format(java.util.Locale.US, "%.1f kg", userProfile.weightKg);
-            tvCurrentWeight.setText(wStr);
-            tvMaxWeight.setText("Nặng nhất  " + wStr);
-            tvMinWeight.setText("Nhẹ nhất  " + wStr);
-        } else {
-            tvCurrentWeight.setText("--");
-            tvMaxWeight.setText("Nặng nhất  --");
-            tvMinWeight.setText("Nhẹ nhất  --");
+            currentW = userProfile.weightKg.floatValue();
+        }
+        float targetW = onboardingStore.getTargetWeightKg();
+
+        if (tvCurrentWeight != null) tvCurrentWeight.setText(String.format(Locale.US, "%.1f kg", currentW));
+        if (tvTargetWeightText != null) tvTargetWeightText.setText(String.format(Locale.US, "%.1f kg", targetW));
+
+        float diff = Math.abs(currentW - targetW);
+        if (tvWeightProgressSubtitle != null) {
+            if (diff < 0.2f) {
+                tvWeightProgressSubtitle.setText("🎉 Đã hoàn thành mục tiêu cân nặng!");
+            } else {
+                tvWeightProgressSubtitle.setText(String.format(Locale.US, "Còn %.1f kg nữa đạt mục tiêu 🎯", diff));
+            }
+        }
+        if (pbWeightProgress != null) {
+            int percent = (currentW > 0 && targetW > 0) ? Math.min(100, Math.max(10, (int) Math.round((targetW / currentW) * 100))) : 50;
+            pbWeightProgress.setProgress(percent);
         }
 
-        if (userProfile.heightCm != null && userProfile.heightCm > 0) {
-            tvHeightValue.setText(String.format(java.util.Locale.US, "%.0f cm ✏️", userProfile.heightCm));
-        } else {
-            tvHeightValue.setText("Chỉnh sửa ✏️");
+        float heightCm = onboardingStore.getHeightCm();
+        if (userProfile != null && userProfile.heightCm != null && userProfile.heightCm > 0) {
+            heightCm = userProfile.heightCm.floatValue();
         }
 
-        if (userProfile.heightCm != null && userProfile.heightCm > 0 && userProfile.weightKg != null && userProfile.weightKg > 0) {
-            double bmi = BmiCalculator.calculate(userProfile.heightCm, userProfile.weightKg);
-            tvBmiValue.setText(String.format(java.util.Locale.US, "%.1f", bmi));
-        } else {
-            tvBmiValue.setText("--");
+        if (tvHeightValue != null) {
+            tvHeightValue.setText(String.format(Locale.US, "Chiều cao: %.0f cm ✏️", heightCm));
+        }
+
+        if (heightCm > 0 && currentW > 0) {
+            double bmi = BmiCalculator.calculate(heightCm, currentW);
+            if (tvBmiValue != null) tvBmiValue.setText(String.format(Locale.US, "%.1f", bmi));
+        }
+
+        // Badges setup
+        if (badgeAdapter != null) {
+            List<BadgeAdapter.BadgeItem> badges = new ArrayList<>();
+            badges.add(new BadgeAdapter.BadgeItem("🏆", "Khởi đầu bền bỉ", "Hoàn thành 3 buổi tập", workoutCount >= 3));
+            badges.add(new BadgeAdapter.BadgeItem("🔥", "Chiến binh tuần lễ", "Duy trì Chuỗi Streak 7 ngày", streakResult.streakCount >= 7));
+            badges.add(new BadgeAdapter.BadgeItem("⚡", "Đốt cháy 1.000 kcal", "Tích lũy tiêu thụ 1.000 kcal", totalKcal >= 1000));
+            badges.add(new BadgeAdapter.BadgeItem("👑", "Chinh phục Thử thách", "Tập đủ 24 buổi Thử thách", workoutCount >= 24));
+            badges.add(new BadgeAdapter.BadgeItem("🥇", "Tập luyện chăm chỉ", "Hoàn thành 10 buổi tập", workoutCount >= 10));
+            badges.add(new BadgeAdapter.BadgeItem("🎯", "Kiên trì vượt khó", "Hoàn thành 5 buổi tập vừa sức", workoutCount >= 5));
+            badgeAdapter.submitList(badges);
         }
     }
 
     private void showWeightDialog() {
         final EditText etWeight = new EditText(requireContext());
         etWeight.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        if (userProfile != null && userProfile.weightKg != null) {
-            etWeight.setText(String.valueOf(userProfile.weightKg));
-        } else {
-            etWeight.setText("65.0");
-        }
+        float currentW = (userProfile != null && userProfile.weightKg != null) ? userProfile.weightKg.floatValue() : onboardingStore.getWeightKg();
+        etWeight.setText(String.valueOf(currentW));
 
         new AlertDialog.Builder(requireContext())
-                .setTitle("Ghi nhận cân nặng (kg)")
+                .setTitle("Ghi nhận cân nặng hiện tại (kg)")
                 .setView(etWeight)
-                .setPositiveButton("Lưu", (dialog, which) -> {
+                .setPositiveButton("Lưu cân nặng", (dialog, which) -> {
                     try {
                         double w = Double.parseDouble(etWeight.getText().toString().trim());
                         if (w > 20 && w < 300) {
@@ -164,16 +209,13 @@ public class ReportFragment extends Fragment {
     private void showHeightDialog() {
         final EditText etHeight = new EditText(requireContext());
         etHeight.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        if (userProfile != null && userProfile.heightCm != null) {
-            etHeight.setText(String.valueOf(userProfile.heightCm));
-        } else {
-            etHeight.setText("170.0");
-        }
+        float currentH = (userProfile != null && userProfile.heightCm != null) ? userProfile.heightCm.floatValue() : onboardingStore.getHeightCm();
+        etHeight.setText(String.valueOf(currentH));
 
         new AlertDialog.Builder(requireContext())
                 .setTitle("Chỉnh sửa chiều cao (cm)")
                 .setView(etHeight)
-                .setPositiveButton("Lưu", (dialog, which) -> {
+                .setPositiveButton("Lưu chiều cao", (dialog, which) -> {
                     try {
                         double h = Double.parseDouble(etHeight.getText().toString().trim());
                         if (h > 50 && h < 250) {
@@ -186,26 +228,28 @@ public class ReportFragment extends Fragment {
     }
 
     private void saveWeight(double weight) {
-        if (userProfile == null) return;
-        userProfile.weightKg = weight;
         AppDatabase db = AppDatabase.getInstance(requireContext());
         AppExecutors.diskIO().execute(() -> {
-            db.userProfileDao().upsert(userProfile);
+            UserProfileEntity profile = db.userProfileDao().getNow();
+            if (profile == null) profile = new UserProfileEntity();
+            profile.weightKg = weight;
+            db.userProfileDao().upsert(profile);
             AppExecutors.mainThread().execute(() -> {
-                Toast.makeText(requireContext(), "Đã lưu cân nặng", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Đã cập nhật cân nặng! ⚖️", Toast.LENGTH_SHORT).show();
                 loadUserData();
             });
         });
     }
 
     private void saveHeight(double height) {
-        if (userProfile == null) return;
-        userProfile.heightCm = height;
         AppDatabase db = AppDatabase.getInstance(requireContext());
         AppExecutors.diskIO().execute(() -> {
-            db.userProfileDao().upsert(userProfile);
+            UserProfileEntity profile = db.userProfileDao().getNow();
+            if (profile == null) profile = new UserProfileEntity();
+            profile.heightCm = height;
+            db.userProfileDao().upsert(profile);
             AppExecutors.mainThread().execute(() -> {
-                Toast.makeText(requireContext(), "Đã lưu chiều cao", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Đã cập nhật chiều cao!", Toast.LENGTH_SHORT).show();
                 loadUserData();
             });
         });

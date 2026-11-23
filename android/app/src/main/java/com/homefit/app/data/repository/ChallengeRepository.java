@@ -203,6 +203,7 @@ public class ChallengeRepository {
         w.name = name;
         w.target = target;
         w.reps_sets = repsSets;
+        w.mediaUrl = com.homefit.app.ui.common.MediaLoader.getFallback2dMediaUrl(name);
         w.instructions = new ArrayList<>();
         w.tips = "";
         list.add(w);

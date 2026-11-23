@@ -388,46 +388,60 @@ public class PlayerViewModel extends AndroidViewModel {
         return 4.0;
     }
 
+    private float getAdaptiveMultiplier() {
+        return new com.homefit.app.ui.settings.SettingsStore(getApplication()).getDifficultyMultiplier();
+    }
+
     private int parseReps(String repsSets) {
         if (repsSets == null || repsSets.isEmpty()) return 10;
+        int baseReps = 10;
         Matcher m = Pattern.compile("(\\d+)").matcher(repsSets);
         if (m.find()) {
             try {
                 String val = m.group(1);
                 if (val != null) {
-                    return Integer.parseInt(val);
+                    baseReps = Integer.parseInt(val);
                 }
             } catch (Exception ignored) {}
         }
-        return 10;
+        float multiplier = getAdaptiveMultiplier();
+        return Math.max(1, Math.round(baseReps * multiplier));
     }
 
     private int parseDurationInSeconds(String repsSets) {
         if (repsSets == null || repsSets.isEmpty()) return 0;
 
         String text = repsSets.toLowerCase(Locale.US);
+        int baseSec = 0;
 
         Matcher mSec = Pattern.compile("(\\d+)\\s*(s(?!ets)|giây|giay|sec)").matcher(text);
         if (mSec.find()) {
             try {
                 String matchGroup = mSec.group(1);
                 if (matchGroup != null) {
-                    return Integer.parseInt(matchGroup);
+                    baseSec = Integer.parseInt(matchGroup);
                 }
             } catch (Exception ignored) {}
         }
 
-        Matcher mMmSs = Pattern.compile("(\\d{1,2}):(\\d{2})").matcher(text);
-        if (mMmSs.find()) {
-            try {
-                String minGroup = mMmSs.group(1);
-                String secGroup = mMmSs.group(2);
-                if (minGroup != null && secGroup != null) {
-                    int mins = Integer.parseInt(minGroup);
-                    int secs = Integer.parseInt(secGroup);
-                    return mins * 60 + secs;
-                }
-            } catch (Exception ignored) {}
+        if (baseSec == 0) {
+            Matcher mMmSs = Pattern.compile("(\\d{1,2}):(\\d{2})").matcher(text);
+            if (mMmSs.find()) {
+                try {
+                    String minGroup = mMmSs.group(1);
+                    String secGroup = mMmSs.group(2);
+                    if (minGroup != null && secGroup != null) {
+                        int mins = Integer.parseInt(minGroup);
+                        int secs = Integer.parseInt(secGroup);
+                        baseSec = mins * 60 + secs;
+                    }
+                } catch (Exception ignored) {}
+            }
+        }
+
+        if (baseSec > 0) {
+            float multiplier = getAdaptiveMultiplier();
+            return Math.max(5, Math.round(baseSec * multiplier));
         }
 
         return 0;

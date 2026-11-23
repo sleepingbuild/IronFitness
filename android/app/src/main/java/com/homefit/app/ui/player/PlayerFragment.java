@@ -16,14 +16,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.media3.common.MediaItem;
-import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.bumptech.glide.Glide;
 import com.homefit.app.R;
 import com.homefit.app.ads.AdsManager;
 import com.homefit.app.data.local.dto.LocalExerciseGroupDto.LocalWorkoutDto;
@@ -112,6 +109,10 @@ public class PlayerFragment extends Fragment {
     }
 
     private void setupButtons() {
+        if (binding == null) return;
+        com.homefit.app.ui.settings.SettingsStore settingsStore = new com.homefit.app.ui.settings.SettingsStore(requireContext());
+        isSoundMuted = !settingsStore.isSoundEffectsEnabled();
+
         binding.btnBackExit.setOnClickListener(v -> handleBackExit());
         binding.btnPlayPause.setOnClickListener(v -> viewModel.onPlayPauseClicked());
         binding.btnNext.setOnClickListener(v -> viewModel.onNextClicked());
@@ -119,14 +120,16 @@ public class PlayerFragment extends Fragment {
         binding.btnDoneReps.setOnClickListener(v -> viewModel.onRepsDoneClicked());
 
         if (binding.btnSoundToggle != null) {
+            binding.btnSoundToggle.setImageResource(isSoundMuted ? R.drawable.ic_volume_off : R.drawable.ic_volume_up);
             binding.btnSoundToggle.setOnClickListener(v -> {
                 isSoundMuted = !isSoundMuted;
+                settingsStore.setSoundEffectsEnabled(!isSoundMuted);
+                settingsStore.setVoiceCoachEnabled(!isSoundMuted);
                 binding.btnSoundToggle.setImageResource(isSoundMuted ? R.drawable.ic_volume_off : R.drawable.ic_volume_up);
-                Toast.makeText(requireContext(), isSoundMuted ? "Đã tắt âm thanh" : "Đã bật âm thanh", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), isSoundMuted ? "Tắt âm thanh & Huấn luyện viên giọng nói" : "Bật âm thanh & Huấn luyện viên giọng nói", Toast.LENGTH_SHORT).show();
             });
         }
 
-        // Rest screen controls (Image 1)
         binding.btnAddRest20s.setOnClickListener(v -> viewModel.addRestSeconds(20));
         binding.btnSkipRest.setOnClickListener(v -> viewModel.skipRest());
         binding.btnEditRestTime.setOnClickListener(v -> showEditRestTimeDialog());
@@ -142,6 +145,7 @@ public class PlayerFragment extends Fragment {
     }
 
     private void handleBackExit() {
+        if (!isAdded()) return;
         viewModel.pauseWorkout();
 
         new AlertDialog.Builder(requireContext())
@@ -153,6 +157,7 @@ public class PlayerFragment extends Fragment {
     }
 
     private void showSaveProgressOptionsDialog() {
+        if (!isAdded()) return;
         new AlertDialog.Builder(requireContext())
                 .setTitle("Thoát buổi tập")
                 .setMessage("Bạn có muốn lưu tiến độ để lần sau tập tiếp không?")
@@ -169,6 +174,7 @@ public class PlayerFragment extends Fragment {
     }
 
     private void saveWorkoutProgress() {
+        if (!isAdded()) return;
         PlayerUiState state = viewModel.getUiState().getValue();
         if (state != null && state.totalExercises > 0 && workoutKey != null) {
             WorkoutProgressStore store = new WorkoutProgressStore(requireContext());
@@ -177,6 +183,7 @@ public class PlayerFragment extends Fragment {
     }
 
     private void clearWorkoutProgress() {
+        if (!isAdded()) return;
         if (workoutKey != null) {
             WorkoutProgressStore store = new WorkoutProgressStore(requireContext());
             store.clearProgress(workoutKey);
@@ -184,6 +191,7 @@ public class PlayerFragment extends Fragment {
     }
 
     private void showEditRestTimeDialog() {
+        if (!isAdded()) return;
         final android.widget.EditText etRest = new android.widget.EditText(requireContext());
         etRest.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
         etRest.setText("20");
@@ -206,10 +214,11 @@ public class PlayerFragment extends Fragment {
 
     private void observeViewModel() {
         viewModel.getUiState().observe(getViewLifecycleOwner(), state -> {
+            if (binding == null || !isAdded()) return;
+
             if (state.state == PlayerState.FINISHED) {
                 clearWorkoutProgress();
                 markChallengeCompletedIfAny();
-                // Show Interstitial Ad before navigating to Summary Screen
                 AdsManager.showInterstitial(requireActivity(), () -> navigateToSummary(state), true);
                 return;
             }
@@ -219,6 +228,7 @@ public class PlayerFragment extends Fragment {
     }
 
     private void markChallengeCompletedIfAny() {
+        if (!isAdded()) return;
         if (groupKey != null && groupKey.startsWith("challenge_")) {
             try {
                 String level = groupKey.replace("challenge_", "");
@@ -230,7 +240,7 @@ public class PlayerFragment extends Fragment {
     }
 
     private void navigateToSummary(PlayerUiState state) {
-        if (!isAdded()) return;
+        if (!isAdded() || getView() == null) return;
         NavController navController = Navigation.findNavController(requireView());
         Bundle args = new Bundle();
         args.putInt("totalExercises", state.totalExercises);
@@ -247,7 +257,15 @@ public class PlayerFragment extends Fragment {
     }
 
     private void updateUi(PlayerUiState state) {
+        if (binding == null || !isAdded()) return;
+
         LocalWorkoutDto current = state.currentExercise;
+
+        // Top Workout Progress Bar
+        if (binding.pbWorkoutProgress != null && state.totalExercises > 0) {
+            int progressPercent = (int) Math.round(((double) (state.currentExerciseIndex + 1) / state.totalExercises) * 100);
+            binding.pbWorkoutProgress.setProgress(progressPercent, true);
+        }
 
         if (state.state == PlayerState.RESTING) {
             binding.clExercisingLayout.setVisibility(View.GONE);
@@ -317,13 +335,22 @@ public class PlayerFragment extends Fragment {
         lastExerciseIndex = state.currentExerciseIndex;
         lastState = state.state;
 
-        // Sound effects & TTS speaking
+        // Sound effects & Voice Coach TTS speaking
         if (!isSoundMuted) {
             if (state.remainingSeconds > 0 && state.remainingSeconds <= 3 && state.remainingSeconds != lastBeepSecond) {
                 lastBeepSecond = state.remainingSeconds;
                 if (toneGenerator != null) {
                     try {
                         toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP, 150);
+                    } catch (Exception ignored) {}
+                }
+                if (textToSpeech != null && (state.state == PlayerState.PREPARING || state.state == PlayerState.RESTING || state.state == PlayerState.EXERCISING)) {
+                    String countdownWord = String.valueOf(state.remainingSeconds);
+                    if (state.remainingSeconds == 3) countdownWord = "Ba";
+                    else if (state.remainingSeconds == 2) countdownWord = "Hai";
+                    else if (state.remainingSeconds == 1) countdownWord = "Một";
+                    try {
+                        textToSpeech.speak(countdownWord, TextToSpeech.QUEUE_FLUSH, null, "countdown_tts");
                     } catch (Exception ignored) {}
                 }
             }
@@ -336,9 +363,9 @@ public class PlayerFragment extends Fragment {
                     if (state.state == PlayerState.PREPARING) {
                         speechText = "Chuẩn bị: " + (current != null ? current.name : "");
                     } else if (state.state == PlayerState.RESTING) {
-                        speechText = "Nghỉ ngơi. Bài tiếp theo: " + (current != null ? current.name : "");
+                        speechText = "Hoàn thành! Nghỉ ngơi 25 giây. Bài tiếp theo: " + (current != null ? current.name : "");
                     } else if (state.state == PlayerState.EXERCISING) {
-                        speechText = "Bắt đầu: " + (current != null ? current.name : "");
+                        speechText = "Bắt đầu bài tập: " + (current != null ? current.name : "");
                     }
                     if (speechText != null && !speechText.isBlank()) {
                         try {
@@ -351,17 +378,20 @@ public class PlayerFragment extends Fragment {
     }
 
     private void loadRestingMedia(LocalWorkoutDto current) {
+        if (!isAdded() || binding == null) return;
         if (current != null && current.mediaUrl != null && !current.mediaUrl.isEmpty()) {
-            MediaLoader.loadFull(binding.ivNextThumb, current.mediaUrl, "GIF");
+            MediaLoader.loadFullWithName(binding.ivNextThumb, current.name, current.mediaUrl, "GIF");
         } else if (current != null && current.name != null) {
+            String name = current.name;
             com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
-                var list = com.homefit.app.data.local.AppDatabase.getInstance(requireContext()).exerciseDao().getAllNow();
+                if (!isAdded()) return;
+                var list = com.homefit.app.data.local.AppDatabase.getInstance(requireContext().getApplicationContext()).exerciseDao().getAllNow();
                 String foundUrl = "";
-                String normCurrent = current.name.toLowerCase(java.util.Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                String normCurrent = name.toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
                 for (var e : list) {
                     if (e.name == null) continue;
-                    String normE = e.name.toLowerCase(java.util.Locale.US).replaceAll("[^a-zA-Z0-9]", "");
-                    if (e.name.equalsIgnoreCase(current.name) || (!normE.isEmpty() && normCurrent.contains(normE))) {
+                    String normE = e.name.toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                    if (e.name.equalsIgnoreCase(name) || (!normE.isEmpty() && normCurrent.contains(normE))) {
                         foundUrl = e.mediaUrl;
                         break;
                     }
@@ -369,11 +399,7 @@ public class PlayerFragment extends Fragment {
                 final String url = foundUrl;
                 com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
                     if (binding != null && isAdded()) {
-                        if (!url.isEmpty()) {
-                            MediaLoader.loadFull(binding.ivNextThumb, url, "GIF");
-                        } else {
-                            binding.ivNextThumb.setImageResource(R.drawable.bg_media_placeholder);
-                        }
+                        MediaLoader.loadFullWithName(binding.ivNextThumb, name, url, "GIF");
                     }
                 });
             });
@@ -383,6 +409,7 @@ public class PlayerFragment extends Fragment {
     }
 
     private void loadExerciseDetailsAndMedia(LocalWorkoutDto current) {
+        if (binding == null || !isAdded()) return;
         if (current == null) {
             binding.tvExerciseDescription.setText("Giữ tư thế chuẩn, siết chặt cơ và thở đều.");
             binding.tvTargetMuscleCaption.setText("Nhóm cơ tác động chính: Toàn thân");
@@ -394,7 +421,7 @@ public class PlayerFragment extends Fragment {
         if (current.target != null && !current.target.isBlank()) {
             targetMuscle = current.target;
         } else if (current.name != null) {
-            String nameLower = current.name.toLowerCase(java.util.Locale.US);
+            String nameLower = current.name.toLowerCase(Locale.US);
             if (nameLower.contains("bụng") || nameLower.contains("plank") || nameLower.contains("crunch")) targetMuscle = "Cơ Bụng";
             else if (nameLower.contains("ngực") || nameLower.contains("push")) targetMuscle = "Cơ Ngực";
             else if (nameLower.contains("tay") || nameLower.contains("dip") || nameLower.contains("curl")) targetMuscle = "Cơ Tay";
@@ -416,21 +443,19 @@ public class PlayerFragment extends Fragment {
         String initialText = initialDesc.toString().trim();
         binding.tvExerciseDescription.setText(initialText.isEmpty() ? "Giữ tư thế chuẩn, siết chặt cơ và thở đều." : initialText);
 
-        if (current.mediaUrl != null && !current.mediaUrl.isBlank()) {
-            MediaLoader.loadFull(binding.ivMedia, current.mediaUrl, "GIF");
-        } else {
-            binding.ivMedia.setImageResource(R.drawable.bg_media_placeholder);
-        }
+        MediaLoader.loadFullWithName(binding.ivMedia, current.name, current.mediaUrl, "GIF");
 
         if (current.name != null) {
+            String name = current.name;
             com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
-                var list = com.homefit.app.data.local.AppDatabase.getInstance(requireContext()).exerciseDao().getAllNow();
+                if (!isAdded()) return;
+                var list = com.homefit.app.data.local.AppDatabase.getInstance(requireContext().getApplicationContext()).exerciseDao().getAllNow();
                 com.homefit.app.data.local.entity.ExerciseEntity match = null;
-                String normCurrent = current.name.toLowerCase(java.util.Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                String normCurrent = name.toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
                 for (var e : list) {
                     if (e.name == null) continue;
-                    String normE = e.name.toLowerCase(java.util.Locale.US).replaceAll("[^a-zA-Z0-9]", "");
-                    if (e.name.equalsIgnoreCase(current.name)
+                    String normE = e.name.toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                    if (e.name.equalsIgnoreCase(name)
                             || (!normE.isEmpty() && normCurrent.contains(normE))
                             || (!normCurrent.isEmpty() && normE.contains(normCurrent))) {
                         match = e;
@@ -445,7 +470,7 @@ public class PlayerFragment extends Fragment {
                             binding.tvExerciseDescription.setText(finalMatch.description);
                         }
                         if (finalMatch.mediaUrl != null && !finalMatch.mediaUrl.isBlank()) {
-                            MediaLoader.loadFull(binding.ivMedia, finalMatch.mediaUrl, finalMatch.mediaType != null ? finalMatch.mediaType : "GIF");
+                            MediaLoader.loadFullWithName(binding.ivMedia, name, finalMatch.mediaUrl, finalMatch.mediaType != null ? finalMatch.mediaType : "GIF");
                         }
                     }
                 });
@@ -454,6 +479,7 @@ public class PlayerFragment extends Fragment {
     }
 
     private void showControls(boolean isRepsBased) {
+        if (binding == null) return;
         if (isRepsBased) {
             binding.llControls.setVisibility(View.GONE);
             binding.btnDoneReps.setVisibility(View.VISIBLE);
@@ -464,9 +490,9 @@ public class PlayerFragment extends Fragment {
     }
 
     private String formatTime(int seconds) {
-        int min = seconds / 60;
-        int sec = seconds % 60;
-        return String.format(java.util.Locale.US, "%02d:%02d", min, sec);
+        int min = Math.max(0, seconds) / 60;
+        int sec = Math.max(0, seconds) % 60;
+        return String.format(Locale.US, "%02d:%02d", min, sec);
     }
 
     @Override

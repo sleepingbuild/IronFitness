@@ -87,6 +87,27 @@ public class WorkoutSummaryFragment extends Fragment {
 
         binding.btnLogWeightSummary.setOnClickListener(v -> showWeightInputDialog());
 
+        com.homefit.app.ui.settings.SettingsStore settingsStore = new com.homefit.app.ui.settings.SettingsStore(requireContext());
+        updateFeedbackButtonsUI(settingsStore.getDifficultyMultiplier());
+
+        binding.btnFeedbackTooEasy.setOnClickListener(v -> {
+            settingsStore.setDifficultyMultiplier(1.15f);
+            updateFeedbackButtonsUI(1.15f);
+            Toast.makeText(requireContext(), "Đã ghi nhận Quá dễ! Tăng 15% khối lượng ở các buổi sau 🚀", Toast.LENGTH_SHORT).show();
+        });
+
+        binding.btnFeedbackJustRight.setOnClickListener(v -> {
+            settingsStore.setDifficultyMultiplier(1.0f);
+            updateFeedbackButtonsUI(1.0f);
+            Toast.makeText(requireContext(), "Đã ghi nhận Vừa sức! Giữ nguyên tiến trình tập 👍", Toast.LENGTH_SHORT).show();
+        });
+
+        binding.btnFeedbackTooHard.setOnClickListener(v -> {
+            settingsStore.setDifficultyMultiplier(0.85f);
+            updateFeedbackButtonsUI(0.85f);
+            Toast.makeText(requireContext(), "Đã ghi nhận Quá nặng! Giảm 15% khối lượng ở các buổi sau 🥵", Toast.LENGTH_SHORT).show();
+        });
+
         binding.btnBack.setOnClickListener(v -> exitSummary());
         binding.btnFinish.setOnClickListener(v -> exitSummary());
         binding.btnContinueWorkout.setOnClickListener(v -> exitSummary());
@@ -170,6 +191,24 @@ public class WorkoutSummaryFragment extends Fragment {
                 })
                 .setNegativeButton("Để sau", null)
                 .show();
+    }
+
+    private void updateFeedbackButtonsUI(float multiplier) {
+        if (binding == null) return;
+        boolean isEasy = (multiplier > 1.05f);
+        boolean isHard = (multiplier < 0.95f);
+        boolean isRight = (!isEasy && !isHard);
+
+        int activeColor = requireContext().getColor(R.color.hf_primary);
+
+        binding.btnFeedbackTooEasy.setBackgroundTintList(android.content.res.ColorStateList.valueOf(isEasy ? activeColor : android.graphics.Color.TRANSPARENT));
+        binding.btnFeedbackTooEasy.setTextColor(isEasy ? requireContext().getColor(R.color.white) : activeColor);
+
+        binding.btnFeedbackJustRight.setBackgroundTintList(android.content.res.ColorStateList.valueOf(isRight ? activeColor : android.graphics.Color.TRANSPARENT));
+        binding.btnFeedbackJustRight.setTextColor(isRight ? requireContext().getColor(R.color.white) : activeColor);
+
+        binding.btnFeedbackTooHard.setBackgroundTintList(android.content.res.ColorStateList.valueOf(isHard ? activeColor : android.graphics.Color.TRANSPARENT));
+        binding.btnFeedbackTooHard.setTextColor(isHard ? requireContext().getColor(R.color.white) : activeColor);
     }
 
     private void exitSummary() {

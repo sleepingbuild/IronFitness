@@ -3,15 +3,20 @@ package com.homefit.app.ui.common;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.homefit.app.R;
+
+import java.util.Locale;
 
 /**
  * Tải ảnh/GIF minh họa bằng Glide. Video (mediaType = VIDEO) chưa phát được trong danh sách
  * nên hiển thị biểu tượng video; ExoPlayer sẽ phát trong màn tập.
  */
 public final class MediaLoader {
+
+    private static final String BASE_MEDIA_URL = "https://raw.githubusercontent.com/sleepingbuild/homefit-media/main/";
 
     private MediaLoader() {
     }
@@ -20,7 +25,8 @@ public final class MediaLoader {
         return "VIDEO".equalsIgnoreCase(mediaType);
     }
 
-    public static String resolveUrl(@NonNull String url) {
+    public static String resolveUrl(@Nullable String url) {
+        if (url == null) return "";
         String trimmed = url.trim();
         if (trimmed.startsWith("/")) {
             return "https://ironfitness-et3g.onrender.com" + trimmed;
@@ -28,43 +34,189 @@ public final class MediaLoader {
         return trimmed;
     }
 
+    /**
+     * Trả về URL ảnh 2D từ GitHub repository homefit-media theo tên bài tập.
+     */
+    @NonNull
+    public static String getFallback2dMediaUrl(@Nullable String exerciseName) {
+        if (exerciseName == null || exerciseName.trim().isEmpty()) {
+            return BASE_MEDIA_URL + "abs/crunches.png";
+        }
+        String n = exerciseName.toLowerCase(Locale.US).trim();
+
+        // Specific mappings:
+        // Heel Touches / Chạm gót chân / Heel Taps -> abs/heel_touch.png
+        if (n.contains("heel touch") || n.contains("heel tap") || n.contains("chạm gót")) {
+            return BASE_MEDIA_URL + "abs/heel_touch.png";
+        }
+        // Leg Drops / Nâng chân -> abs/leg_raises.png
+        if (n.contains("leg drop") || n.contains("leg raise") || n.contains("nâng chân")) {
+            return BASE_MEDIA_URL + "abs/leg_raises.png";
+        }
+        // Hollow Body Hold / Hollow Hold / L-Sit Hold -> abs/hollow_hold.png
+        if (n.contains("hollow body") || n.contains("hollow hold") || n.contains("l-sit hold") || n.contains("hollow")) {
+            return BASE_MEDIA_URL + "abs/hollow_hold.png";
+        }
+        // Windshield Wipers / Gạt nước kính -> abs/side_plank_upandown.png
+        if (n.contains("windshield wiper") || n.contains("gạt nước")) {
+            return BASE_MEDIA_URL + "abs/side_plank_upandown.png";
+        }
+
+        // Additional 2D mappings:
+        if (n.contains("bicycle") || n.contains("đạp xe")) {
+            return BASE_MEDIA_URL + "abs/bicycle_crunches.png";
+        }
+        if (n.contains("reverse crunch") || n.contains("gập bụng ngược")) {
+            return BASE_MEDIA_URL + "abs/reverse_cruches.png";
+        }
+        if (n.contains("crunch") || n.contains("gập bụng")) {
+            return BASE_MEDIA_URL + "abs/crunches.png";
+        }
+        if (n.contains("knee touch") || n.contains("chạm gối")) {
+            return BASE_MEDIA_URL + "abs/knee_touch.png";
+        }
+        if (n.contains("toe touch") || n.contains("chạm mũi chân")) {
+            return BASE_MEDIA_URL + "abs/toe_touches.png";
+        }
+        if (n.contains("v-up") || n.contains("v crunch")) {
+            return BASE_MEDIA_URL + "abs/v_crunches.png";
+        }
+        if (n.contains("side plank") || n.contains("plank nghiêng")) {
+            return BASE_MEDIA_URL + "abs/side_plank.png";
+        }
+        if (n.contains("knee plank") || n.contains("plank quỳ")) {
+            return BASE_MEDIA_URL + "abs/knee_plank.png";
+        }
+        if (n.contains("full arm plank") || n.contains("plank cao") || n.contains("plank thẳng")) {
+            return BASE_MEDIA_URL + "abs/full_arm_plank.png";
+        }
+        if (n.contains("plank")) {
+            return BASE_MEDIA_URL + "abs/plank.png";
+        }
+        if (n.contains("wall push") || n.contains("vào tường")) {
+            return BASE_MEDIA_URL + "arm/wall_pushup.png";
+        }
+        if (n.contains("knee push") || n.contains("quỳ gối")) {
+            return BASE_MEDIA_URL + "arm/knee_pushup.png";
+        }
+        if (n.contains("diamond") || n.contains("kim cương") || n.contains("tay hẹp")) {
+            return BASE_MEDIA_URL + "arm/diamond_pushup.png";
+        }
+        if (n.contains("pike")) {
+            return BASE_MEDIA_URL + "arm/pike_pushp.png";
+        }
+        if (n.contains("pushup") || n.contains("push-up") || n.contains("chống đẩy") || n.contains("hít đất")) {
+            return BASE_MEDIA_URL + "arm/pushup.png";
+        }
+        if (n.contains("dips") || n.contains("nhún tay") || n.contains("triceps")) {
+            return BASE_MEDIA_URL + "arm/dips.png";
+        }
+        if (n.contains("shoulder tap") || n.contains("chạm vai")) {
+            return BASE_MEDIA_URL + "arm/shoulder_tap.png";
+        }
+        if (n.contains("biceps") || n.contains("curl") || n.contains("tay")) {
+            return BASE_MEDIA_URL + "arm/biceps_curl.png";
+        }
+        if (n.contains("sumo squat")) {
+            return BASE_MEDIA_URL + "legs/sumo_squat.png";
+        }
+        if (n.contains("jump squat")) {
+            return BASE_MEDIA_URL + "legs/jump_squat.png";
+        }
+        if (n.contains("squat")) {
+            return BASE_MEDIA_URL + "legs/squat.png";
+        }
+        if (n.contains("lunge") || n.contains("split squat") || n.contains("chùng chân")) {
+            return BASE_MEDIA_URL + "legs/bulgarian_split_squat.png";
+        }
+        if (n.contains("calf") || n.contains("nhón gót")) {
+            return BASE_MEDIA_URL + "legs/calf_raises.png";
+        }
+        if (n.contains("donkey") || n.contains("đá chân")) {
+            return BASE_MEDIA_URL + "legs/donkey_kick.png";
+        }
+        if (n.contains("glute") || n.contains("bridge") || n.contains("cầu mông")) {
+            return BASE_MEDIA_URL + "legs/glute_bridge.png";
+        }
+        if (n.contains("wall sit")) {
+            return BASE_MEDIA_URL + "legs/wall_sit.png";
+        }
+        if (n.contains("superman")) {
+            return BASE_MEDIA_URL + "stretching/superman_stretch.png";
+        }
+        if (n.contains("child")) {
+            return BASE_MEDIA_URL + "stretching/child_pose.png";
+        }
+        if (n.contains("cat-cow") || n.contains("cat cow")) {
+            return BASE_MEDIA_URL + "stretching/cat_cow_stretch.png";
+        }
+        if (n.contains("bird dog")) {
+            return BASE_MEDIA_URL + "stretching/bird_dog.png";
+        }
+        if (n.contains("dead bug")) {
+            return BASE_MEDIA_URL + "stretching/dead_bug.png";
+        }
+        if (n.contains("jumping jack")) {
+            return BASE_MEDIA_URL + "warm_up/jumping_jack.png";
+        }
+        if (n.contains("arm circle") || n.contains("xoay tay")) {
+            return BASE_MEDIA_URL + "warm_up/arm_circles.png";
+        }
+        if (n.contains("mountain climber") || n.contains("leo núi")) {
+            return BASE_MEDIA_URL + "cardio/mountain_climber.png";
+        }
+        if (n.contains("burpee")) {
+            return BASE_MEDIA_URL + "cardio/burpees.png";
+        }
+
+        return BASE_MEDIA_URL + "abs/crunches.png";
+    }
+
+    @NonNull
+    public static String resolveExerciseMediaUrl(@Nullable String exerciseName, @Nullable String url) {
+        if (url != null && !url.trim().isEmpty() && !url.contains("placeholder")) {
+            return resolveUrl(url);
+        }
+        return getFallback2dMediaUrl(exerciseName);
+    }
+
     /** Ảnh nhỏ cho danh sách: chỉ lấy khung đầu của GIF để cuộn mượt. */
-    public static void loadThumbnail(@NonNull ImageView target, @NonNull String url, @NonNull String mediaType) {
+    public static void loadThumbnail(@NonNull ImageView target, @Nullable String url, @Nullable String mediaType) {
+        loadThumbnailWithName(target, null, url, mediaType);
+    }
+
+    public static void loadThumbnailWithName(@NonNull ImageView target, @Nullable String exerciseName, @Nullable String url, @Nullable String mediaType) {
         Glide.with(target).clear(target);
-        if (isVideo(mediaType)) {
+        if (mediaType != null && isVideo(mediaType)) {
             target.setImageResource(R.drawable.ic_media_video);
             return;
         }
-        String fullUrl = resolveUrl(url);
-        if (fullUrl.isEmpty()) {
-            target.setImageResource(R.drawable.bg_media_placeholder);
-            return;
-        }
+        String fullUrl = resolveExerciseMediaUrl(exerciseName, url);
         Glide.with(target)
                 .asBitmap()
                 .load(fullUrl)
                 .placeholder(R.drawable.bg_media_placeholder)
-                .error(R.drawable.bg_media_placeholder)
+                .error(Glide.with(target).asBitmap().load(getFallback2dMediaUrl(exerciseName)))
                 .fitCenter()
                 .into(target);
     }
 
     /** Ảnh lớn cho màn chi tiết: GIF được phát. */
-    public static void loadFull(@NonNull ImageView target, @NonNull String url, @NonNull String mediaType) {
+    public static void loadFull(@NonNull ImageView target, @Nullable String url, @Nullable String mediaType) {
+        loadFullWithName(target, null, url, mediaType);
+    }
+
+    public static void loadFullWithName(@NonNull ImageView target, @Nullable String exerciseName, @Nullable String url, @Nullable String mediaType) {
         Glide.with(target).clear(target);
-        if (isVideo(mediaType)) {
+        if (mediaType != null && isVideo(mediaType)) {
             target.setImageResource(R.drawable.ic_media_video);
             return;
         }
-        String fullUrl = resolveUrl(url);
-        if (fullUrl.isEmpty()) {
-            target.setImageResource(R.drawable.bg_media_placeholder);
-            return;
-        }
+        String fullUrl = resolveExerciseMediaUrl(exerciseName, url);
         Glide.with(target)
                 .load(fullUrl)
                 .placeholder(R.drawable.bg_media_placeholder)
-                .error(R.drawable.bg_media_placeholder)
+                .error(Glide.with(target).load(getFallback2dMediaUrl(exerciseName)))
                 .fitCenter()
                 .into(target);
     }

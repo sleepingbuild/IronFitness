@@ -205,6 +205,14 @@
             android:layout_marginTop="@dimen/space_lg"
             android:text="@string/profile_save" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnReopenOnboarding"
+            style="@style/Widget.HomeFit.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            android:text="Cập nhật khảo sát mục tiêu 🎯" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

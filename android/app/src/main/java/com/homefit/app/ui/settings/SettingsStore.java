@@ -37,4 +37,28 @@ public class SettingsStore {
             .putInt(KEY_REMINDER_MINUTE, minute)
             .apply();
     }
+
+    public boolean isVoiceCoachEnabled() {
+        return prefs.getBoolean("voice_coach_enabled", true);
+    }
+
+    public void setVoiceCoachEnabled(boolean enabled) {
+        prefs.edit().putBoolean("voice_coach_enabled", enabled).apply();
+    }
+
+    public boolean isSoundEffectsEnabled() {
+        return prefs.getBoolean("sound_effects_enabled", true);
+    }
+
+    public void setSoundEffectsEnabled(boolean enabled) {
+        prefs.edit().putBoolean("sound_effects_enabled", enabled).apply();
+    }
+
+    public float getDifficultyMultiplier() {
+        return prefs.getFloat("difficulty_multiplier", 1.0f);
+    }
+
+    public void setDifficultyMultiplier(float multiplier) {
+        prefs.edit().putFloat("difficulty_multiplier", multiplier).apply();
+    }
 }

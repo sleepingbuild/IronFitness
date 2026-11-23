@@ -74,6 +74,12 @@ public class ProfileFragment extends Fragment {
             return false;
         });
         binding.btnSave.setOnClickListener(v -> save());
+        if (binding.btnReopenOnboarding != null) {
+            binding.btnReopenOnboarding.setOnClickListener(v -> {
+                android.content.Intent intent = new android.content.Intent(requireContext(), com.homefit.app.ui.onboarding.OnboardingActivity.class);
+                startActivity(intent);
+            });
+        }
         binding.btnLogout.setOnClickListener(v -> confirmLogout());
 
         viewModel.getProfile().observe(getViewLifecycleOwner(), this::bindProfile);

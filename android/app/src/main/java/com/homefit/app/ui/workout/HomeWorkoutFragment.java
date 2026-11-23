@@ -70,6 +70,7 @@ public class HomeWorkoutFragment extends Fragment {
         updateProStateUI();
         updateStreakUI();
         updateChallengeHeroUI();
+        updateGreetingUI();
 
         // Tải/đồng bộ ngay lập tức dữ liệu mới nhất từ backend API vào Room DB
         new com.homefit.app.data.repository.ExerciseRepository(requireContext()).refresh();
@@ -81,7 +82,37 @@ public class HomeWorkoutFragment extends Fragment {
         updateProStateUI();
         updateStreakUI();
         updateChallengeHeroUI();
+        updateGreetingUI();
         new com.homefit.app.data.repository.ExerciseRepository(requireContext()).refresh();
+    }
+
+    private void updateGreetingUI() {
+        if (binding == null || !isAdded()) return;
+        int hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
+        String greetingText;
+        if (hour >= 5 && hour < 12) {
+            greetingText = "Chào buổi sáng! 🌅";
+        } else if (hour >= 12 && hour < 18) {
+            greetingText = "Chào buổi chiều! ☀️";
+        } else {
+            greetingText = "Chào buổi tối! 🌙";
+        }
+
+        com.homefit.app.data.prefs.OnboardingStore store = new com.homefit.app.data.prefs.OnboardingStore(requireContext());
+        String goal = store.getGoal();
+        String subtitleText = "Sẵn sàng bứt phá mục tiêu hôm nay";
+        if ("fatloss".equals(goal)) {
+            subtitleText = "Mục tiêu đốt cháy ~" + store.calculateTargetDailyCalories() + " kcal/ngày 🔥";
+        } else if ("muscle".equals(goal)) {
+            subtitleText = "Tập luyện phát triển cơ bắp cùng IronFitness 💪";
+        } else if ("abs".equals(goal)) {
+            subtitleText = "Sẵn sàng cho bài tập siết cơ bụng hôm nay ⚡";
+        } else if ("keepfit".equals(goal)) {
+            subtitleText = "Duy trì vóc dáng thon gọn & dẻo dai 🧘";
+        }
+
+        if (binding.tvGreeting != null) binding.tvGreeting.setText(greetingText);
+        if (binding.tvGreetingSubtitle != null) binding.tvGreetingSubtitle.setText(subtitleText);
     }
 
     private void updateChallengeHeroUI() {

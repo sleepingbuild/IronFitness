@@ -63,12 +63,12 @@ public class DiscoverFragment extends Fragment {
                         new com.homefit.app.ui.workout.AddExerciseBottomSheetDialogFragment();
                 bottomSheet.show(getChildFragmentManager(), "AddExerciseModal");
             } catch (Exception e) {
-                Log.e(TAG, "Lỗi mở modal 95 bài tập: " + e.getMessage());
+                Log.e(TAG, "Lỗi mở modal 94 bài tập: " + e.getMessage());
                 try {
                     Bundle args = new Bundle();
                     args.putString("groupKey", "category_1");
                     args.putString("difficulty", "Easy");
-                    args.putString("groupName", "Thư viện 95 bài tập");
+                    args.putString("groupName", "Thư viện 94 bài tập");
                     NavHostFragment.findNavController(this).navigate(R.id.action_discover_to_exerciseList, args);
                 } catch (Exception ex) {
                     Log.e(TAG, "Lỗi điều hướng NavController: " + ex.getMessage());
@@ -129,7 +129,7 @@ public class DiscoverFragment extends Fragment {
         }
 
         if (tvBmiCategoryBadge != null) tvBmiCategoryBadge.setText(badgeText);
-        if (tvBmiRecommendation != null) tvBmiRecommendation.setText("Khuyên dùng: " + recommendation);
+        if (tvBmiRecommendation != null) tvBmiRecommendation.setText(recommendation);
     }
 
     private void showUpdateBmiDialog() {

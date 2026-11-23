@@ -16,7 +16,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.homefit.app.R;
-import com.homefit.app.ads.AdsManager;
 import com.homefit.app.data.local.AppDatabase;
 import com.homefit.app.data.local.entity.UserProfileEntity;
 import com.homefit.app.util.AppExecutors;
@@ -61,7 +60,7 @@ public class ProPaywallFragment extends Fragment {
             Toast.makeText(requireContext(), "Đã khôi phục giao dịch mua", Toast.LENGTH_SHORT).show()
         );
 
-        btnStartPro.setOnClickListener(v -> activateProAndExit());
+        btnStartPro.setOnClickListener(v -> openCheckoutScreen());
 
         checkProState();
     }
@@ -79,25 +78,14 @@ public class ProPaywallFragment extends Fragment {
         });
     }
 
-    private void activateProAndExit() {
-        AppDatabase db = AppDatabase.getInstance(requireContext());
-        AppExecutors.diskIO().execute(() -> {
-            UserProfileEntity profile = db.userProfileDao().getNow();
-            if (profile == null) {
-                profile = new UserProfileEntity();
-                profile.email = "user@example.com";
-                profile.displayName = "Hội viên PRO";
+    private void openCheckoutScreen() {
+        boolean isYearly = rbYearly != null && rbYearly.isChecked();
+        CheckoutBottomSheetFragment checkoutSheet = CheckoutBottomSheetFragment.newInstance(isYearly);
+        checkoutSheet.setOnPaymentSuccessListener(() -> {
+            if (getContext() != null && isAdded()) {
+                NavHostFragment.findNavController(ProPaywallFragment.this).navigateUp();
             }
-            profile.isPremium = true;
-            db.userProfileDao().upsert(profile);
-
-            AppExecutors.mainThread().execute(() -> {
-                AdsManager.setAdsEnabled(false);
-                if (getContext() != null) {
-                    Toast.makeText(getContext(), "Chúc mừng! Bạn đã kích hoạt gói PRO thành công!", Toast.LENGTH_LONG).show();
-                }
-                NavHostFragment.findNavController(this).navigateUp();
-            });
         });
+        checkoutSheet.show(getChildFragmentManager(), "CheckoutBottomSheet");
     }
 }

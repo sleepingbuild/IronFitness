@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,11 +18,15 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.homefit.app.R;
 import com.homefit.app.data.local.dto.LocalExerciseGroupDto;
 import com.homefit.app.data.repository.ChallengeRepository;
+import com.homefit.app.ui.common.MediaLoader;
 import com.homefit.app.ui.library.ExerciseListAdapter;
+
+import java.util.Locale;
 
 public class ChallengeDayFragment extends Fragment {
 
@@ -36,6 +41,7 @@ public class ChallengeDayFragment extends Fragment {
     private TextView tvCount;
     private MaterialButton btnStart;
     private RecyclerView rvExercises;
+    private ImageView ivHeaderPhoto;
     private ExerciseListAdapter adapter;
 
     @Nullable
@@ -57,6 +63,7 @@ public class ChallengeDayFragment extends Fragment {
 
         ImageButton btnBack = view.findViewById(R.id.btnBack);
         ImageButton btnMenu = view.findViewById(R.id.btnMenu);
+        ivHeaderPhoto = view.findViewById(R.id.ivHeaderPhoto);
         tvDayTitle = view.findViewById(R.id.tvDayTitle);
         tvDaySubtitle = view.findViewById(R.id.tvDaySubtitle);
         tvDuration = view.findViewById(R.id.tvDuration);
@@ -93,7 +100,7 @@ public class ChallengeDayFragment extends Fragment {
             if (allWorkouts != null) {
                 String lvlVi = level.contains("easy") ? "dễ" : (level.contains("hard") ? "khó" : "trung bình");
                 for (var w : allWorkouts) {
-                    String wTitle = w.titleVi.toLowerCase(java.util.Locale.US);
+                    String wTitle = w.titleVi.toLowerCase(Locale.US);
                     if (wTitle.contains("ngày " + dayIndex) && (wTitle.contains(lvlVi) || w.level.equalsIgnoreCase(level))) {
                         matched = w;
                         break;
@@ -125,7 +132,8 @@ public class ChallengeDayFragment extends Fragment {
                 currentSession = repository.getSessionForDay(level, dayIndex);
                 if (currentSession != null) {
                     tvDayTitle.setText("NGÀY " + dayIndex);
-                    tvDaySubtitle.setText(repository.getDayTypeName(dayIndex) + " - " + repository.getLevelTitleVi(level));
+                    String dayType = repository.getDayTypeName(dayIndex);
+                    tvDaySubtitle.setText(dayType + " - " + repository.getLevelTitleVi(level));
 
                     if (finalSynced != null && !finalSynced.isEmpty()) {
                         currentSession.workouts = finalSynced;
@@ -135,10 +143,39 @@ public class ChallengeDayFragment extends Fragment {
                     int count = currentSession.workouts != null ? currentSession.workouts.size() : 0;
                     tvCount.setText(count + " Bài tập");
 
+                    // Load High Quality Banner Photo
+                    if (ivHeaderPhoto != null) {
+                        String coverUrl = currentSession.coverImageUrl;
+                        if (coverUrl == null || coverUrl.trim().isEmpty() || coverUrl.contains("unsplash.com")) {
+                            coverUrl = getMuscleCoverUrlForGroup(currentSession.group, dayType);
+                        }
+                        String fullUrl = MediaLoader.resolveUrl(coverUrl);
+                        String fallbackUrl = getMuscleCoverUrlForGroup(currentSession.group, dayType);
+
+                        Glide.with(this)
+                                .load(fullUrl)
+                                .fitCenter()
+                                .placeholder(R.drawable.bg_home_banner)
+                                .error(Glide.with(this).load(MediaLoader.resolveUrl(fallbackUrl)).fitCenter())
+                                .into(ivHeaderPhoto);
+                    }
+
                     adapter.submitList(currentSession.workouts);
                 }
             });
         });
+    }
+
+    private String getMuscleCoverUrlForGroup(String groupKey, String groupName) {
+        String base = "https://ironfitness-et3g.onrender.com/images/muscles/";
+        String combined = (groupKey != null ? groupKey : "") + " " + (groupName != null ? groupName : "");
+        String g = combined.toLowerCase(Locale.US);
+        if (g.contains("bung") || g.contains("abs") || g.contains("bụng")) return base + "abs.png";
+        if (g.contains("nguc") || g.contains("chest") || g.contains("ngực")) return base + "chest.png";
+        if (g.contains("tay") || g.contains("arms")) return base + "arms.png";
+        if (g.contains("chan") || g.contains("legs") || g.contains("chân") || g.contains("mông")) return base + "legs.png";
+        if (g.contains("back") || g.contains("lung") || g.contains("lưng")) return base + "back.png";
+        return base + "fullbody.png";
     }
 
     private void startWorkoutPlayer() {

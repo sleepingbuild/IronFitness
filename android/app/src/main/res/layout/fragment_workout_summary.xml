@@ -230,6 +230,83 @@
                 app:backgroundTint="#F0F6FF"
                 app:cornerRadius="20dp" />
 
+            <!-- Adaptive Difficulty 1-Touch Feedback -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardAdaptiveDifficulty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="1dp"
+                app:strokeColor="#E2E8F0"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bạn cảm thấy buổi tập hôm nay thế nào?"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Hệ thống sẽ tự động tăng/giảm khối lượng cho các buổi tập tới."
+                        android:textColor="#64748B"
+                        android:textSize="12sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal"
+                        android:weightSum="3">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnFeedbackTooEasy"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="44dp"
+                            android:layout_marginEnd="4dp"
+                            android:layout_weight="1"
+                            android:text="Quá dễ 🚀"
+                            android:textSize="12sp"
+                            app:cornerRadius="22dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnFeedbackJustRight"
+                            android:layout_width="0dp"
+                            android:layout_height="44dp"
+                            android:layout_marginHorizontal="2dp"
+                            android:layout_weight="1"
+                            android:text="Vừa sức 👍"
+                            android:textSize="12sp"
+                            app:backgroundTint="#0066FF"
+                            app:cornerRadius="22dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnFeedbackTooHard"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="44dp"
+                            android:layout_marginStart="4dp"
+                            android:layout_weight="1"
+                            android:text="Quá nặng 🥵"
+                            android:textSize="12sp"
+                            app:cornerRadius="22dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
