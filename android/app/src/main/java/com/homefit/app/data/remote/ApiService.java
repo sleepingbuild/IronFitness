@@ -49,6 +49,9 @@ public interface ApiService {
     @GET("me")
     Call<UserDto> getMe();
 
+    @POST("me/upgrade-pro")
+    Call<UserDto> upgradePro();
+
     @GET("me/stats")
     Call<StatsResponse> getStats();
 

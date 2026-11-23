@@ -148,6 +148,9 @@ public class CheckoutBottomSheetFragment extends BottomSheetDialogFragment {
                 profile.isPremium = true;
                 db.userProfileDao().upsert(profile);
 
+                com.homefit.app.data.repository.AuthRepository authRepo = new com.homefit.app.data.repository.AuthRepository(requireContext());
+                authRepo.upgradePro();
+
                 AppExecutors.mainThread().execute(() -> {
                     AdsManager.setAdsEnabled(false);
                     if (getContext() != null) {

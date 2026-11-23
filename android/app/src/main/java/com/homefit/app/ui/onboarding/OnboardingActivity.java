@@ -139,21 +139,44 @@ public class OnboardingActivity extends AppCompatActivity {
         binding.etOnboardingHeight.addTextChangedListener(realTimeWatcher);
         binding.etOnboardingWeight.addTextChangedListener(realTimeWatcher);
         binding.etOnboardingTargetWeight.addTextChangedListener(realTimeWatcher);
+
+        setDays(selectedDays);
+        setGender(selectedGender);
+    }
+
+    private void updateOptionButton(com.google.android.material.button.MaterialButton button, boolean isSelected) {
+        if (button == null) return;
+        int primaryColor = getColor(R.color.hf_primary);
+        int whiteColor = getColor(R.color.white);
+        int strokeWidthPx = (int) (1.5f * getResources().getDisplayMetrics().density);
+
+        if (isSelected) {
+            button.setBackgroundTintList(android.content.res.ColorStateList.valueOf(primaryColor));
+            button.setTextColor(whiteColor);
+            button.setStrokeColor(android.content.res.ColorStateList.valueOf(primaryColor));
+            button.setStrokeWidth(strokeWidthPx);
+        } else {
+            button.setBackgroundTintList(android.content.res.ColorStateList.valueOf(whiteColor));
+            button.setTextColor(primaryColor);
+            button.setStrokeColor(android.content.res.ColorStateList.valueOf(primaryColor));
+            button.setStrokeWidth(strokeWidthPx);
+        }
+        button.setTypeface(null, android.graphics.Typeface.BOLD);
     }
 
     private void setDays(int days) {
         selectedDays = days;
-        binding.btnDays3.setBackgroundTintList(getColorStateList(days == 3 ? R.color.hf_primary : android.R.color.transparent));
-        binding.btnDays4.setBackgroundTintList(getColorStateList(days == 4 ? R.color.hf_primary : android.R.color.transparent));
-        binding.btnDays5.setBackgroundTintList(getColorStateList(days == 5 ? R.color.hf_primary : android.R.color.transparent));
-        binding.btnDays6.setBackgroundTintList(getColorStateList(days == 6 ? R.color.hf_primary : android.R.color.transparent));
+        updateOptionButton(binding.btnDays3, days == 3);
+        updateOptionButton(binding.btnDays4, days == 4);
+        updateOptionButton(binding.btnDays5, days == 5);
+        updateOptionButton(binding.btnDays6, days == 6);
     }
 
     private void setGender(String gender) {
         selectedGender = gender;
-        binding.btnGenderMale.setBackgroundTintList(getColorStateList("Nam".equals(gender) ? R.color.hf_primary : android.R.color.transparent));
-        binding.btnGenderFemale.setBackgroundTintList(getColorStateList("Nữ".equals(gender) ? R.color.hf_primary : android.R.color.transparent));
-        binding.btnGenderOther.setBackgroundTintList(getColorStateList("Khác".equals(gender) ? R.color.hf_primary : android.R.color.transparent));
+        updateOptionButton(binding.btnGenderMale, "Nam".equals(gender));
+        updateOptionButton(binding.btnGenderFemale, "Nữ".equals(gender));
+        updateOptionButton(binding.btnGenderOther, "Khác".equals(gender));
         recalculateStep4Summary();
     }
 

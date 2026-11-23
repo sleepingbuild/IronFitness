@@ -155,6 +155,33 @@ public class AuthRepository {
         return result;
     }
 
+    public LiveData<Resource<UserProfileEntity>> upgradePro() {
+        MutableLiveData<Resource<UserProfileEntity>> result = new MutableLiveData<>(Resource.loading());
+        AppExecutors.diskIO().execute(() -> {
+            UserProfileEntity local = db.userProfileDao().getNow();
+            if (local == null) {
+                local = new UserProfileEntity();
+                local.userId = tokenStore.getUserId();
+            }
+            local.isPremium = true;
+            db.userProfileDao().upsert(local);
+            final UserProfileEntity savedLocal = local;
+
+            api.upgradePro().enqueue(new ApiCallback<UserDto>() {
+                @Override
+                protected void onSuccess(@NonNull UserDto body) {
+                    saveProfileAndPost(Mappers.toEntity(body), result);
+                }
+
+                @Override
+                protected void onError(@NonNull String code, @Nullable String message) {
+                    result.postValue(Resource.success(savedLocal));
+                }
+            });
+        });
+        return result;
+    }
+
     public void logout() {
         tokenStore.clear();
         syncStore.clear();
