@@ -84,18 +84,18 @@ public class AddExerciseAdapter extends RecyclerView.Adapter<AddExerciseAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         CustomWorkoutItem item = items.get(position);
-        holder.tvName.setText(item.exerciseName != null ? item.exerciseName : "");
+        holder.tvName.setText(com.homefit.app.util.LocalizationHelper.getLocalizedExerciseName(holder.itemView.getContext(), item));
 
         boolean isSelected = selectedIds.contains(item.exerciseId);
 
         if (isSelected) {
-            holder.tvSubtitle.setText(item.getFormattedSubtitle());
+            holder.tvSubtitle.setText(com.homefit.app.util.LocalizationHelper.getLocalizedRepsSets(holder.itemView.getContext(), item.getFormattedSubtitle()));
             holder.tvSubtitle.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.hf_primary));
             holder.ivCheck.setImageResource(R.drawable.ic_check_circle_24);
             holder.ivCheck.setColorFilter(ContextCompat.getColor(holder.itemView.getContext(), R.color.hf_primary));
         } else {
             // Không hiển thị các con số mặc định (như 05:30, 50:15) khi chưa chọn. Hiển thị target/khu vực.
-            holder.tvSubtitle.setText(item.target != null ? item.target : "Toàn thân");
+            holder.tvSubtitle.setText(com.homefit.app.util.LocalizationHelper.getLocalizedTarget(holder.itemView.getContext(), item.target != null ? item.target : "Toàn thân"));
             holder.tvSubtitle.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.hf_on_surface_variant));
             holder.ivCheck.setImageResource(R.drawable.ic_check_circle_24);
             holder.ivCheck.setColorFilter(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.darker_gray));

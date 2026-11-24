@@ -83,7 +83,7 @@ public class EditCustomWorkoutFragment extends Fragment {
         if (currentWorkout == null) {
             currentWorkout = new CustomWorkout();
             List<CustomWorkout> all = repository.getAllWorkouts();
-            currentWorkout.title = "Buổi tập của tôi " + (all.size() + 1);
+            currentWorkout.title = getString(R.string.my_workout_format, all.size() + 1);
         }
 
         etWorkoutTitle.setText(currentWorkout.title);
@@ -246,33 +246,11 @@ public class EditCustomWorkoutFragment extends Fragment {
     private void updateSummaryAndWarnings() {
         int duration = currentWorkout.calculateDurationMin();
         int count = currentWorkout.items != null ? currentWorkout.items.size() : 0;
-        tvWorkoutSummary.setText(duration + " phút • " + count + " bài");
-
-        boolean hasWarmup = false;
-        boolean hasCooldown = false;
-
-        if (currentWorkout.items != null && !currentWorkout.items.isEmpty()) {
-            CustomWorkoutItem first = currentWorkout.items.get(0);
-            CustomWorkoutItem last = currentWorkout.items.get(currentWorkout.items.size() - 1);
-            if (first.target != null && (first.target.toLowerCase().contains("khởi động") || "warmup".equalsIgnoreCase(first.role))) {
-                hasWarmup = true;
-            }
-            if (last.target != null && (last.target.toLowerCase().contains("giãn cơ") || "cooldown".equalsIgnoreCase(last.role))) {
-                hasCooldown = true;
-            }
-        }
+        tvWorkoutSummary.setText(com.homefit.app.util.LocalizationHelper.getLocalizedDurationAndCount(requireContext(), duration, count));
 
         if (count < 3) {
             llWarningBanner.setVisibility(View.VISIBLE);
-            tvWarningText.setText("Cần ít nhất 3 bài tập để lưu buổi tập.");
-            btnWarningAction.setVisibility(View.GONE);
-        } else if (!hasWarmup) {
-            llWarningBanner.setVisibility(View.VISIBLE);
-            tvWarningText.setText("Nên thêm bài khởi động ở đầu buổi.");
-            btnWarningAction.setVisibility(View.GONE);
-        } else if (!hasCooldown) {
-            llWarningBanner.setVisibility(View.VISIBLE);
-            tvWarningText.setText("Nên thêm bài giãn cơ ở cuối buổi.");
+            tvWarningText.setText(R.string.warning_min_3_exercises);
             btnWarningAction.setVisibility(View.GONE);
         } else {
             llWarningBanner.setVisibility(View.GONE);

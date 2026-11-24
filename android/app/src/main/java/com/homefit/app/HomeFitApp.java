@@ -17,6 +17,9 @@ public class HomeFitApp extends Application {
 
         setupCrashHandler();
 
+        com.homefit.app.ui.settings.SettingsStore settingsStore = new com.homefit.app.ui.settings.SettingsStore(this);
+        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(settingsStore.getNightMode());
+
         AppExecutors.diskIO().execute(() -> {
             try {
                 AdsManager.init(this);

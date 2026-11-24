@@ -65,8 +65,8 @@ public class ExerciseAdapter extends ListAdapter<ExerciseEntity, ExerciseAdapter
         }
 
         void bind(@NonNull ExerciseEntity exercise, @NonNull OnExerciseClick listener) {
-            binding.tvName.setText(exercise.name);
-            binding.tvMeta.setText(ExerciseText.meta(binding.getRoot().getContext(), exercise));
+            binding.tvName.setText(com.homefit.app.util.LocalizationHelper.getLocalizedExerciseName(binding.getRoot().getContext(), exercise));
+            binding.tvMeta.setText(com.homefit.app.util.LocalizationHelper.getLocalizedRepsSets(binding.getRoot().getContext(), ExerciseText.meta(binding.getRoot().getContext(), exercise)));
             MediaLoader.loadThumbnail(binding.ivThumb, exercise.mediaUrl, exercise.mediaType);
             binding.getRoot().setOnClickListener(v -> listener.onClick(exercise));
         }

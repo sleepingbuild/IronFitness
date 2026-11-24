@@ -91,9 +91,64 @@ public class SettingsFragment extends Fragment {
         binding.btnChangeTime.setOnClickListener(v -> showTimePicker());
         binding.btnUpgradePro.setOnClickListener(v ->
                 NavHostFragment.findNavController(this).navigate(R.id.action_global_proPaywall));
+        if (binding.cardAppearanceSetting != null) {
+            binding.cardAppearanceSetting.setOnClickListener(v -> showAppearanceBottomSheet());
+        }
+        if (binding.cardLanguageSetting != null) {
+            binding.cardLanguageSetting.setOnClickListener(v -> showLanguageBottomSheet());
+        }
         binding.btnLogout.setOnClickListener(v -> confirmLogout());
 
+        updateAppearanceUI();
+        updateLanguageUI();
         observeViewModel();
+    }
+
+    private void updateAppearanceUI() {
+        if (binding == null || !isAdded()) return;
+        SettingsStore store = new SettingsStore(requireContext());
+        int mode = store.getNightMode();
+        int titleRes = R.string.theme_system;
+
+        if (mode == androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO) {
+            titleRes = R.string.theme_light;
+        } else if (mode == androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES) {
+            titleRes = R.string.theme_dark;
+        }
+
+        if (binding.tvCurrentThemeMode != null) binding.tvCurrentThemeMode.setText(titleRes);
+    }
+
+    private void showAppearanceBottomSheet() {
+        AppearanceBottomSheetFragment fragment = new AppearanceBottomSheetFragment();
+        fragment.show(getChildFragmentManager(), "AppearanceBottomSheet");
+    }
+
+    private void updateLanguageUI() {
+        if (binding == null || !isAdded()) return;
+        SettingsStore store = new SettingsStore(requireContext());
+        String code = store.getLanguageCode();
+        int flagRes = R.drawable.ic_flag_vi;
+        int nameRes = R.string.language_vi;
+
+        if ("en".equalsIgnoreCase(code)) {
+            flagRes = R.drawable.ic_flag_en;
+            nameRes = R.string.language_en;
+        } else if ("ko".equalsIgnoreCase(code)) {
+            flagRes = R.drawable.ic_flag_ko;
+            nameRes = R.string.language_ko;
+        } else if ("ja".equalsIgnoreCase(code)) {
+            flagRes = R.drawable.ic_flag_ja;
+            nameRes = R.string.language_ja;
+        }
+
+        if (binding.ivCurrentFlag != null) binding.ivCurrentFlag.setImageResource(flagRes);
+        if (binding.tvCurrentLanguage != null) binding.tvCurrentLanguage.setText(nameRes);
+    }
+
+    private void showLanguageBottomSheet() {
+        LanguageBottomSheetFragment fragment = new LanguageBottomSheetFragment();
+        fragment.show(getChildFragmentManager(), "LanguageBottomSheet");
     }
 
     private void observeViewModel() {
@@ -121,28 +176,70 @@ public class SettingsFragment extends Fragment {
                         : getString(R.string.settings_account_default_name);
                 binding.tvAccountName.setText(name);
                 binding.tvAccountEmail.setText(profile.email != null ? profile.email : "");
-                binding.tvAccountPlan.setText(profile.isPremium
+
+                long now = System.currentTimeMillis();
+                Long expiry = profile.proExpiryDate;
+
+                // Fallback nếu isPremium == true mà chưa có proExpiryDate hợp lệ
+                if (profile.isPremium && (expiry == null || expiry <= 0)) {
+                    expiry = now + 30L * 24 * 60 * 60 * 1000L;
+                }
+
+                boolean isProActive = profile.isPremium && (expiry != null && expiry > now);
+
+                binding.tvAccountPlan.setText(isProActive
                         ? R.string.settings_account_plan_premium
                         : R.string.settings_account_plan_standard);
 
-                if (profile.isPremium) {
+                if (isProActive) {
+                    long diffMillis = expiry - now;
+                    long daysLeft = Math.max(1, (long) Math.ceil(diffMillis / (1000.0 * 60 * 60 * 24)));
+
                     binding.ivProIcon.setImageResource(R.drawable.ic_crown);
-                    binding.tvProTitle.setText("Gói PRO");
-                    binding.btnUpgradePro.setText("GIA HẠN GÓI PRO ➔");
+                    binding.tvProTitle.setText(getString(R.string.settings_pro_title_active_with_days, daysLeft));
+                    binding.btnUpgradePro.setText(R.string.settings_pro_btn_renew);
+
+                    String expiryStr = com.homefit.app.util.DateUtils.formatDateDdMmYyyy(expiry);
+                    if (binding.tvProBadge != null) {
+                        binding.tvProBadge.setText(getString(R.string.settings_pro_active_badge, daysLeft));
+                        binding.tvProBadge.setVisibility(View.VISIBLE);
+                    }
+                    if (binding.tvProExpiryDate != null) {
+                        binding.tvProExpiryDate.setText(getString(R.string.settings_pro_expiry_date, expiryStr));
+                        binding.tvProExpiryDate.setVisibility(View.VISIBLE);
+                    }
                 } else {
                     binding.ivProIcon.setImageResource(R.drawable.ic_arrow_up);
-                    binding.tvProTitle.setText("Nâng cấp lên PRO");
-                    binding.btnUpgradePro.setText("MUA GÓI PRO ➔");
+                    if (profile.isPremium && expiry != null && expiry <= now) {
+                        binding.tvProTitle.setText(R.string.settings_pro_expired);
+                        binding.btnUpgradePro.setText(R.string.settings_pro_btn_renew);
+                    } else {
+                        binding.tvProTitle.setText(R.string.settings_pro_title_upgrade);
+                        binding.btnUpgradePro.setText(R.string.settings_pro_btn_buy);
+                    }
+                    if (binding.tvProBadge != null) binding.tvProBadge.setVisibility(View.GONE);
+                    if (binding.tvProExpiryDate != null) binding.tvProExpiryDate.setVisibility(View.GONE);
                 }
             } else {
                 binding.tvAccountName.setText(R.string.settings_account_default_name);
                 binding.tvAccountEmail.setText(R.string.settings_account_email_unknown);
                 binding.tvAccountPlan.setText(R.string.settings_account_plan_standard);
                 binding.ivProIcon.setImageResource(R.drawable.ic_arrow_up);
-                binding.tvProTitle.setText("Nâng cấp lên PRO");
-                binding.btnUpgradePro.setText("MUA GÓI PRO ➔");
+                binding.tvProTitle.setText(R.string.settings_pro_title_upgrade);
+                binding.btnUpgradePro.setText(R.string.settings_pro_btn_buy);
+                if (binding.tvProBadge != null) binding.tvProBadge.setVisibility(View.GONE);
+                if (binding.tvProExpiryDate != null) binding.tvProExpiryDate.setVisibility(View.GONE);
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getContext() != null) {
+            com.homefit.app.data.repository.AuthRepository authRepo = new com.homefit.app.data.repository.AuthRepository(requireContext());
+            authRepo.refreshProfile();
+        }
     }
 
     private void updateReminderStatusText() {

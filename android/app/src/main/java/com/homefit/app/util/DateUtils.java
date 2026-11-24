@@ -17,19 +17,40 @@ public final class DateUtils {
     private DateUtils() {
     }
 
-    /** Parse ISO-8601; chấp nhận cả chuỗi thiếu "Z". Lỗi parse trả về 0. */
+    /** Parse ISO-8601 hoặc Epoch millis dạng chuỗi; chấp nhận cả chuỗi thiếu "Z". Lỗi parse trả về 0. */
     public static long parseIso(String iso) {
-        if (iso == null || iso.isEmpty()) {
+        if (iso == null || iso.trim().isEmpty()) {
             return 0L;
         }
+        String s = iso.trim();
         try {
-            return Instant.parse(iso).toEpochMilli();
+            return Long.parseLong(s);
+        } catch (NumberFormatException ignored) {}
+
+        try {
+            return Instant.parse(s).toEpochMilli();
         } catch (DateTimeParseException first) {
             try {
-                return Instant.parse(iso + "Z").toEpochMilli();
+                return Instant.parse(s + "Z").toEpochMilli();
             } catch (DateTimeParseException second) {
-                return 0L;
+                try {
+                    return java.time.LocalDateTime.parse(s).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                } catch (Exception third) {
+                    return 0L;
+                }
             }
+        }
+    }
+
+    /** Format epoch millis thành định dạng dd/MM/yyyy */
+    @NonNull
+    public static String formatDateDdMmYyyy(long epochMillis) {
+        if (epochMillis <= 0) return "";
+        try {
+            java.time.LocalDate date = Instant.ofEpochMilli(epochMillis).atZone(ZoneId.systemDefault()).toLocalDate();
+            return String.format(java.util.Locale.US, "%02d/%02d/%04d", date.getDayOfMonth(), date.getMonthValue(), date.getYear());
+        } catch (Exception e) {
+            return "";
         }
     }
 

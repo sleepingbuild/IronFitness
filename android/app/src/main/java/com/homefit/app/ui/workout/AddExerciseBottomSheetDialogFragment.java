@@ -95,9 +95,9 @@ public class AddExerciseBottomSheetDialogFragment extends BottomSheetDialogFragm
 
         adapter = new AddExerciseAdapter(count -> {
             if (count > 0) {
-                btnBottomAction.setText("Thêm (" + count + ")");
+                btnBottomAction.setText(getString(R.string.add_count, count));
             } else {
-                btnBottomAction.setText("Đóng");
+                btnBottomAction.setText(R.string.done);
             }
         });
 
@@ -327,8 +327,12 @@ public class AddExerciseBottomSheetDialogFragment extends BottomSheetDialogFragm
                 filtered.add(item);
             } else {
                 String normName = stripAccents(item.exerciseName != null ? item.exerciseName : "").toLowerCase(Locale.US);
+                String normLocName = stripAccents(com.homefit.app.util.LocalizationHelper.getLocalizedExerciseName(requireContext(), item)).toLowerCase(Locale.US);
                 String normTarget = stripAccents(item.target != null ? item.target : "").toLowerCase(Locale.US);
-                if (normName.contains(normQuery) || normTarget.contains(normQuery)) {
+                String normLocTarget = stripAccents(com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), item.target)).toLowerCase(Locale.US);
+
+                if (normName.contains(normQuery) || normLocName.contains(normQuery)
+                        || normTarget.contains(normQuery) || normLocTarget.contains(normQuery)) {
                     filtered.add(item);
                 }
             }
@@ -340,13 +344,13 @@ public class AddExerciseBottomSheetDialogFragment extends BottomSheetDialogFragm
 
     private void updateFilterChipText(int count) {
         if (selectedAreas.isEmpty()) {
-            chipFilterArea.setText("Tất cả các khu vực (" + count + ")");
+            chipFilterArea.setText(getString(R.string.all_focus_areas_count, count));
         } else if (selectedAreas.size() == 1) {
             chipFilterArea.setText(selectedAreas.get(0) + " (" + count + ")");
         } else if (selectedAreas.size() == 2) {
             chipFilterArea.setText(selectedAreas.get(0) + ", " + selectedAreas.get(1) + " (" + count + ")");
         } else {
-            chipFilterArea.setText(selectedAreas.size() + " khu vực (" + count + ")");
+            chipFilterArea.setText(selectedAreas.size() + " (" + count + ")");
         }
     }
 

@@ -66,8 +66,11 @@ public class WorkoutDto {
         @SerializedName("block")
         public String block;
 
-        @SerializedName("position")
+        @SerializedName(value = "position", alternate = {"orderIndex", "order_index", "sortOrder", "sort_order"})
         public int position;
+
+        @SerializedName(value = "orderIndex", alternate = {"order_index", "sortOrder", "sort_order"})
+        public Integer orderIndex;
 
         @SerializedName(value = "exerciseId", alternate = {"exercise_id"})
         public Long exerciseId;
@@ -75,22 +78,43 @@ public class WorkoutDto {
         @SerializedName(value = "roundNum", alternate = {"round_num"})
         public int roundNum;
 
-        @SerializedName("measure")
+        @SerializedName(value = "measure", alternate = {"unit"})
         public String measure;
 
-        @SerializedName("value")
+        @SerializedName("unit")
+        public String unit;
+
+        @SerializedName(value = "value", alternate = {"quantity"})
         public int value;
 
-        @SerializedName(value = "restAfterSec", alternate = {"rest_after_sec"})
+        @SerializedName("quantity")
+        public Integer quantity;
+
+        @SerializedName(value = "restAfterSec", alternate = {"rest_after_sec", "restSeconds", "rest_seconds"})
         public int restAfterSec;
 
-        @SerializedName(value = "exerciseName", alternate = {"exercise_name"})
+        @SerializedName(value = "restSeconds", alternate = {"rest_seconds"})
+        public Integer restSeconds;
+
+        @SerializedName(value = "exerciseName", alternate = {"exercise_name", "name"})
         public String exerciseName;
 
-        @SerializedName(value = "exerciseMediaUrl", alternate = {"exercise_media_url"})
+        @SerializedName("name")
+        public String name;
+
+        @SerializedName(value = "exerciseMediaUrl", alternate = {"exercise_media_url", "mediaUrl", "media_url"})
         public String exerciseMediaUrl;
+
+        @SerializedName("mediaUrl")
+        public String mediaUrl;
 
         @SerializedName(value = "exerciseMediaType", alternate = {"exercise_media_type"})
         public String exerciseMediaType;
+
+        @SerializedName("description")
+        public String description;
+
+        @SerializedName(value = "muscleGroup", alternate = {"muscle_group"})
+        public String muscleGroup;
     }
 }

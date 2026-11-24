@@ -144,10 +144,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        app:cardBackgroundColor="@color/white"
+        app:cardBackgroundColor="?attr/colorSurface"
         app:cardCornerRadius="12dp"
         app:cardElevation="1dp"
-        app:strokeColor="#0066FF"
+        app:strokeColor="?attr/colorPrimary"
         app:strokeWidth="2dp">
 
         <RelativeLayout
@@ -184,7 +184,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="Thẻ Visa/Mastercard, Ví MoMo, ZaloPay qua CH Play"
-                    android:textColor="#64748B"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="12sp" />
             </LinearLayout>
         </RelativeLayout>
@@ -196,10 +196,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        app:cardBackgroundColor="@color/white"
+        app:cardBackgroundColor="?attr/colorSurface"
         app:cardCornerRadius="12dp"
         app:cardElevation="1dp"
-        app:strokeColor="#E2E8F0"
+        app:strokeColor="?attr/colorOutline"
         app:strokeWidth="1dp">
 
         <RelativeLayout
@@ -235,7 +235,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="Chuyển khoản trực tiếp với nội dung đơn hàng"
-                    android:textColor="#64748B"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="12sp" />
             </LinearLayout>
         </RelativeLayout>
@@ -247,8 +247,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:background="#F8FAFC"
+        android:background="?attr/colorSurfaceVariant"
         android:orientation="vertical"
+        android:gravity="center_horizontal"
         android:padding="14dp"
         android:visibility="gone"
         tools:visibility="visible">
@@ -256,45 +257,118 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Thông tin chuyển khoản Ngân hàng:"
+            android:text="@string/payment_title"
             android:textColor="#0066FF"
-            android:textSize="13sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvCountdownTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="• Ngân hàng: MB Bank (Ngân hàng Quân Đội)"
-            android:textColor="#334155"
-            android:textSize="13sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:text="• Số tài khoản: 090012345678"
-            android:textColor="#1E293B"
+            android:layout_marginTop="4dp"
+            android:text="Mã QR hết hạn sau: 15:00"
+            android:textColor="#EF4444"
             android:textSize="13sp"
             android:textStyle="bold" />
 
+        <!-- Dynamic VietQR Image -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_marginTop="10dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E2E8F0">
+
+            <ImageView
+                android:id="@+id/ivVietQrCode"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:padding="8dp"
+                android:contentDescription="@null" />
+        </com.google.android.material.card.MaterialCardView>
+
         <TextView
+            android:id="@+id/tvBankInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:text="• Chủ tài khoản: HOMEFIT MEDIA / IRONFITNESS"
+            android:layout_marginTop="10dp"
+            android:text="• MB Bank: 0987654321 (CONG TY IRONFITNESS)"
             android:textColor="#334155"
-            android:textSize="13sp" />
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/tvOrderCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
-            android:text="• Nội dung: PRO-8829"
+            android:text="• Nội dung CK: IFPRO102938"
             android:textColor="#0066FF"
-            android:textSize="13sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
+
+        <!-- Action Buttons for Bank Transfer -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp"
+            android:gravity="center">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCopyStk"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:textSize="11sp"
+                android:paddingHorizontal="4dp"
+                android:text="@string/payment_copy_stk" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCopyContent"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="2dp"
+                android:textSize="11sp"
+                android:paddingHorizontal="4dp"
+                android:text="@string/payment_copy_content" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSaveQr"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:textSize="11sp"
+                android:paddingHorizontal="4dp"
+                android:text="@string/payment_save_qr" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvPaymentStatusInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Tự động kiểm tra giao dịch mỗi 5 giây..."
+            android:textColor="#64748B"
+            android:textSize="12sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCheckStatus"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/payment_check_status"
+            android:textSize="13sp" />
     </LinearLayout>
 
     <!-- Progress Indicator during checkout -->

@@ -52,8 +52,8 @@ public class ExerciseListAdapter extends RecyclerView.Adapter<ExerciseListAdapte
         }
 
         public void bind(LocalWorkoutDto dto) {
-            binding.tvName.setText(dto.name);
-            binding.tvReps.setText(dto.reps_sets);
+            binding.tvName.setText(com.homefit.app.util.LocalizationHelper.getLocalizedExerciseName(binding.getRoot().getContext(), dto));
+            binding.tvReps.setText(com.homefit.app.util.LocalizationHelper.getLocalizedRepsSets(binding.getRoot().getContext(), dto.reps_sets));
 
             // Always show 2D image thumb, never default dumbbell icon
             binding.ivThumb.setVisibility(View.VISIBLE);

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.chip.Chip;
 import com.homefit.app.R;
 import com.homefit.app.data.local.model.CustomWorkoutItem;
+import com.homefit.app.util.LocalizationHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,15 +54,15 @@ public class EditCustomWorkoutItemAdapter extends RecyclerView.Adapter<EditCusto
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         int pos = holder.getBindingAdapterPosition();
-        if (pos == RecyclerView.NO_POSITION) pos = position;
+        if (pos == RecyclerView.NO_POSITION) return;
 
         CustomWorkoutItem item = items.get(pos);
         item.order = pos;
 
         holder.tvOrderNumber.setText(String.valueOf(pos + 1));
-        holder.tvName.setText(item.exerciseName != null ? item.exerciseName : "");
-        holder.tvTarget.setText(item.target != null ? item.target : "Toàn thân");
-        holder.chipValue.setText(item.getFormattedSubtitle());
+        holder.tvName.setText(LocalizationHelper.getLocalizedExerciseName(holder.itemView.getContext(), item));
+        holder.tvTarget.setText(LocalizationHelper.getLocalizedTarget(holder.itemView.getContext(), item.target));
+        holder.chipValue.setText(LocalizationHelper.getLocalizedRepsSets(holder.itemView.getContext(), item.getFormattedSubtitle()));
 
         holder.chipValue.setOnClickListener(v -> {
             int currentPos = holder.getBindingAdapterPosition();

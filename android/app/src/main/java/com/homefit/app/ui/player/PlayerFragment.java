@@ -99,7 +99,13 @@ public class PlayerFragment extends Fragment {
 
         textToSpeech = new TextToSpeech(requireContext().getApplicationContext(), status -> {
             if (status == TextToSpeech.SUCCESS && textToSpeech != null) {
-                textToSpeech.setLanguage(new Locale("vi", "VN"));
+                com.homefit.app.ui.settings.SettingsStore store = new com.homefit.app.ui.settings.SettingsStore(requireContext());
+                String code = store.getLanguageCode();
+                Locale locale = new Locale("vi", "VN");
+                if ("en".equalsIgnoreCase(code)) locale = Locale.US;
+                else if ("ko".equalsIgnoreCase(code)) locale = Locale.KOREA;
+                else if ("ja".equalsIgnoreCase(code)) locale = Locale.JAPAN;
+                textToSpeech.setLanguage(locale);
             }
         });
 
@@ -271,9 +277,9 @@ public class PlayerFragment extends Fragment {
             binding.clExercisingLayout.setVisibility(View.GONE);
             binding.llRestingLayout.setVisibility(View.VISIBLE);
 
-            binding.tvNextProgress.setText("TIẾP THEO " + (state.currentExerciseIndex + 1) + "/" + state.totalExercises);
-            binding.tvNextExerciseName.setText(current != null ? current.name : "");
-            binding.tvNextRepsSubtitle.setText(current != null ? current.reps_sets : "");
+            binding.tvNextProgress.setText(com.homefit.app.util.LocalizationHelper.getLocalizedNextHeader(requireContext(), state.currentExerciseIndex + 1, state.totalExercises));
+            binding.tvNextExerciseName.setText(com.homefit.app.util.LocalizationHelper.getLocalizedExerciseName(requireContext(), current));
+            binding.tvNextRepsSubtitle.setText(com.homefit.app.util.LocalizationHelper.getLocalizedRepsSets(requireContext(), current != null ? current.reps_sets : ""));
             binding.tvRestCounter.setText(formatTime(state.remainingSeconds));
 
             if (state.currentExerciseIndex != lastExerciseIndex || state.state != lastState) {
@@ -286,27 +292,27 @@ public class PlayerFragment extends Fragment {
             binding.clExercisingLayout.setVisibility(View.VISIBLE);
             binding.llRestingLayout.setVisibility(View.GONE);
 
-            binding.tvProgress.setText("Bài " + (state.currentExerciseIndex + 1) + " / " + state.totalExercises);
+            binding.tvProgress.setText(com.homefit.app.util.LocalizationHelper.getLocalizedProgressHeader(requireContext(), state.currentExerciseIndex + 1, state.totalExercises));
 
             switch (state.state) {
                 case PREPARING:
-                    binding.tvStateHeader.setText("Chuẩn bị");
-                    binding.tvExerciseName.setText(current != null ? current.name : "");
+                    binding.tvStateHeader.setText(com.homefit.app.util.LocalizationHelper.getLocalizedStateHeader(requireContext(), state.state));
+                    binding.tvExerciseName.setText(com.homefit.app.util.LocalizationHelper.getLocalizedExerciseName(requireContext(), current));
                     binding.tvCounter.setText(formatTime(state.remainingSeconds));
                     showControls(false);
                     break;
                 case EXERCISING:
-                    binding.tvStateHeader.setText("Tập luyện");
-                    binding.tvExerciseName.setText(current != null ? current.name : "");
+                    binding.tvStateHeader.setText(com.homefit.app.util.LocalizationHelper.getLocalizedStateHeader(requireContext(), state.state));
+                    binding.tvExerciseName.setText(com.homefit.app.util.LocalizationHelper.getLocalizedExerciseName(requireContext(), current));
                     if (state.isRepsBased) {
-                        binding.tvCounter.setText(current != null ? current.reps_sets : "");
+                        binding.tvCounter.setText(com.homefit.app.util.LocalizationHelper.getLocalizedRepsSets(requireContext(), current != null ? current.reps_sets : ""));
                     } else {
                         binding.tvCounter.setText(formatTime(state.remainingSeconds));
                     }
                     showControls(state.isRepsBased);
                     break;
                 case PAUSED:
-                    binding.tvStateHeader.setText("Tạm dừng");
+                    binding.tvStateHeader.setText(com.homefit.app.util.LocalizationHelper.getLocalizedStateHeader(requireContext(), state.state));
                     binding.btnPlayPause.setImageResource(R.drawable.ic_play_arrow_24);
                     break;
                 default:
@@ -359,13 +365,31 @@ public class PlayerFragment extends Fragment {
                 lastSpokenIndex = state.currentExerciseIndex;
                 lastSpokenState = state.state;
                 if (textToSpeech != null) {
+                    String localizedName = com.homefit.app.util.LocalizationHelper.getLocalizedExerciseName(requireContext(), current);
+                    String lang = com.homefit.app.util.LocalizationHelper.getLanguage(requireContext());
                     String speechText = null;
+
                     if (state.state == PlayerState.PREPARING) {
-                        speechText = "Chuẩn bị: " + (current != null ? current.name : "");
+                        switch (lang) {
+                            case "en": speechText = "Get ready for: " + localizedName; break;
+                            case "ko": speechText = "준비: " + localizedName; break;
+                            case "ja": speechText = "準備: " + localizedName; break;
+                            default: speechText = "Chuẩn bị: " + localizedName; break;
+                        }
                     } else if (state.state == PlayerState.RESTING) {
-                        speechText = "Hoàn thành! Nghỉ ngơi 25 giây. Bài tiếp theo: " + (current != null ? current.name : "");
+                        switch (lang) {
+                            case "en": speechText = "Rest time. Next up: " + localizedName; break;
+                            case "ko": speechText = "휴식 시간. 다음 운동: " + localizedName; break;
+                            case "ja": speechText = "休憩時間。次の運動: " + localizedName; break;
+                            default: speechText = "Hoàn thành! Nghỉ ngơi. Bài tiếp theo: " + localizedName; break;
+                        }
                     } else if (state.state == PlayerState.EXERCISING) {
-                        speechText = "Bắt đầu bài tập: " + (current != null ? current.name : "");
+                        switch (lang) {
+                            case "en": speechText = "Start: " + localizedName; break;
+                            case "ko": speechText = "운동 시작: " + localizedName; break;
+                            case "ja": speechText = "スタート: " + localizedName; break;
+                            default: speechText = "Bắt đầu bài tập: " + localizedName; break;
+                        }
                     }
                     if (speechText != null && !speechText.isBlank()) {
                         try {
@@ -411,8 +435,8 @@ public class PlayerFragment extends Fragment {
     private void loadExerciseDetailsAndMedia(LocalWorkoutDto current) {
         if (binding == null || !isAdded()) return;
         if (current == null) {
-            binding.tvExerciseDescription.setText("Giữ tư thế chuẩn, siết chặt cơ và thở đều.");
-            binding.tvTargetMuscleCaption.setText("Nhóm cơ tác động chính: Toàn thân");
+            binding.tvExerciseDescription.setText(com.homefit.app.util.LocalizationHelper.getLocalizedExerciseDescription(requireContext(), null));
+            binding.tvTargetMuscleCaption.setText(com.homefit.app.util.LocalizationHelper.getLocalizedTargetCaption(requireContext(), "Toàn thân"));
             binding.ivMedia.setImageResource(R.drawable.bg_media_placeholder);
             return;
         }
@@ -420,28 +444,24 @@ public class PlayerFragment extends Fragment {
         String targetMuscle = "Toàn thân";
         if (current.target != null && !current.target.isBlank()) {
             targetMuscle = current.target;
-        } else if (current.name != null) {
-            String nameLower = current.name.toLowerCase(Locale.US);
-            if (nameLower.contains("bụng") || nameLower.contains("plank") || nameLower.contains("crunch")) targetMuscle = "Cơ Bụng";
-            else if (nameLower.contains("ngực") || nameLower.contains("push")) targetMuscle = "Cơ Ngực";
-            else if (nameLower.contains("tay") || nameLower.contains("dip") || nameLower.contains("curl")) targetMuscle = "Cơ Tay";
-            else if (nameLower.contains("chân") || nameLower.contains("squat") || nameLower.contains("lunge")) targetMuscle = "Cơ Chân & Mông";
-            else if (nameLower.contains("lưng")) targetMuscle = "Cơ Lưng";
-        }
-        binding.tvTargetMuscleCaption.setText("Nhóm cơ tác động chính: " + targetMuscle);
-
-        StringBuilder initialDesc = new StringBuilder();
-        if (current.instructions != null && !current.instructions.isEmpty()) {
-            for (String step : current.instructions) {
-                if (initialDesc.length() > 0) initialDesc.append("\n");
-                initialDesc.append("• ").append(step);
+        } else if (groupKey != null && !groupKey.isBlank()) {
+            String groupLoc = com.homefit.app.util.LocalizationHelper.getLocalizedGroup(requireContext(), groupKey);
+            if (groupLoc != null && !groupLoc.isBlank()) {
+                targetMuscle = groupLoc;
             }
-        } else if (current.target != null && !current.target.isBlank()) {
-            initialDesc.append(current.target);
         }
+        if ("Toàn thân".equals(targetMuscle) && current.name != null) {
+            String nameLower = current.name.toLowerCase(Locale.US);
+            if (nameLower.contains("bụng") || nameLower.contains("plank") || nameLower.contains("crunch") || nameLower.contains("abs")) targetMuscle = "Cơ Bụng";
+            else if (nameLower.contains("ngực") || nameLower.contains("push") || nameLower.contains("chest")) targetMuscle = "Cơ Ngực";
+            else if (nameLower.contains("tay") || nameLower.contains("dip") || nameLower.contains("curl") || nameLower.contains("arm")) targetMuscle = "Cơ Tay";
+            else if (nameLower.contains("chân") || nameLower.contains("squat") || nameLower.contains("lunge") || nameLower.contains("leg")) targetMuscle = "Cơ Chân & Mông";
+            else if (nameLower.contains("lưng") || nameLower.contains("back")) targetMuscle = "Cơ Lưng";
+        }
+        binding.tvTargetMuscleCaption.setText(com.homefit.app.util.LocalizationHelper.getLocalizedTargetCaption(requireContext(), targetMuscle));
 
-        String initialText = initialDesc.toString().trim();
-        binding.tvExerciseDescription.setText(initialText.isEmpty() ? "Giữ tư thế chuẩn, siết chặt cơ và thở đều." : initialText);
+        String locDesc = com.homefit.app.util.LocalizationHelper.getLocalizedExerciseDescription(requireContext(), current);
+        binding.tvExerciseDescription.setText(locDesc);
 
         MediaLoader.loadFullWithName(binding.ivMedia, current.name, current.mediaUrl, "GIF");
 
@@ -466,8 +486,9 @@ public class PlayerFragment extends Fragment {
                 com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
                     if (binding == null || !isAdded()) return;
                     if (finalMatch != null) {
-                        if (finalMatch.description != null && !finalMatch.description.isBlank()) {
-                            binding.tvExerciseDescription.setText(finalMatch.description);
+                        String matchDesc = com.homefit.app.util.LocalizationHelper.getLocalizedExerciseDescription(requireContext(), finalMatch);
+                        if (matchDesc != null && !matchDesc.isBlank()) {
+                            binding.tvExerciseDescription.setText(matchDesc);
                         }
                         if (finalMatch.mediaUrl != null && !finalMatch.mediaUrl.isBlank()) {
                             MediaLoader.loadFullWithName(binding.ivMedia, name, finalMatch.mediaUrl, finalMatch.mediaType != null ? finalMatch.mediaType : "GIF");

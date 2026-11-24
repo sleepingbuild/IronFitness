@@ -59,7 +59,13 @@ public final class Mappers {
         e.displayName = d.displayName != null ? d.displayName : "";
         e.heightCm = d.heightCm;
         e.weightKg = d.weightKg;
-        e.isPremium = Boolean.TRUE.equals(d.isPremium);
+        e.isPremium = Boolean.TRUE.equals(d.isPremium) || Boolean.TRUE.equals(d.isPro);
+        if (d.proExpiryDate != null) {
+            e.proExpiryDate = DateUtils.parseIso(d.proExpiryDate);
+        }
+        if (e.isPremium && (e.proExpiryDate == null || e.proExpiryDate <= 0)) {
+            e.proExpiryDate = System.currentTimeMillis() + 30L * 24 * 60 * 60 * 1000L;
+        }
         return e;
     }
 
@@ -122,13 +128,25 @@ public final class Mappers {
         e.id = d.id != null ? d.id : System.nanoTime();
         e.workoutId = d.workoutId != null ? d.workoutId : defaultWorkoutId;
         e.exerciseId = d.exerciseId != null ? d.exerciseId : 0L;
-        e.position = d.position;
+        e.position = d.orderIndex != null ? d.orderIndex : d.position;
         e.block = d.block != null ? d.block : "B";
-        e.measure = d.measure != null ? d.measure : "reps";
-        e.value = d.value;
-        e.restAfterSec = d.restAfterSec;
-        e.exerciseName = d.exerciseName != null ? d.exerciseName : "";
-        e.exerciseMediaUrl = d.exerciseMediaUrl != null ? d.exerciseMediaUrl : "";
+
+        String m = d.unit != null ? d.unit : d.measure;
+        if (m == null) m = "reps";
+        if (m.equalsIgnoreCase("giây") || m.equalsIgnoreCase("sec") || m.equalsIgnoreCase("time")) {
+            e.measure = "time";
+        } else {
+            e.measure = "reps";
+        }
+
+        e.value = d.quantity != null ? d.quantity : d.value;
+        e.restAfterSec = d.restSeconds != null ? d.restSeconds : d.restAfterSec;
+
+        String nameStr = d.name != null ? d.name : d.exerciseName;
+        e.exerciseName = nameStr != null ? nameStr : "";
+
+        String media = d.mediaUrl != null ? d.mediaUrl : d.exerciseMediaUrl;
+        e.exerciseMediaUrl = media != null ? media : "";
         e.exerciseMediaType = d.exerciseMediaType != null ? d.exerciseMediaType : "GIF";
         return e;
     }

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.homefit.app.R;
 import com.homefit.app.data.local.model.CustomWorkout;
+import com.homefit.app.util.LocalizationHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,7 @@ public class CustomWorkoutAdapter extends RecyclerView.Adapter<CustomWorkoutAdap
         holder.tvTitle.setText(workout.title);
         int duration = workout.calculateDurationMin();
         int count = workout.items != null ? workout.items.size() : 0;
-        holder.tvSubtitle.setText(duration + " phút • " + count + " bài tập");
+        holder.tvSubtitle.setText(LocalizationHelper.getLocalizedDurationAndCount(holder.itemView.getContext(), duration, count));
 
         holder.btnStart.setOnClickListener(v -> {
             if (listener != null) listener.onStartWorkout(workout);
@@ -65,14 +66,16 @@ public class CustomWorkoutAdapter extends RecyclerView.Adapter<CustomWorkoutAdap
         });
 
         holder.btnMenu.setOnClickListener(v -> {
+            String editLabel = v.getContext().getString(R.string.edit);
+            String deleteLabel = v.getContext().getString(R.string.delete);
             PopupMenu popup = new PopupMenu(v.getContext(), v);
-            popup.getMenu().add("Sửa");
-            popup.getMenu().add("Xóa");
+            popup.getMenu().add(editLabel);
+            popup.getMenu().add(deleteLabel);
             popup.setOnMenuItemClickListener(item -> {
-                if ("Sửa".equals(item.getTitle())) {
+                if (editLabel.equals(item.getTitle())) {
                     if (listener != null) listener.onEditWorkout(workout);
                     return true;
-                } else if ("Xóa".equals(item.getTitle())) {
+                } else if (deleteLabel.equals(item.getTitle())) {
                     if (listener != null) listener.onDeleteWorkout(workout);
                     return true;
                 }

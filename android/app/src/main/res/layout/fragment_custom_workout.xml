@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F8F8">
+    android:background="@color/bg_screen">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="16dp"
-                android:text="TÙY CHỈNH BÀI TẬP"
+                android:text="@string/custom_workouts_title"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface"/>
@@ -62,8 +62,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
-                    android:text="Bạn có thể thiết kế kế hoạch cá nhân phù hợp với mục tiêu của mình."
-                    android:textColor="#6B7280"
+                    android:text="@string/custom_workout_empty_desc"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="18sp"
                     android:gravity="center"
                     android:lineSpacingExtra="4dp"/>
@@ -73,7 +73,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_marginTop="32dp"
-                    android:text="Tạo"
+                    android:text="@string/create"
                     android:textColor="@color/white"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -106,7 +106,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_margin="16dp"
-                    android:text="Tạo buổi tập mới"
+                    android:text="@string/create_new_workout"
                     android:textColor="@color/white"
                     android:textSize="18sp"
                     android:textStyle="bold"

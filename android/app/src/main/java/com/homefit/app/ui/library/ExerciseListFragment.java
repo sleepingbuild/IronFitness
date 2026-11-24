@@ -130,6 +130,9 @@ public class ExerciseListFragment extends Fragment {
     public void onResume() {
         super.onResume();
         checkProgressAndSetupButtons();
+        if (categoryId == -1) {
+            loadData();
+        }
     }
 
     private void checkProgressAndSetupButtons() {
@@ -156,40 +159,51 @@ public class ExerciseListFragment extends Fragment {
     }
 
     private void loadData() {
-        AssetExerciseRepository repo = new AssetExerciseRepository(requireContext());
-        List<LocalExerciseGroupDto> all = repo.getAllGroups();
-        for (LocalExerciseGroupDto g : all) {
-            if (g.group.equalsIgnoreCase(groupKey) && g.difficulty.equalsIgnoreCase(difficulty)) {
-                currentGroup = g;
-                break;
-            }
-        }
+        com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
+            LocalExerciseGroupDto roomGroup = com.homefit.app.data.repository.WorkoutLoaderHelper.loadWorkoutFromRoom(
+                    requireContext().getApplicationContext(), groupKey, difficulty, groupName
+            );
 
-        // Handle generated goals dynamically
-        if (currentGroup == null) {
-            currentGroup = getDynamicGroup(groupKey, difficulty, groupName);
-        }
+            com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
+                if (!isAdded() || binding == null) return;
 
-        if (currentGroup != null) {
-            binding.tvTitle.setText(currentGroup.group_name + " " + currentGroup.difficulty);
-            int count = currentGroup.workouts != null ? currentGroup.workouts.size() : 0;
-            binding.tvDuration.setText(count + " phút");
-            binding.tvCount.setText(count + " Bài tập");
+                if (roomGroup != null && roomGroup.workouts != null && !roomGroup.workouts.isEmpty()) {
+                    currentGroup = roomGroup;
+                } else {
+                    AssetExerciseRepository repo = new AssetExerciseRepository(requireContext());
+                    List<LocalExerciseGroupDto> all = repo.getAllGroups();
+                    for (LocalExerciseGroupDto g : all) {
+                        if (g.group.equalsIgnoreCase(groupKey) && g.difficulty.equalsIgnoreCase(difficulty)) {
+                            currentGroup = g;
+                            break;
+                        }
+                    }
+                    if (currentGroup == null) {
+                        currentGroup = getDynamicGroup(groupKey, difficulty, groupName);
+                    }
+                }
 
-            adapter.submitList(currentGroup.workouts);
-            displayHeaderBanner();
-            // Hide progress and state view
-            binding.progress.setVisibility(View.GONE);
-            binding.stateView.getRoot().setVisibility(View.GONE);
-            binding.rvExercises.setVisibility(View.VISIBLE);
-        } else {
-            // Error handling
-            binding.progress.setVisibility(View.GONE);
-            binding.stateView.getRoot().setVisibility(View.VISIBLE);
-            binding.stateView.tvStateMessage.setText("Không tìm thấy bài tập");
-        }
+                if (currentGroup != null) {
+                    String fullTitle = (currentGroup.group_name != null ? currentGroup.group_name : "") + " " + (currentGroup.difficulty != null ? currentGroup.difficulty : "");
+                    binding.tvTitle.setText(com.homefit.app.util.LocalizationHelper.localizeWorkoutTitle(requireContext(), fullTitle.trim()));
+                    int count = currentGroup.workouts != null ? currentGroup.workouts.size() : 0;
+                    binding.tvDuration.setText(com.homefit.app.util.LocalizationHelper.localizeSubtitle(requireContext(), count, currentGroup.difficulty).split("•")[0].trim());
+                    binding.tvCount.setText(com.homefit.app.util.LocalizationHelper.getLocalizedDurationAndCount(requireContext(), count, count).split("•")[1].trim());
 
-        checkProgressAndSetupButtons();
+                    adapter.submitList(currentGroup.workouts);
+                    displayHeaderBanner();
+                    binding.progress.setVisibility(View.GONE);
+                    binding.stateView.getRoot().setVisibility(View.GONE);
+                    binding.rvExercises.setVisibility(View.VISIBLE);
+                } else {
+                    binding.progress.setVisibility(View.GONE);
+                    binding.stateView.getRoot().setVisibility(View.VISIBLE);
+                    binding.stateView.tvStateMessage.setText("Không tìm thấy bài tập");
+                }
+
+                checkProgressAndSetupButtons();
+            });
+        });
     }
 
     private void displayHeaderBanner() {

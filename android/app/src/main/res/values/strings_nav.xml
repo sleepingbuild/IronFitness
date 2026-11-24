@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="nav_workout">Tập luyện</string>
-    <string name="nav_discover">Khám phá</string>
-    <string name="nav_report">Cá nhân</string>
-    <string name="nav_settings">Cài đặt</string>
-
     <!-- Màn tạm (PlaceholderFragment): xóa khi màn thật thay thế -->
     <string name="placeholder_message">Màn hình này đang được xây dựng. Phần dưới là mẫu giao diện dùng chung để kiểm tra chế độ sáng và tối.</string>
     <string name="placeholder_card_title">Thẻ nội dung</string>

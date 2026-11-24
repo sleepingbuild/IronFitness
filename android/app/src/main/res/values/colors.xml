@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Bảng màu HomeFit, chế độ SÁNG. Chế độ tối: values-night/colors.xml (cùng tên màu).
-  Quy tắc: layout và theme chỉ dùng thuộc tính theme (?attr/colorPrimary...) hoặc tên màu hf_*,
-  không ghi mã màu trực tiếp. Chi tiết và tỉ lệ tương phản: docs/design/tokens.md.
--->
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="ic_launcher_background">#0B111A</color>
+    <color name="ic_launcher_background">#0B0F17</color>
 
-    <!-- Thương hiệu: Blue (Xanh dương) -->
-    <color name="hf_primary">#0066FF</color>
+    <!-- Brand Accent: Electric Blue -->
+    <color name="hf_primary">#2563EB</color>
     <color name="hf_on_primary">#FFFFFF</color>
-    <color name="hf_primary_container">#E6F0FF</color>
-    <color name="hf_on_primary_container">#0066FF</color>
+    <color name="hf_primary_container">#DBEAFE</color>
+    <color name="hf_on_primary_container">#1E40AF</color>
 
-    <color name="hf_navy">#1E2A44</color>
+    <color name="hf_navy">#1E293B</color>
     <color name="hf_streak">#FF6B35</color>
     <color name="hf_pro">#FFC400</color>
     <color name="hf_on_pro">#1A1A1A</color>
@@ -23,14 +18,23 @@
     <color name="hf_warning">#F59E0B</color>
     <color name="hf_danger">#DC2626</color>
 
-    <!-- Nền và bề mặt: White (Trắng) -->
-    <color name="hf_background">#FFFFFF</color>
-    <color name="hf_on_background">#111827</color>
+    <!-- Surface & Background - Light Mode -->
+    <color name="hf_background">#F5F7FA</color>
+    <color name="hf_on_background">#0F172A</color>
     <color name="hf_surface">#FFFFFF</color>
-    <color name="hf_on_surface">#111827</color>
-    <color name="hf_surface_variant">#F3F4F6</color>
-    <color name="hf_on_surface_variant">#6B7280</color>
-    <color name="hf_outline">#E5E7EB</color>
+    <color name="hf_on_surface">#0F172A</color>
+    <color name="hf_surface_variant">#F1F5F9</color>
+    <color name="hf_on_surface_variant">#64748B</color>
+    <color name="hf_outline">#E2E8F0</color>
+
+    <!-- Semantic UI Tokens - Light Mode -->
+    <color name="bg_screen">#F5F7FA</color>
+    <color name="bg_card">#FFFFFF</color>
+    <color name="bg_card_elevated">#FFFFFF</color>
+    <color name="bg_pro_card">#EFF6FF</color>
+    <color name="border_card">#E2E8F0</color>
+    <color name="text_primary">#0F172A</color>
+    <color name="text_secondary">#64748B</color>
 
     <!-- Thumbnail Placeholders -->
     <color name="hf_thumb_abs">#FFE3CC</color>
@@ -39,17 +43,17 @@
     <color name="hf_thumb_legs">#D9F2E1</color>
     <color name="hf_thumb_fullbody">#DCE9FF</color>
 
-    <!-- Trạng thái Workout Player (luôn kèm chữ, không dùng màu đơn lẻ) -->
-    <color name="hf_phase_exercise">#0066FF</color>
+    <!-- Player Phases -->
+    <color name="hf_phase_exercise">#2563EB</color>
     <color name="hf_on_phase_exercise">#FFFFFF</color>
-    <color name="hf_phase_rest">#FF3333</color>
+    <color name="hf_phase_rest">#EF4444</color>
     <color name="hf_on_phase_rest">#FFFFFF</color>
-    <color name="hf_phase_paused">#000000</color>
+    <color name="hf_phase_paused">#0F172A</color>
     <color name="hf_on_phase_paused">#FFFFFF</color>
 
-    <!-- Phân loại BMI (dùng làm màu chữ trên nền surface, luôn kèm nhãn chữ) -->
-    <color name="hf_bmi_underweight">#1D5FA8</color>
-    <color name="hf_bmi_normal">#1B6D2F</color>
-    <color name="hf_bmi_overweight">#8A5100</color>
-    <color name="hf_bmi_obese">#BA1A1A</color>
+    <!-- BMI Categories -->
+    <color name="hf_bmi_underweight">#0284C7</color>
+    <color name="hf_bmi_normal">#16A34A</color>
+    <color name="hf_bmi_overweight">#D97706</color>
+    <color name="hf_bmi_obese">#DC2626</color>
 </resources>

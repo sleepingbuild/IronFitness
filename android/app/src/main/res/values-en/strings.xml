@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">IronFitness</string>
+
+    <!-- Nav Bottom Bar -->
+    <string name="nav_workout">Workout</string>
+    <string name="nav_discover">Discover</string>
+    <string name="nav_report">Profile</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Home Greetings & Subtitles -->
+    <string name="home_greeting_morning">Good morning!</string>
+    <string name="home_greeting_afternoon">Good afternoon!</string>
+    <string name="home_greeting_evening">Good evening!</string>
+    <string name="home_subtitle_default">Ready to smash today\'s goal</string>
+    <string name="home_subtitle_fatloss">Target burn ~%1$d kcal/day</string>
+    <string name="home_subtitle_muscle">Build your strength with IronFitness</string>
+    <string name="home_subtitle_abs">Ready for today\'s core workout</string>
+    <string name="home_subtitle_keepfit">Maintain a lean and flexible body</string>
+
+    <!-- Home Section Headers & Chips -->
+    <string name="home_section_focus">Focus Area</string>
+    <string name="home_chip_abs">Abs</string>
+    <string name="home_chip_arms">Arms</string>
+    <string name="home_chip_chest">Chest</string>
+    <string name="home_chip_legs">Legs</string>
+    <string name="home_chip_fullbody">Full Body</string>
+    <string name="home_filter_under7">&lt;7 min</string>
+    <string name="home_filter_7to15">7-15 min</string>
+    <string name="home_filter_over15">&gt;15 min</string>
+    <string name="home_section_foryou">For You</string>
+    <string name="home_more">More &gt;</string>
+    <string name="home_section_short">Short Sessions</string>
+    <string name="home_section_goals">Popular Goals</string>
+    <string name="home_chip_muscle">Build Muscle</string>
+    <string name="home_chip_fatloss">Fat Loss</string>
+    <string name="home_chip_keepfit">Keep Fit</string>
+    <string name="home_section_custom">Custom Workouts</string>
+    <string name="home_custom_banner_title">CREATE\nYOUR OWN</string>
+    <string name="home_custom_banner_go">GO</string>
+
+    <!-- Discover Section -->
+    <string name="discover_title">HEALTH TOOLS &amp; DISCOVER</string>
+    <string name="discover_bmi_title">BMI SCORE &amp; RECOMMENDATIONS</string>
+    <string name="discover_bmi_subtitle">Ideal fitness state</string>
+    <string name="discover_bmi_update_btn">Update Height / Weight</string>
+    <string name="discover_library_title">Lookup 94 IronFitness Exercises</string>
+    <string name="discover_library_desc">View 2D animations, muscle groups &amp; guides.</string>
+    <string name="discover_library_btn">Open Now</string>
+    <string name="discover_tips_section">Knowledge &amp; Workout Tips</string>
+    <string name="discover_tip1_category">Nutrition Guide</string>
+    <string name="discover_tip1_title">Balanced diet secrets to boost results 200%</string>
+    <string name="discover_tip1_desc">Combine protein &amp; fiber for faster muscle recovery. Tap for details ➔</string>
+    <string name="discover_tip2_category">Muscle Recovery Tips</string>
+    <string name="discover_tip2_title">Importance of stretching &amp; sleep</string>
+    <string name="discover_tip2_desc">5-min post-workout stretch prevents injuries. Tap for details ➔</string>
+    <string name="discover_tip3_category">IronFitness Community</string>
+    <string name="discover_tip3_title">Join 100,000+ active members daily</string>
+    <string name="discover_tip3_desc">Share progress, motivation &amp; transformation photos. Tap for details ➔</string>
+
+    <!-- BMI Badges & Recommendations -->
+    <string name="bmi_badge_underweight">UNDERWEIGHT</string>
+    <string name="bmi_badge_normal">NORMAL</string>
+    <string name="bmi_badge_overweight">OVERWEIGHT</string>
+    <string name="bmi_badge_obese">OBESE</string>
+    <string name="bmi_rec_underweight">Recommended: Muscle building &amp; Upper body + Core workouts to gain lean weight.</string>
+    <string name="bmi_rec_normal">Recommended: Maintain daily Full Body &amp; Cardio workouts for a balanced body.</string>
+    <string name="bmi_rec_overweight">Recommended: Focus on Fat Loss &amp; Full Body HIIT to burn excess calories quickly.</string>
+    <string name="bmi_rec_obese">Recommended: Start with Easy Fat Loss &amp; Stretching to protect your joints.</string>
+
+    <!-- Report & Personal Section -->
+    <string name="report_title">PERSONAL REPORT</string>
+    <string name="report_workouts">Workouts</string>
+    <string name="report_minutes">Minutes</string>
+    <string name="report_7days_title">Workout Time Last 7 Days</string>
+    <string name="report_weight_title">Weight Progress</string>
+    <string name="report_btn_log_weight">Log Weight ⚖️</string>
+    <string name="report_current_weight">Current</string>
+    <string name="report_target_weight">Target</string>
+    <string name="report_bmi_title">BMI Score</string>
+    <string name="report_btn_edit_bmi">Edit ✏️</string>
+    <string name="report_badges_title">Achievement Badges</string>
+
+    <!-- Badges Strings -->
+    <string name="height_format">Height: %1$d cm ✏️</string>
+    <string name="badge_status_unlocked">Unlocked ✨</string>
+    <string name="badge_status_locked">Locked 🔒</string>
+    <string name="badge_1_title">Steadfast Start</string>
+    <string name="badge_1_desc">Complete 3 workouts</string>
+    <string name="badge_2_title">Weekly Warrior</string>
+    <string name="badge_2_desc">Maintain 7-day streak</string>
+    <string name="badge_3_title">Burn 1,000 kcal</string>
+    <string name="badge_3_desc">Accumulate 1,000 kcal burned</string>
+    <string name="badge_4_title">Challenge Conqueror</string>
+    <string name="badge_4_desc">Complete 24 Challenge sessions</string>
+    <string name="badge_5_title">Hard Worker</string>
+    <string name="badge_5_desc">Complete 10 workouts</string>
+    <string name="badge_6_title">Perseverance Master</string>
+    <string name="badge_6_desc">Complete 5 moderate workouts</string>
+
+    <!-- Settings PRO Section -->
+    <string name="settings_pro_section">PRO Plan</string>
+    <string name="settings_pro_title_upgrade">Upgrade to PRO</string>
+    <string name="settings_pro_title_active">PRO Plan Active</string>
+    <string name="settings_pro_title_active_with_days">PRO Plan • %d days left</string>
+    <string name="settings_pro_expired">PRO Plan Expired</string>
+    <string name="settings_pro_active_badge">%d days left</string>
+    <string name="settings_pro_expiry_date">Expires: %s</string>
+    <string name="settings_pro_btn_buy">GET PRO NOW ➔</string>
+    <string name="settings_pro_btn_renew">RENEW PRO ➔</string>
+    <string name="settings_pro_desc">Unlock all premium workouts &amp; remove all ads completely.</string>
+
+    <!-- Appearance & Theme Settings -->
+    <string name="settings_appearance_section">Appearance</string>
+    <string name="settings_appearance_title">Theme Mode</string>
+    <string name="settings_appearance_desc">Change app theme mode to light or dark</string>
+    <string name="theme_system">System Default</string>
+    <string name="theme_light">Light Mode</string>
+    <string name="theme_dark">Dark Mode</string>
+    <string name="theme_dialog_title">Select Theme Mode</string>
+
+    <!-- Language Settings -->
+    <string name="settings_language_section">Language</string>
+    <string name="settings_language_title">Display Language</string>
+    <string name="settings_language_desc">Change app language &amp; TTS voice guide</string>
+    <string name="language_vi">Tiếng Việt (Vietnamese)</string>
+    <string name="language_en">English</string>
+    <string name="language_ko">한국어 (Korean)</string>
+    <string name="language_ja">日本語 (Japanese)</string>
+    <string name="language_dialog_title">Select Language</string>
+
+    <!-- Settings general -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_subtitle">Manage daily reminders and session</string>
+    <string name="settings_reminder_section">Daily Reminder</string>
+    <string name="settings_reminder_switch_title">Enable Daily Reminder</string>
+    <string name="settings_reminder_switch_desc">Show notifications to remind you to train on time</string>
+    <string name="settings_reminder_time_label">Reminder Time</string>
+    <string name="settings_reminder_change_time">Change</string>
+    <string name="settings_reminder_picker_title">Set Reminder Time</string>
+    <string name="settings_reminder_status_on">Reminder scheduled for %1$s daily</string>
+    <string name="settings_reminder_status_off">Reminder turned off</string>
+    <string name="settings_reminder_saved_on">Daily reminder set to %1$s</string>
+    <string name="settings_reminder_saved_off">Daily reminder turned off</string>
+    <string name="settings_account_section">Account</string>
+    <string name="settings_account_default_name">IronFitness User</string>
+    <string name="settings_account_plan_premium">PRO Premium Account (No Ads)</string>
+    <string name="settings_account_plan_standard">Standard Account (With Ads)</string>
+    <string name="settings_logout_btn">Log out</string>
+    <string name="settings_logout_dialog_title">Log out account?</string>
+    <string name="settings_logout_dialog_msg">You will need to sign in again. Your progress remains saved.</string>
+
+    <!-- Payment & VietQR -->
+    <string name="payment_title">VietQR Bank Transfer Payment</string>
+    <string name="payment_order_code">Order Code: %1$s</string>
+    <string name="payment_copy_stk">Copy Account No</string>
+    <string name="payment_copy_content">Copy Transfer Note</string>
+    <string name="payment_save_qr">Save QR Code</string>
+    <string name="payment_check_status">Check Payment Status</string>
+    <string name="payment_status_pending">Awaiting bank verification (%1$s)...</string>
+    <string name="payment_success">Payment successful! You have upgraded to IronFitness PRO!</string>
+    <string name="payment_stk_copied">Account number copied to clipboard</string>
+    <string name="payment_content_copied">Transfer note copied to clipboard</string>
+
+    <!-- Additional UI & Multi-Language Strings -->
+    <string name="weight_remaining_format">%.1f kg left to reach goal</string>
+    <string name="weight_goal_reached">🎉 Weight goal reached!</string>
+    <string name="session_progress_format">%1$d/%2$d sessions</string>
+    <string name="full_body">Full Body</string>
+    <string name="no_equipment">No Equipment</string>
+    <string name="start">START</string>
+    <string name="start_workout_now">START WORKOUT</string>
+    <string name="start_workout_upper">START ➔</string>
+    <string name="renew_workout_upper">RENEW ➔</string>
+    <string name="pro_unlock_personal_plan">Unlock your personal workout plan!</string>
+    <string name="pro_monthly">Monthly</string>
+    <string name="pro_monthly_price">$9.99 / month</string>
+    <string name="pro_yearly_discount">New User Discount</string>
+    <string name="pro_yearly_price">Only $39.99 / year</string>
+    <string name="pro_save_67">SAVE 67%</string>
+    <string name="pro_enable_7_day_trial">Enable 7-day free trial</string>
+    <string name="pro_you_can_also_get">You will also get</string>
+    <string name="pro_feature_1">🔒  Unlimited targeted workouts</string>
+    <string name="pro_feature_2">🔥  Unlock all 94+ exercises &amp; 24-day challenge</string>
+    <string name="pro_feature_3">👍  Visible results in just 4 weeks</string>
+    <string name="pro_feature_4">⭐  Continuous new exercise updates</string>
+    <string name="pro_feature_5">🚫  Remove all ads</string>
+    <string name="pro_sync_desc">Sync workout progress &amp; health metrics across all devices</string>
+    <string name="pro_restore">Restore</string>
+    <string name="pro_restored_toast">Purchases restored</string>
+    <string name="custom_workouts_title">CUSTOM WORKOUTS</string>
+    <string name="custom_workout_empty_desc">You can design a personal plan tailored to your goals.</string>
+    <string name="create">Create</string>
+    <string name="create_new_workout">Create New Workout</string>
+    <string name="my_workout_format">My Workout %d</string>
+    <string name="add_exercises_title">Add Exercises</string>
+    <string name="all_focus_areas_count">All Focus Areas (%d)</string>
+    <string name="search_exercises">Search exercises</string>
+    <string name="done">Done</string>
+    <string name="add_count">Add (%d)</string>
+    <string name="warning_min_3_exercises">At least 3 exercises are needed to save.</string>
+    <string name="edit_action">Edit &gt;</string>
+    <string name="exercises_header">Exercises</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="update_goal_survey">Update Goal Survey 🎯</string>
+</resources>

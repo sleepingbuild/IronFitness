@@ -75,6 +75,7 @@ public class ProfileFragment extends Fragment {
         });
         binding.btnSave.setOnClickListener(v -> save());
         if (binding.btnReopenOnboarding != null) {
+            binding.btnReopenOnboarding.setText(R.string.update_goal_survey);
             binding.btnReopenOnboarding.setOnClickListener(v -> {
                 android.content.Intent intent = new android.content.Intent(requireContext(), com.homefit.app.ui.onboarding.OnboardingActivity.class);
                 startActivity(intent);

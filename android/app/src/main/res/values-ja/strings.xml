@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">IronFitness</string>
+
+    <!-- Nav Bottom Bar -->
+    <string name="nav_workout">運動</string>
+    <string name="nav_discover">発見</string>
+    <string name="nav_report">マイページ</string>
+    <string name="nav_settings">設定</string>
+
+    <!-- Home Greetings & Subtitles -->
+    <string name="home_greeting_morning">おはようございます！</string>
+    <string name="home_greeting_afternoon">こんにちは！</string>
+    <string name="home_greeting_evening">こんばんは！</string>
+    <string name="home_subtitle_default">今日の目標を達成する準備はできましたか</string>
+    <string name="home_subtitle_fatloss">目標消費カロリー ~%1$d kcal/日</string>
+    <string name="home_subtitle_muscle">IronFitnessで筋力を向上させましょう</string>
+    <string name="home_subtitle_abs">今日の腹筋トレーニングを始めましょう</string>
+    <string name="home_subtitle_keepfit">引き締まったしなやかな体を維持する</string>
+
+    <!-- Home Section Headers & Chips -->
+    <string name="home_section_focus">部位別トレーニング</string>
+    <string name="home_chip_abs">腹筋</string>
+    <string name="home_chip_arms">腕</string>
+    <string name="home_chip_chest">胸</string>
+    <string name="home_chip_legs">脚</string>
+    <string name="home_chip_fullbody">全身</string>
+    <string name="home_filter_under7">&lt;7分</string>
+    <string name="home_filter_7to15">7-15分</string>
+    <string name="home_filter_over15">&gt;15分</string>
+    <string name="home_section_foryou">あなたへのおすすめ</string>
+    <string name="home_more">もっと見る &gt;</string>
+    <string name="home_section_short">ショートセッション</string>
+    <string name="home_section_goals">人気の目標</string>
+    <string name="home_chip_muscle">筋力アップ</string>
+    <string name="home_chip_fatloss">脂肪燃焼</string>
+    <string name="home_chip_keepfit">体型維持</string>
+    <string name="home_section_custom">カスタムワークアウト</string>
+    <string name="home_custom_banner_title">自分専用の\nワークアウト</string>
+    <string name="home_custom_banner_go">スタート</string>
+
+    <!-- Discover Section -->
+    <string name="discover_title">ヘルスツール &amp; 発見</string>
+    <string name="discover_bmi_title">BMI スコア &amp; おすすめ</string>
+    <string name="discover_bmi_subtitle">理想的な体型</string>
+    <string name="discover_bmi_update_btn">身長 / 体重の更新</string>
+    <string name="discover_library_title">94種類のIronFitness種目の検索</string>
+    <string name="discover_library_desc">2Dアニメーション、対象筋肉、ガイドを閲覧。</string>
+    <string name="discover_library_btn">今すぐ開く</string>
+    <string name="discover_tips_section">知識 &amp; トレーニングのコツ</string>
+    <string name="discover_tip1_category">栄養ガイド</string>
+    <string name="discover_tip1_title">効果を200%高める食事のコツ</string>
+    <string name="discover_tip1_desc">タンパク質と食物繊維を組み合わせて回復を促進。詳細を見る ➔</string>
+    <string name="discover_tip2_category">筋肉の回復のコツ</string>
+    <string name="discover_tip2_title">ストレッチと睡眠の重要性</string>
+    <string name="discover_tip2_desc">運動後5分のストレッチで怪我を予防。詳細を見る ➔</string>
+    <string name="discover_tip3_category">IronFitness コミュニティ</string>
+    <string name="discover_tip3_title">毎日10万以上のメンバーが一緒にトレーニング</string>
+    <string name="discover_tip3_desc">進捗状況やモチベーションを共有。詳細を見る ➔</string>
+
+    <!-- BMI Badges & Recommendations -->
+    <string name="bmi_badge_underweight">低体重</string>
+    <string name="bmi_badge_normal">普通体重</string>
+    <string name="bmi_badge_overweight">肥満(1度)</string>
+    <string name="bmi_badge_obese">肥満(2度以上)</string>
+    <string name="bmi_rec_underweight">おすすめ：筋肉増量と上半身＋コアトレーニングで体重を増やしましょう。</string>
+    <string name="bmi_rec_normal">おすすめ：日々の全身＆有酸素運動でバランスの良い体型を維持しましょう。</string>
+    <string name="bmi_rec_overweight">おすすめ：脂肪燃焼と全身HIITトレーニングで効率的にカロリーを消費。</string>
+    <string name="bmi_rec_obese">おすすめ：関節を保護するため、軽めの脂肪燃焼とストレッチから始めましょう。</string>
+
+    <!-- Report & Personal Section -->
+    <string name="report_title">個人レポート</string>
+    <string name="report_workouts">回</string>
+    <string name="report_minutes">分</string>
+    <string name="report_7days_title">過去7日間のトレーニング時間</string>
+    <string name="report_weight_title">体重の推移</string>
+    <string name="report_btn_log_weight">記録する ⚖️</string>
+    <string name="report_current_weight">現在</string>
+    <string name="report_target_weight">目標</string>
+    <string name="report_bmi_title">BMI スコア</string>
+    <string name="report_btn_edit_bmi">編集 ✏️</string>
+    <string name="report_badges_title">実績バッジ</string>
+
+    <!-- Badges Strings -->
+    <string name="height_format">身長: %1$d cm ✏️</string>
+    <string name="badge_status_unlocked">解除済み ✨</string>
+    <string name="badge_status_locked">未達成 🔒</string>
+    <string name="badge_1_title">着実な一歩</string>
+    <string name="badge_1_desc">3回のトレーニングを完了</string>
+    <string name="badge_2_title">ウィークリーウォリアー</string>
+    <string name="badge_2_desc">7日連続トレーニング</string>
+    <string name="badge_3_title">1,000 kcal消費</string>
+    <string name="badge_3_desc">累計1,000 kcal消費</string>
+    <string name="badge_4_title">チャレンジ制覇</string>
+    <string name="badge_4_desc">24回のチャレンジ完了</string>
+    <string name="badge_5_title">ハードワーカー</string>
+    <string name="badge_5_desc">10回のトレーニング完了</string>
+    <string name="badge_6_title">不屈のマスタ</string>
+    <string name="badge_6_desc">5回の中級トレーニング完了</string>
+
+    <!-- Settings PRO Section -->
+    <string name="settings_pro_section">PRO プラン</string>
+    <string name="settings_pro_title_upgrade">PROへアップグレード</string>
+    <string name="settings_pro_title_active">PROプラン利用中</string>
+    <string name="settings_pro_title_active_with_days">PROプラン • 残り%d日</string>
+    <string name="settings_pro_expired">PROプランの有効期限が切れています</string>
+    <string name="settings_pro_active_badge">残り%d日</string>
+    <string name="settings_pro_expiry_date">有効期限: %s</string>
+    <string name="settings_pro_btn_buy">PROを購入 ➔</string>
+    <string name="settings_pro_btn_renew">PROを更新 ➔</string>
+    <string name="settings_pro_desc">すべてのプレミアムワークアウトを解放し、広告を非表示。</string>
+
+    <!-- Appearance & Theme Settings -->
+    <string name="settings_appearance_section">テーマ設定 / Appearance</string>
+    <string name="settings_appearance_title">テーマモード</string>
+    <string name="settings_appearance_desc">ライトモードまたはダークモードに変更</string>
+    <string name="theme_system">システム設定に従う</string>
+    <string name="theme_light">ライトモード</string>
+    <string name="theme_dark">ダークモード</string>
+    <string name="theme_dialog_title">テーマモードを選択</string>
+
+    <!-- Language Settings -->
+    <string name="settings_language_section">言語 / Language</string>
+    <string name="settings_language_title">表示言語</string>
+    <string name="settings_language_desc">アプリの表示言語と音声ガイド言語の変更</string>
+    <string name="language_vi">Tiếng Việt (ベトナム語)</string>
+    <string name="language_en">English (英語)</string>
+    <string name="language_ko">한국어 (韓国語)</string>
+    <string name="language_ja">日本語</string>
+    <string name="language_dialog_title">言語を選択 / Select Language</string>
+
+    <!-- Settings general -->
+    <string name="settings_title">設定</string>
+    <string name="settings_subtitle">毎日のリマインダーとアカウント管理</string>
+    <string name="settings_reminder_section">毎日のリマインダー</string>
+    <string name="settings_reminder_switch_title">リマインダーを有効にする</string>
+    <string name="settings_reminder_switch_desc">時間通りにトレーニングできるよう通知します</string>
+    <string name="settings_reminder_time_label">リマインダー時刻</string>
+    <string name="settings_reminder_change_time">時刻変更</string>
+    <string name="settings_reminder_picker_title">リマインダー時刻を設定</string>
+    <string name="settings_reminder_status_on">毎日 %1$s にリマインダーが設定されています</string>
+    <string name="settings_reminder_status_off">リマインダーはオフです</string>
+    <string name="settings_reminder_saved_on">毎日 %1$s にリマインダーを保存しました</string>
+    <string name="settings_reminder_saved_off">毎日のリマインダーをオフにしました</string>
+    <string name="settings_account_section">アカウント</string>
+    <string name="settings_account_default_name">IronFitness ユーザー</string>
+    <string name="settings_account_plan_premium">PRO プレミアムアカウント（広告なし）</string>
+    <string name="settings_account_plan_standard">標準アカウント（広告あり）</string>
+    <string name="settings_logout_btn">ログアウト</string>
+    <string name="settings_logout_dialog_title">ログアウトしますか？</string>
+    <string name="settings_logout_dialog_msg">再度ログインが必要です。トレーニング履歴は安全に保持されます。</string>
+
+    <!-- Payment & VietQR -->
+    <string name="payment_title">VietQR 銀行振込決済</string>
+    <string name="payment_order_code">注文番号: %1$s</string>
+    <string name="payment_copy_stk">口座番号をコピー</string>
+    <string name="payment_copy_content">振込メモをコピー</string>
+    <string name="payment_save_qr">QRコードを保存</string>
+    <string name="payment_check_status">決済状況を確認</string>
+    <string name="payment_status_pending">入金確認中 (%1$s)...</string>
+    <string name="payment_success">決済完了！IronFitness PROの利用が開始されました！</string>
+    <string name="payment_stk_copied">口座番号をクリップボードにコピーしました</string>
+    <string name="payment_content_copied">振込メモをクリップボードにコピーしました</string>
+
+    <!-- Additional UI & Multi-Language Strings -->
+    <string name="weight_remaining_format">目標まであと %.1f kg</string>
+    <string name="weight_goal_reached">🎉 体重目標を達成しました！</string>
+    <string name="session_progress_format">%1$d/%2$d セッション</string>
+    <string name="full_body">全身</string>
+    <string name="no_equipment">器具なし</string>
+    <string name="start">スタート</string>
+    <string name="start_workout_now">今すぐスタート</string>
+    <string name="start_workout_upper">スタート ➔</string>
+    <string name="renew_workout_upper">更新 ➔</string>
+    <string name="pro_unlock_personal_plan">あなた専用のトレーニングプランを解除！</string>
+    <string name="pro_monthly">月額</string>
+    <string name="pro_monthly_price">¥1,400 / 月</string>
+    <string name="pro_yearly_discount">新規ユーザー割引</string>
+    <string name="pro_yearly_price">年間 ¥5,800</string>
+    <string name="pro_save_67">67% OFF</string>
+    <string name="pro_enable_7_day_trial">7日間無料体験を有効化</string>
+    <string name="pro_you_can_also_get">さらに利用できる機能</string>
+    <string name="pro_feature_1">🔒  無制限のターゲットワークアウト</string>
+    <string name="pro_feature_2">🔥  全94種目＆24日間コースを解除</string>
+    <string name="pro_feature_3">👍  わずか4週間で目に見える効果</string>
+    <string name="pro_feature_4">⭐  新しいエクササイズを継続追加</string>
+    <string name="pro_feature_5">🚫  広告を完全に非表示</string>
+    <string name="pro_sync_desc">全デバイスでワークアウト進捗と健康データを同期</string>
+    <string name="pro_restore">復元</string>
+    <string name="pro_restored_toast">購入を復元しました</string>
+    <string name="custom_workouts_title">カスタムワークアウト</string>
+    <string name="custom_workout_empty_desc">目標に合わせた個人プランを設計できます。</string>
+    <string name="create">作成</string>
+    <string name="create_new_workout">新しいワークアウトを作成</string>
+    <string name="my_workout_format">マイワークアウト %d</string>
+    <string name="add_exercises_title">エクササイズを追加</string>
+    <string name="all_focus_areas_count">すべての部位 (%d)</string>
+    <string name="search_exercises">エクササイズを検索</string>
+    <string name="done">完了</string>
+    <string name="add_count">追加 (%d)</string>
+    <string name="warning_min_3_exercises">保存するには少なくとも3つのエクササイズが必要です。</string>
+    <string name="edit_action">編集 &gt;</string>
+    <string name="exercises_header">エクササイズ</string>
+    <string name="edit">編集</string>
+    <string name="delete">削除</string>
+    <string name="save">保存</string>
+    <string name="update_goal_survey">目標アンケートを更新 🎯</string>
+</resources>

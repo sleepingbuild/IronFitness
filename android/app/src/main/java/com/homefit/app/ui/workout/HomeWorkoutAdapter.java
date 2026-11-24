@@ -79,7 +79,8 @@ public class HomeWorkoutAdapter extends RecyclerView.Adapter<HomeWorkoutAdapter.
                 else if (diffStr.equalsIgnoreCase("Hard")) duration = (int) (count * 2.0);
             }
             
-            String title = dto.group_name + " " + diffStr;
+            String fullRawTitle = (dto.group_name != null ? dto.group_name : "") + " " + diffStr;
+            String title = com.homefit.app.util.LocalizationHelper.localizeWorkoutTitle(binding.getRoot().getContext(), fullRawTitle.trim());
             binding.tvName.setText(title);
 
             int mainBlockCount = count;
@@ -95,7 +96,7 @@ public class HomeWorkoutAdapter extends RecyclerView.Adapter<HomeWorkoutAdapter.
                 }
             }
             
-            binding.tvDuration.setText(duration + " phút • " + mainBlockCount + (dto.duration_min > 0 ? " Bài tập / vòng" : " Bài tập"));
+            binding.tvDuration.setText(com.homefit.app.util.LocalizationHelper.getLocalizedDurationAndCount(binding.getRoot().getContext(), duration, mainBlockCount));
             
             // Thumbnail frame: Pure white background with border
             binding.cardThumb.setCardBackgroundColor(0xFFFFFFFF);
@@ -120,13 +121,20 @@ public class HomeWorkoutAdapter extends RecyclerView.Adapter<HomeWorkoutAdapter.
             binding.llDifficulty.removeAllViews();
             int diffIcons = 2; // Default Medium
             int diffColor = R.color.hf_warning;
+            int stripeRes = R.drawable.bg_difficulty_medium;
 
             if (diffStr.equalsIgnoreCase("Easy")) {
                 diffIcons = 1;
                 diffColor = R.color.hf_success;
+                stripeRes = R.drawable.bg_difficulty_easy;
             } else if (diffStr.equalsIgnoreCase("Hard")) {
                 diffIcons = 3;
                 diffColor = R.color.hf_danger;
+                stripeRes = R.drawable.bg_difficulty_hard;
+            }
+
+            if (binding.viewDifficultyStripe != null) {
+                binding.viewDifficultyStripe.setBackgroundResource(stripeRes);
             }
 
             for (int i = 0; i < 3; i++) {

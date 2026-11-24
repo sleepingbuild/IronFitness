@@ -1,3 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">IronFitness</string>
+
+    <!-- Nav Bottom Bar -->
+    <string name="nav_workout">Tập luyện</string>
+    <string name="nav_discover">Khám phá</string>
+    <string name="nav_report">Báo cáo</string>
+    <string name="nav_settings">Cài đặt</string>
+
+    <!-- Home Greetings & Subtitles -->
+    <string name="home_greeting_morning">Chào buổi sáng!</string>
+    <string name="home_greeting_afternoon">Chào buổi chiều!</string>
+    <string name="home_greeting_evening">Chào buổi tối!</string>
+    <string name="home_subtitle_default">Sẵn sàng bứt phá mục tiêu hôm nay</string>
+    <string name="home_subtitle_fatloss">Mục tiêu đốt cháy ~%1$d kcal/ngày</string>
+    <string name="home_subtitle_muscle">Tập luyện phát triển cơ bắp cùng IronFitness</string>
+    <string name="home_subtitle_abs">Sẵn sàng cho bài tập siết cơ bụng hôm nay</string>
+    <string name="home_subtitle_keepfit">Duy trì vóc dáng thon gọn &amp; dẻo dai</string>
+
+    <!-- Home Section Headers & Chips -->
+    <string name="home_section_focus">Cơ thể tập trung</string>
+    <string name="home_chip_abs">Bụng</string>
+    <string name="home_chip_arms">Tay</string>
+    <string name="home_chip_chest">Ngực</string>
+    <string name="home_chip_legs">Chân</string>
+    <string name="home_chip_fullbody">Toàn thân</string>
+    <string name="home_filter_under7">&lt;7 phút</string>
+    <string name="home_filter_7to15">7-15 phút</string>
+    <string name="home_filter_over15">&gt;15 phút</string>
+    <string name="home_section_foryou">Chỉ dành cho bạn</string>
+    <string name="home_more">Thêm &gt;</string>
+    <string name="home_section_short">Buổi ngắn</string>
+    <string name="home_section_goals">Mục tiêu phổ biến</string>
+    <string name="home_chip_muscle">Xây dựng cơ bắp</string>
+    <string name="home_chip_fatloss">Đốt cháy mỡ</string>
+    <string name="home_chip_keepfit">Giữ dáng</string>
+    <string name="home_section_custom">Tùy chỉnh bài tập</string>
+    <string name="home_custom_banner_title">TẠO CỦA\nRIÊNG BẠN</string>
+    <string name="home_custom_banner_go">ĐI</string>
+
+    <!-- Discover Section -->
+    <string name="discover_title">CÔNG CỤ SỨC KHỎE &amp; KHÁM PHÁ</string>
+    <string name="discover_bmi_title">CHỈ SỐ BMI &amp; KHUYẾN NGHỊ</string>
+    <string name="discover_bmi_subtitle">Thể trạng lý tưởng</string>
+    <string name="discover_bmi_update_btn">Cập nhật Chiều cao / Cân nặng</string>
+    <string name="discover_library_title">Tra cứu 94 Bài Tập IronFitness</string>
+    <string name="discover_library_desc">Xem minh họa 2D, nhóm cơ &amp; hướng dẫn chuẩn.</string>
+    <string name="discover_library_btn">Mở ngay</string>
+    <string name="discover_tips_section">Góc Kiến Thức &amp; Mẹo Tập Luyện</string>
+    <string name="discover_tip1_category">Dinh Dưỡng IronFitness</string>
+    <string name="discover_tip1_title">Bí quyết ăn uống cân bằng tăng 200% hiệu quả tập</string>
+    <string name="discover_tip1_desc">Kết hợp đạm và xơ hợp lý giúp cơ bắp phục hồi nhanh hơn. Bấm để đọc chi tiết ➔</string>
+    <string name="discover_tip2_category">Mẹo Phục Hồi Cơ Bắp</string>
+    <string name="discover_tip2_title">Tầm quan trọng của kéo giãn cơ &amp; giấc ngủ</string>
+    <string name="discover_tip2_desc">Kéo giãn cơ 5 phút sau buổi tập giúp tránh chấn thương. Bấm để đọc chi tiết ➔</string>
+    <string name="discover_tip3_category">Cộng Đồng IronFitness</string>
+    <string name="discover_tip3_title">Hơn 100.000+ hội viên đồng hành mỗi ngày</string>
+    <string name="discover_tip3_desc">Chia sẻ tiến độ, động lực và hình ảnh thay đổi vóc dáng. Bấm để đọc chi tiết ➔</string>
+
+    <!-- BMI Badges & Recommendations -->
+    <string name="bmi_badge_underweight">THIẾU CÂN</string>
+    <string name="bmi_badge_normal">BÌNH THƯỜNG</string>
+    <string name="bmi_badge_overweight">THỪA CÂN</string>
+    <string name="bmi_badge_obese">BÉO PHÌ</string>
+    <string name="bmi_rec_underweight">Khuyên dùng: Các bài tập Xây dựng cơ bắp &amp; Thân trên + Lõi để tăng trọng lượng nạc.</string>
+    <string name="bmi_rec_normal">Khuyên dùng: Duy trì chuỗi tập Toàn Thân &amp; Cardio hàng ngày để giữ vóc dáng cân đối.</string>
+    <string name="bmi_rec_overweight">Khuyên dùng: Tập trung các buổi tập Đốt cháy mỡ &amp; HIIT toàn thân để thiêu đốt calo dư thừa.</string>
+    <string name="bmi_rec_obese">Khuyên dùng: Bắt đầu với các bài tập Đốt mỡ nhẹ nhàng &amp; Kéo giãn để bảo vệ khớp gối.</string>
+
+    <!-- Report & Personal Section -->
+    <string name="report_title">BÁO CÁO CÁ NHÂN</string>
+    <string name="report_workouts">Lần tập</string>
+    <string name="report_minutes">Phút</string>
+    <string name="report_7days_title">Thời gian tập 7 ngày qua</string>
+    <string name="report_weight_title">Tiến trình Cân nặng</string>
+    <string name="report_btn_log_weight">Ghi lại ⚖️</string>
+    <string name="report_current_weight">Hiện tại</string>
+    <string name="report_target_weight">Mục tiêu</string>
+    <string name="report_bmi_title">Chỉ số BMI</string>
+    <string name="report_btn_edit_bmi">Chỉnh sửa ✏️</string>
+    <string name="report_badges_title">Huy hiệu Thành tích</string>
+
+    <!-- Badges Strings -->
+    <string name="height_format">Chiều cao: %1$d cm ✏️</string>
+    <string name="badge_status_unlocked">Đã mở khóa ✨</string>
+    <string name="badge_status_locked">Chưa đạt 🔒</string>
+    <string name="badge_1_title">Khởi đầu bền bỉ</string>
+    <string name="badge_1_desc">Hoàn thành 3 buổi tập</string>
+    <string name="badge_2_title">Chiến binh tuần lễ</string>
+    <string name="badge_2_desc">Duy trì Chuỗi Streak 7 ngày</string>
+    <string name="badge_3_title">Đốt cháy 1.000 kcal</string>
+    <string name="badge_3_desc">Tích lũy tiêu thụ 1.000 kcal</string>
+    <string name="badge_4_title">Chinh phục Thử thách</string>
+    <string name="badge_4_desc">Tập đủ 24 buổi Thử thách</string>
+    <string name="badge_5_title">Tập luyện chăm chỉ</string>
+    <string name="badge_5_desc">Hoàn thành 10 buổi tập</string>
+    <string name="badge_6_title">Kiên trì vượt khó</string>
+    <string name="badge_6_desc">Hoàn thành 5 buổi tập vừa sức</string>
+
+    <!-- Settings PRO Section -->
+    <string name="settings_pro_section">Gói PRO</string>
+    <string name="settings_pro_title_upgrade">Nâng cấp lên PRO</string>
+    <string name="settings_pro_title_active">Gói PRO Active</string>
+    <string name="settings_pro_title_active_with_days">Gói PRO • Còn %d ngày</string>
+    <string name="settings_pro_expired">Gói PRO đã hết hạn</string>
+    <string name="settings_pro_active_badge">Còn %d ngày</string>
+    <string name="settings_pro_expiry_date">Hết hạn: %s</string>
+    <string name="settings_pro_btn_buy">MUA GÓI PRO ➔</string>
+    <string name="settings_pro_btn_renew">GIA HẠN GÓI PRO ➔</string>
+    <string name="settings_pro_desc">Mở khóa tất cả bài tập mục tiêu không giới hạn, loại bỏ hoàn toàn quảng cáo.</string>
+
+    <!-- Appearance & Theme Settings -->
+    <string name="settings_appearance_section">Giao diện / Appearance</string>
+    <string name="settings_appearance_title">Chế độ giao diện</string>
+    <string name="settings_appearance_desc">Thay đổi màu sắc giao diện sáng hoặc tối</string>
+    <string name="theme_system">Theo hệ thống</string>
+    <string name="theme_light">Giao diện Sáng</string>
+    <string name="theme_dark">Giao diện Tối</string>
+    <string name="theme_dialog_title">Chọn giao diện / Select Theme</string>
+
+    <!-- Language Settings -->
+    <string name="settings_language_section">Ngôn ngữ / Language</string>
+    <string name="settings_language_title">Ngôn ngữ hiển thị</string>
+    <string name="settings_language_desc">Thay đổi ngôn ngữ ứng dụng &amp; giọng nói TTS</string>
+    <string name="language_vi">Tiếng Việt</string>
+    <string name="language_en">English</string>
+    <string name="language_ko">한국어 (Korean)</string>
+    <string name="language_ja">日本語 (Japanese)</string>
+    <string name="language_dialog_title">Chọn ngôn ngữ / Select Language</string>
+
+    <!-- Payment & VietQR -->
+    <string name="payment_title">Thanh toán VietQR Chuyển khoản</string>
+    <string name="payment_order_code">Mã đơn hàng: %1$s</string>
+    <string name="payment_copy_stk">Sao chép STK</string>
+    <string name="payment_copy_content">Sao chép nội dung CK</string>
+    <string name="payment_save_qr">Lưu ảnh QR</string>
+    <string name="payment_check_status">Kiểm tra thanh toán</string>
+    <string name="payment_status_pending">Đang chờ giao dịch ngân hàng (%1$s)...</string>
+    <string name="payment_success">Thanh toán thành công! Chúc mừng bạn đã nâng cấp gói PRO!</string>
+    <string name="payment_stk_copied">Đã sao chép số tài khoản vào bộ nhớ tạm</string>
+    <string name="payment_content_copied">Đã sao chép nội dung chuyển khoản vào bộ nhớ tạm</string>
+
+    <!-- Additional UI & Multi-Language Strings -->
+    <string name="weight_remaining_format">Còn %.1f kg nữa đạt mục tiêu</string>
+    <string name="weight_goal_reached">🎉 Đã hoàn thành mục tiêu cân nặng!</string>
+    <string name="session_progress_format">%1$d/%2$d buổi</string>
+    <string name="full_body">Toàn thân</string>
+    <string name="no_equipment">Không dụng cụ</string>
+    <string name="start">BẮT ĐẦU</string>
+    <string name="start_workout_now">TẬP NGAY</string>
+    <string name="start_workout_upper">KHỞI ĐẦU ➔</string>
+    <string name="renew_workout_upper">GIA HẠN ➔</string>
+    <string name="pro_unlock_personal_plan">Mở khóa kế hoạch cá nhân của bạn!</string>
+    <string name="pro_monthly">Hàng tháng</string>
+    <string name="pro_monthly_price">232.000 đ/tháng</string>
+    <string name="pro_yearly_discount">Giảm giá cho người mới</string>
+    <string name="pro_yearly_price">Chỉ 928.000 đ/năm</string>
+    <string name="pro_save_67">TIẾT KIỆM 67%</string>
+    <string name="pro_enable_7_day_trial">Bật chế độ dùng thử miễn phí trong 7 ngày</string>
+    <string name="pro_you_can_also_get">Bạn còn có thể nhận được</string>
+    <string name="pro_feature_1">🔒  Bài tập mục tiêu không giới hạn</string>
+    <string name="pro_feature_2">🔥  Mở khóa toàn bộ 94+ bài tập chuyên sâu &amp; lộ trình 24 ngày</string>
+    <string name="pro_feature_3">👍  Kết quả rõ rệt chỉ sau 4 tuần</string>
+    <string name="pro_feature_4">⭐  Thêm bài tập mới liên tục</string>
+    <string name="pro_feature_5">🚫  Xóa quảng cáo</string>
+    <string name="pro_sync_desc">Đồng bộ tiến độ tập luyện &amp; chỉ số sức khỏe trên mọi thiết bị</string>
+    <string name="pro_restore">Phục hồi</string>
+    <string name="pro_restored_toast">Đã khôi phục giao dịch mua</string>
+    <string name="custom_workouts_title">TÙY CHỈNH BÀI TẬP</string>
+    <string name="custom_workout_empty_desc">Bạn có thể thiết kế kế hoạch cá nhân phù hợp với mục tiêu của mình.</string>
+    <string name="create">Tạo</string>
+    <string name="create_new_workout">Tạo buổi tập mới</string>
+    <string name="my_workout_format">Buổi tập của tôi %d</string>
+    <string name="add_exercises_title">Thêm bài tập</string>
+    <string name="all_focus_areas_count">Tất cả các khu vực (%d)</string>
+    <string name="search_exercises">Tìm kiếm bài tập</string>
+    <string name="done">Đóng</string>
+    <string name="add_count">Thêm (%d)</string>
+    <string name="warning_min_3_exercises">Cần ít nhất 3 bài tập để lưu buổi tập.</string>
+    <string name="edit_action">Chỉnh sửa &gt;</string>
+    <string name="exercises_header">Bài tập</string>
+    <string name="edit">Sửa</string>
+    <string name="delete">Xóa</string>
+    <string name="save">Lưu</string>
+    <string name="update_goal_survey">Cập nhật khảo sát mục tiêu 🎯</string>
 </resources>

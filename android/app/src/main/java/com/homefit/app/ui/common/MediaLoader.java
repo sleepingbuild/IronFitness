@@ -44,33 +44,80 @@ public final class MediaLoader {
         }
         String n = exerciseName.toLowerCase(Locale.US).trim();
 
-        // Specific mappings:
-        // Heel Touches / Chạm gót chân / Heel Taps -> abs/heel_touch.png
+        // Warm-up & Stretching (MUST check before generic "tay", "curl", "biceps")
+        if (n.contains("arm circle") || n.contains("xoay tay") || n.contains("xoay cánh tay")) {
+            return BASE_MEDIA_URL + "warm_up/arm_circles.png";
+        }
+        if (n.contains("hip circle") || n.contains("xoay hông")) {
+            return BASE_MEDIA_URL + "warm_up/hip_circles.png";
+        }
+        if (n.contains("leg swing") || n.contains("đu chân")) {
+            return BASE_MEDIA_URL + "warm_up/leg_swings.png";
+        }
+        if (n.contains("inchworm") || n.contains("bò sâu")) {
+            return BASE_MEDIA_URL + "warm_up/inchworm.png";
+        }
+        if (n.contains("quad stretch") || n.contains("đùi trước")) {
+            return BASE_MEDIA_URL + "stretching/quad_stretch.png";
+        }
+        if (n.contains("hamstring stretch") || n.contains("đùi sau")) {
+            return BASE_MEDIA_URL + "stretching/hamstring_stretch.png";
+        }
+        if (n.contains("glute stretch") || n.contains("figure-4") || n.contains("figure 4") || n.contains("giãn mông") || n.contains("mông")) {
+            return BASE_MEDIA_URL + "stretching/glute_stretch.png";
+        }
+        if (n.contains("hip flexor") || n.contains("gân háng") || n.contains("háng")) {
+            return BASE_MEDIA_URL + "stretching/hip_flexor_stretch.png";
+        }
+        if (n.contains("chest stretch") || n.contains("giãn ngực") || n.contains("chest opener")) {
+            return BASE_MEDIA_URL + "stretching/chest_stretch.png";
+        }
+        if (n.contains("shoulder stretch") || n.contains("giãn vai")) {
+            return BASE_MEDIA_URL + "stretching/shoulder_stretch.png";
+        }
+        if (n.contains("child") || n.contains("em bé")) {
+            return BASE_MEDIA_URL + "stretching/child_pose.png";
+        }
+        if (n.contains("cat-cow") || n.contains("cat cow") || n.contains("mèo bò") || n.contains("mèo - bò")) {
+            return BASE_MEDIA_URL + "stretching/cat_cow_stretch.png";
+        }
+        if (n.contains("forward fold") || n.contains("gập người")) {
+            return BASE_MEDIA_URL + "stretching/seated_forward_fold.png";
+        }
+        if (n.contains("spinal twist") || n.contains("xoay cột sống")) {
+            return BASE_MEDIA_URL + "stretching/lying_spinal_twist.png";
+        }
+        if (n.contains("world") || n.contains("greatest stretch")) {
+            return BASE_MEDIA_URL + "stretching/worlds_greatest_stretch.png";
+        }
+        if (n.contains("superman")) {
+            return BASE_MEDIA_URL + "stretching/superman_stretch.png";
+        }
+        if (n.contains("bird dog") || n.contains("chó chim")) {
+            return BASE_MEDIA_URL + "stretching/bird_dog.png";
+        }
+        if (n.contains("dead bug") || n.contains("bọ chết")) {
+            return BASE_MEDIA_URL + "stretching/dead_bug.png";
+        }
+
+        // Specific Abs / Arm / Legs / Cardio
         if (n.contains("heel touch") || n.contains("heel tap") || n.contains("chạm gót")) {
             return BASE_MEDIA_URL + "abs/heel_touch.png";
         }
-        // Leg Drops / Nâng chân -> abs/leg_raises.png
         if (n.contains("leg drop") || n.contains("leg raise") || n.contains("nâng chân")) {
             return BASE_MEDIA_URL + "abs/leg_raises.png";
         }
-        // Hollow Body Hold / Hollow Hold / L-Sit Hold -> abs/hollow_hold.png
         if (n.contains("hollow body") || n.contains("hollow hold") || n.contains("l-sit hold") || n.contains("hollow")) {
             return BASE_MEDIA_URL + "abs/hollow_hold.png";
         }
-        // Windshield Wipers / Gạt nước kính -> abs/side_plank_upandown.png
         if (n.contains("windshield wiper") || n.contains("gạt nước")) {
             return BASE_MEDIA_URL + "abs/side_plank_upandown.png";
         }
-
-        // Additional 2D mappings:
         if (n.contains("bicycle") || n.contains("đạp xe")) {
             return BASE_MEDIA_URL + "abs/bicycle_crunches.png";
         }
         if (n.contains("reverse crunch") || n.contains("gập bụng ngược")) {
             return BASE_MEDIA_URL + "abs/reverse_cruches.png";
-        }
-        if (n.contains("crunch") || n.contains("gập bụng")) {
-            return BASE_MEDIA_URL + "abs/crunches.png";
         }
         if (n.contains("knee touch") || n.contains("chạm gối")) {
             return BASE_MEDIA_URL + "abs/knee_touch.png";
@@ -80,6 +127,9 @@ public final class MediaLoader {
         }
         if (n.contains("v-up") || n.contains("v crunch")) {
             return BASE_MEDIA_URL + "abs/v_crunches.png";
+        }
+        if (n.contains("crunch") || n.contains("gập bụng")) {
+            return BASE_MEDIA_URL + "abs/crunches.png";
         }
         if (n.contains("side plank") || n.contains("plank nghiêng")) {
             return BASE_MEDIA_URL + "abs/side_plank.png";
@@ -99,7 +149,7 @@ public final class MediaLoader {
         if (n.contains("knee push") || n.contains("quỳ gối")) {
             return BASE_MEDIA_URL + "arm/knee_pushup.png";
         }
-        if (n.contains("diamond") || n.contains("kim cương") || n.contains("tay hẹp")) {
+        if (n.contains("diamond") || n.contains("kim cương")) {
             return BASE_MEDIA_URL + "arm/diamond_pushup.png";
         }
         if (n.contains("pike")) {
@@ -114,7 +164,7 @@ public final class MediaLoader {
         if (n.contains("shoulder tap") || n.contains("chạm vai")) {
             return BASE_MEDIA_URL + "arm/shoulder_tap.png";
         }
-        if (n.contains("biceps") || n.contains("curl") || n.contains("tay")) {
+        if (n.contains("biceps") || n.contains("curl") || n.contains("tay trước") || n.contains("tay sau")) {
             return BASE_MEDIA_URL + "arm/biceps_curl.png";
         }
         if (n.contains("sumo squat")) {
@@ -132,7 +182,7 @@ public final class MediaLoader {
         if (n.contains("calf") || n.contains("nhón gót")) {
             return BASE_MEDIA_URL + "legs/calf_raises.png";
         }
-        if (n.contains("donkey") || n.contains("đá chân")) {
+        if (n.contains("donkey")) {
             return BASE_MEDIA_URL + "legs/donkey_kick.png";
         }
         if (n.contains("glute") || n.contains("bridge") || n.contains("cầu mông")) {
@@ -141,26 +191,8 @@ public final class MediaLoader {
         if (n.contains("wall sit")) {
             return BASE_MEDIA_URL + "legs/wall_sit.png";
         }
-        if (n.contains("superman")) {
-            return BASE_MEDIA_URL + "stretching/superman_stretch.png";
-        }
-        if (n.contains("child")) {
-            return BASE_MEDIA_URL + "stretching/child_pose.png";
-        }
-        if (n.contains("cat-cow") || n.contains("cat cow")) {
-            return BASE_MEDIA_URL + "stretching/cat_cow_stretch.png";
-        }
-        if (n.contains("bird dog")) {
-            return BASE_MEDIA_URL + "stretching/bird_dog.png";
-        }
-        if (n.contains("dead bug")) {
-            return BASE_MEDIA_URL + "stretching/dead_bug.png";
-        }
-        if (n.contains("jumping jack")) {
+        if (n.contains("jumping jack") || n.contains("jack")) {
             return BASE_MEDIA_URL + "warm_up/jumping_jack.png";
-        }
-        if (n.contains("arm circle") || n.contains("xoay tay")) {
-            return BASE_MEDIA_URL + "warm_up/arm_circles.png";
         }
         if (n.contains("mountain climber") || n.contains("leo núi")) {
             return BASE_MEDIA_URL + "cardio/mountain_climber.png";

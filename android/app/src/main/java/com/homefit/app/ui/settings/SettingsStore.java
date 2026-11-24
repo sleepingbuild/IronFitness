@@ -8,11 +8,29 @@ public class SettingsStore {
     private static final String KEY_REMINDER_ENABLED = "reminder_enabled";
     private static final String KEY_REMINDER_HOUR = "reminder_hour";
     private static final String KEY_REMINDER_MINUTE = "reminder_minute";
+    private static final String KEY_APP_LANGUAGE = "app_language";
+    private static final String KEY_NIGHT_MODE = "night_mode";
 
     private final SharedPreferences prefs;
 
     public SettingsStore(Context context) {
         prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    }
+
+    public int getNightMode() {
+        return prefs.getInt(KEY_NIGHT_MODE, androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+    }
+
+    public void setNightMode(int mode) {
+        prefs.edit().putInt(KEY_NIGHT_MODE, mode).apply();
+    }
+
+    public String getLanguageCode() {
+        return prefs.getString(KEY_APP_LANGUAGE, "vi");
+    }
+
+    public void setLanguageCode(String code) {
+        prefs.edit().putString(KEY_APP_LANGUAGE, code).apply();
     }
 
     public boolean isReminderEnabled() {

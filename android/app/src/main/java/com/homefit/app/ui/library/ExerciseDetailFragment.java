@@ -69,7 +69,7 @@ public class ExerciseDetailFragment extends Fragment {
     }
 
     private void bind(@NonNull ExerciseEntity exercise) {
-        binding.tvName.setText(exercise.name);
+        binding.tvName.setText(com.homefit.app.util.LocalizationHelper.getLocalizedExerciseName(requireContext(), exercise));
         binding.ivMedia.setContentDescription(getString(R.string.exercise_media_description, exercise.name));
         MediaLoader.loadFull(binding.ivMedia, exercise.mediaUrl, exercise.mediaType);
         binding.tvVideoNotice.setVisibility(MediaLoader.isVideo(exercise.mediaType) ? View.VISIBLE : View.GONE);
@@ -78,10 +78,10 @@ public class ExerciseDetailFragment extends Fragment {
         binding.tvWorkLabel.setText(byDuration
                 ? R.string.exercise_label_work_duration
                 : R.string.exercise_label_work_reps);
-        binding.tvWorkValue.setText(ExerciseText.work(requireContext(), exercise));
-        binding.tvRestValue.setText(getString(R.string.exercise_work_duration, exercise.restSec));
+        binding.tvWorkValue.setText(com.homefit.app.util.LocalizationHelper.getLocalizedRepsSets(requireContext(), ExerciseText.work(requireContext(), exercise)));
+        binding.tvRestValue.setText(com.homefit.app.util.LocalizationHelper.getLocalizedRepsSets(requireContext(), getString(R.string.exercise_work_duration, exercise.restSec)));
 
-        String description = exercise.description;
+        String description = com.homefit.app.util.LocalizationHelper.getLocalizedExerciseDescription(requireContext(), exercise);
         boolean hasDescription = description != null && !description.trim().isEmpty();
         binding.tvDescription.setText(hasDescription ? description : getString(R.string.exercise_no_description));
     }

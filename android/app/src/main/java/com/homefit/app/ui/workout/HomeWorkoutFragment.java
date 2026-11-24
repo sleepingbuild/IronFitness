@@ -1,5 +1,6 @@
 package com.homefit.app.ui.workout;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,9 +72,23 @@ public class HomeWorkoutFragment extends Fragment {
         updateStreakUI();
         updateChallengeHeroUI();
         updateGreetingUI();
+        updateStaticCardLocalization();
 
         // Tải/đồng bộ ngay lập tức dữ liệu mới nhất từ backend API vào Room DB
         new com.homefit.app.data.repository.ExerciseRepository(requireContext()).refresh();
+    }
+
+    private void updateStaticCardLocalization() {
+        if (binding == null || !isAdded()) return;
+        Context ctx = requireContext();
+        if (binding.tvForYouCalorieTitle != null) binding.tvForYouCalorieTitle.setText(com.homefit.app.util.LocalizationHelper.localizeWorkoutTitle(ctx, "Đốt cháy calo toàn thân"));
+        if (binding.tvForYouCalorieSub != null) binding.tvForYouCalorieSub.setText(com.homefit.app.util.LocalizationHelper.localizeSubtitle(ctx, 28, "Hard"));
+
+        if (binding.tvForYouLegTitle != null) binding.tvForYouLegTitle.setText(com.homefit.app.util.LocalizationHelper.localizeWorkoutTitle(ctx, "Thử thách sức mạnh chân"));
+        if (binding.tvForYouLegSub != null) binding.tvForYouLegSub.setText(com.homefit.app.util.LocalizationHelper.localizeSubtitle(ctx, 21, "Medium"));
+
+        if (binding.tvTabataTitle != null) binding.tvTabataTitle.setText(com.homefit.app.util.LocalizationHelper.localizeWorkoutTitle(ctx, "6 phút với Tabata"));
+        if (binding.tvStretchBackTitle != null) binding.tvStretchBackTitle.setText(com.homefit.app.util.LocalizationHelper.localizeWorkoutTitle(ctx, "Kéo giãn Lưng"));
     }
 
     @Override
@@ -91,24 +106,24 @@ public class HomeWorkoutFragment extends Fragment {
         int hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
         String greetingText;
         if (hour >= 5 && hour < 12) {
-            greetingText = "Chào buổi sáng! 🌅";
+            greetingText = getString(R.string.home_greeting_morning);
         } else if (hour >= 12 && hour < 18) {
-            greetingText = "Chào buổi chiều! ☀️";
+            greetingText = getString(R.string.home_greeting_afternoon);
         } else {
-            greetingText = "Chào buổi tối! 🌙";
+            greetingText = getString(R.string.home_greeting_evening);
         }
 
         com.homefit.app.data.prefs.OnboardingStore store = new com.homefit.app.data.prefs.OnboardingStore(requireContext());
         String goal = store.getGoal();
-        String subtitleText = "Sẵn sàng bứt phá mục tiêu hôm nay";
+        String subtitleText = getString(R.string.home_subtitle_default);
         if ("fatloss".equals(goal)) {
-            subtitleText = "Mục tiêu đốt cháy ~" + store.calculateTargetDailyCalories() + " kcal/ngày 🔥";
+            subtitleText = getString(R.string.home_subtitle_fatloss, store.calculateTargetDailyCalories());
         } else if ("muscle".equals(goal)) {
-            subtitleText = "Tập luyện phát triển cơ bắp cùng IronFitness 💪";
+            subtitleText = getString(R.string.home_subtitle_muscle);
         } else if ("abs".equals(goal)) {
-            subtitleText = "Sẵn sàng cho bài tập siết cơ bụng hôm nay ⚡";
+            subtitleText = getString(R.string.home_subtitle_abs);
         } else if ("keepfit".equals(goal)) {
-            subtitleText = "Duy trì vóc dáng thon gọn & dẻo dai 🧘";
+            subtitleText = getString(R.string.home_subtitle_keepfit);
         }
 
         if (binding.tvGreeting != null) binding.tvGreeting.setText(greetingText);
@@ -128,13 +143,13 @@ public class HomeWorkoutFragment extends Fragment {
         int durationMin = session != null ? session.duration_min : 11;
         int count = session != null && session.workouts != null ? session.workouts.size() : 14;
 
-        binding.tvFirstDayLabel.setText("THỬ THÁCH BẢN THÂN");
-        binding.tvFirstDayTitle.setText("Ngày " + currentDay + " - " + dayTypeName);
-        binding.tvFirstDaySubtitle.setText(durationMin + " phút • " + count + " bài");
+        binding.tvFirstDayLabel.setText(com.homefit.app.util.LocalizationHelper.getLocalizedChallengeTitle(requireContext()));
+        binding.tvFirstDayTitle.setText(com.homefit.app.util.LocalizationHelper.getLocalizedDayTitle(requireContext(), currentDay, dayTypeName));
+        binding.tvFirstDaySubtitle.setText(com.homefit.app.util.LocalizationHelper.getLocalizedDurationAndCount(requireContext(), durationMin, count));
 
         int percent = (int) Math.round((completed / 24.0) * 100);
         binding.pbFirstDay.setProgress(percent);
-        binding.tvFirstDayProgress.setText(completed + "/24 buổi");
+        binding.tvFirstDayProgress.setText(getString(R.string.session_progress_format, completed, 24));
 
         binding.cardFirstDay.setOnClickListener(v ->
             NavHostFragment.findNavController(this).navigate(R.id.action_home_to_challengeWeek));

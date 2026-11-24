@@ -126,6 +126,7 @@ public class AdminWorkoutController {
                 existing.setCoverImageUrl(workout.getCoverImageUrl());
                 existing.setVersion(existing.getVersion() + 1);
 
+                existing.getItems().clear();
                 workoutItemRepository.deleteByWorkoutId(existing.getId());
                 workoutItemRepository.flush();
 
@@ -143,7 +144,8 @@ public class AdminWorkoutController {
                     }
                 }
                 if (!newItems.isEmpty()) {
-                    workoutItemRepository.saveAllAndFlush(newItems);
+                    List<WorkoutItem> savedItems = workoutItemRepository.saveAllAndFlush(newItems);
+                    existing.getItems().addAll(savedItems);
                 }
                 workoutRepository.saveAndFlush(existing);
 

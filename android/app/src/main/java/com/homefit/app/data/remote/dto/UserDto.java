@@ -6,6 +6,8 @@ public class UserDto {
     public String email;
     public String displayName;
     public Boolean isPremium;
+    public Boolean isPro;
     public Double heightCm;
     public Double weightKg;
+    public String proExpiryDate;
 }

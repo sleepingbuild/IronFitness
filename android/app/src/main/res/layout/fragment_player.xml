@@ -57,7 +57,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/pbWorkoutProgress">
 
-        <!-- 1. TOP: Title & Exercise Name -->
+        <!-- 1. HEADER (Top pinned) -->
         <TextView
             android:id="@+id/tvStateHeader"
             android:layout_width="0dp"
@@ -88,193 +88,216 @@
             app:layout_constraintTop_toBottomOf="@id/tvStateHeader"
             tools:text="Plank" />
 
-        <!-- 1. TOP: Image / GIF Illustration Frame -->
-        <FrameLayout
-            android:id="@+id/flMediaContainer"
-            android:layout_width="0dp"
-            android:layout_height="180dp"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="12dp"
-            android:background="#FFFFFF"
-            android:clipToOutline="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvExerciseName">
-
-            <ImageView
-                android:id="@+id/ivMedia"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="Minh họa động tác"
-                android:scaleType="fitCenter"
-                tools:src="@drawable/bg_media_placeholder" />
-
-            <androidx.media3.ui.PlayerView
-                android:id="@+id/videoPlayerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone"
-                app:use_controller="false" />
-        </FrameLayout>
-
-        <!-- Muscle Target Caption -->
-        <TextView
-            android:id="@+id/tvTargetMuscleCaption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="6dp"
-            android:textAlignment="center"
-            android:textAppearance="?attr/textAppearanceLabelMedium"
-            android:textColor="#0066FF"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/flMediaContainer"
-            tools:text="Nhóm cơ tác động chính: Cơ Bụng" />
-
-        <!-- 2. MIDDLE: Description / Instructions Frame -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cvDescriptionCard"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="12dp"
-            app:cardBackgroundColor="#F8FAFC"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="1dp"
-            app:strokeColor="#E2E8F0"
-            app:strokeWidth="1dp"
-            app:layout_constraintBottom_toTopOf="@id/tvCounter"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvTargetMuscleCaption">
-
-            <androidx.core.widget.NestedScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="12dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hướng dẫn thực hiện:"
-                        android:textColor="#0066FF"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvExerciseDescription"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:lineSpacingExtra="3dp"
-                        android:textColor="#334155"
-                        android:textSize="14sp"
-                        tools:text="Chống khuỷu tay và mũi chân xuống sàn, giữ thân người thẳng từ đầu đến gót, siết bụng và không võng lưng." />
-                </LinearLayout>
-            </androidx.core.widget.NestedScrollView>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 3. BOTTOM: Large High-Contrast Timer / Reps Counter -->
-        <TextView
-            android:id="@+id/tvCounter"
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:layout_marginBottom="4dp"
-            android:fontFeatureSettings="tnum"
-            android:gravity="center"
-            android:textAlignment="center"
-            android:textColor="#0066FF"
-            android:textSize="50sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/tvProgress"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="00:20" />
-
-        <!-- Progress info -->
-        <TextView
-            android:id="@+id/tvProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:textColor="#64748B"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/llControls"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Bài 3 / 14" />
-
-        <!-- Controls Row -->
+        <!-- 2. FIXED BOTTOM CONTROL BAR (Anchored at parent bottom) -->
         <LinearLayout
-            android:id="@+id/llControls"
-            android:layout_width="wrap_content"
+            android:id="@+id/llBottomControlsContainer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <ImageButton
-                android:id="@+id/btnPrevious"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Quay lại bài trước"
-                android:src="@drawable/ic_skip_previous_24"
-                app:tint="?attr/colorOnSurface" />
+            <!-- Counter (Reps / Timer) -->
+            <TextView
+                android:id="@+id/tvCounter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFeatureSettings="tnum"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:textColor="#0066FF"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                tools:text="00:20" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/btnPlayPause"
+            <!-- Progress info -->
+            <TextView
+                android:id="@+id/tvProgress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="24dp"
-                android:contentDescription="Tạm dừng hoặc Tiếp tục"
-                app:backgroundTint="#0066FF"
-                app:elevation="6dp"
-                app:srcCompat="@drawable/ic_pause_24"
-                app:tint="@color/white" />
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="8dp"
+                android:textColor="#64748B"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="Bài 3 / 14" />
 
-            <ImageButton
-                android:id="@+id/btnNext"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Bỏ qua"
-                android:src="@drawable/ic_skip_next_24"
-                app:tint="?attr/colorOnSurface" />
+            <!-- Controls Layout Frame (containing timer controls and reps button) -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- Controls Row (Previous, Play/Pause, Next) -->
+                <LinearLayout
+                    android:id="@+id/llControls"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/btnPrevious"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Quay lại bài trước"
+                        android:src="@drawable/ic_skip_previous_24"
+                        app:tint="?attr/colorOnSurface" />
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/btnPlayPause"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="20dp"
+                        android:contentDescription="Tạm dừng hoặc Tiếp tục"
+                        app:backgroundTint="#0066FF"
+                        app:elevation="6dp"
+                        app:srcCompat="@drawable/ic_pause_24"
+                        app:tint="@color/white" />
+
+                    <ImageButton
+                        android:id="@+id/btnNext"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Bỏ qua"
+                        android:src="@drawable/ic_skip_next_24"
+                        app:tint="?attr/colorOnSurface" />
+                </LinearLayout>
+
+                <!-- Nút Hoàn thành dành riêng cho bài reps -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDoneReps"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_gravity="center"
+                    android:layout_marginHorizontal="24dp"
+                    android:text="Hoàn thành"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:backgroundTint="#0066FF"
+                    app:cornerRadius="27dp"
+                    tools:visibility="visible" />
+            </FrameLayout>
 
         </LinearLayout>
 
-        <!-- Nút Hoàn thành dành riêng cho bài reps -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDoneReps"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginHorizontal="48dp"
-            android:text="Hoàn thành"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:visibility="gone"
-            app:backgroundTint="#0066FF"
-            app:cornerRadius="28dp"
-            app:layout_constraintBottom_toBottomOf="@id/llControls"
+        <!-- 3. SCROLLABLE MIDDLE CONTENT (Between Header and Bottom Controls) -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nsvExerciseContent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            android:paddingBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@id/llBottomControlsContainer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/llControls"
-            tools:visibility="visible" />
+            app:layout_constraintTop_toBottomOf="@id/tvExerciseName">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Image / GIF Illustration Frame -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cvMediaCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:layout_marginHorizontal="24dp"
+                    android:layout_marginTop="12dp"
+                    app:cardBackgroundColor="@color/bg_card"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/border_card"
+                    app:strokeWidth="1dp">
+
+                    <FrameLayout
+                        android:id="@+id/flMediaContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/ivMedia"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="Minh họa động tác"
+                            android:scaleType="fitCenter"
+                            tools:src="@drawable/bg_media_placeholder" />
+
+                        <androidx.media3.ui.PlayerView
+                            android:id="@+id/videoPlayerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:visibility="gone"
+                            app:use_controller="false" />
+                    </FrameLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Muscle Target Caption -->
+                <TextView
+                    android:id="@+id/tvTargetMuscleCaption"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="24dp"
+                    android:layout_marginTop="8dp"
+                    android:textAlignment="center"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="#0066FF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="Nhóm cơ tác động chính: Cơ Bụng" />
+
+                <!-- Instructions Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cvDescriptionCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="24dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    app:cardBackgroundColor="@color/bg_card"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/border_card"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Hướng dẫn thực hiện:"
+                            android:textColor="#0066FF"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvExerciseDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:lineSpacingExtra="3dp"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            tools:text="Chống khuỷu tay và mũi chân xuống sàn, giữ thân người thẳng từ đầu đến gót, siết bụng và không võng lưng." />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

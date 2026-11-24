@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC"
+    android:background="@color/bg_screen"
     android:fillViewport="true">
 
     <LinearLayout
@@ -18,8 +18,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="CÔNG CỤ SỨC KHỎE &amp; KHÁM PHÁ"
-            android:textColor="?attr/colorOnSurface"
+            android:text="@string/discover_title"
+            android:textColor="@color/text_primary"
             android:textSize="22sp"
             android:textStyle="bold" />
 
@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            app:cardBackgroundColor="#0066FF"
+            app:cardBackgroundColor="?attr/colorPrimary"
             app:cardCornerRadius="16dp"
             app:cardElevation="2dp"
             app:strokeWidth="0dp">
@@ -40,24 +40,29 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:text="📊 CHỈ SỐ BMI &amp; KHUYẾN NGHỊ"
+                        android:layout_weight="1"
+                        android:text="@string/discover_bmi_title"
                         android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:autoSizeTextType="uniform"
+                        app:autoSizeMinTextSize="10sp"
+                        app:autoSizeMaxTextSize="14sp" />
 
                     <TextView
                         android:id="@+id/tvBmiCategoryBadge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
+                        android:layout_marginStart="8dp"
                         android:background="@drawable/bg_chip_selected"
                         android:backgroundTint="#FFC400"
                         android:paddingHorizontal="10dp"
@@ -66,7 +71,7 @@
                         android:textColor="#1A1A1A"
                         android:textSize="12sp"
                         android:textStyle="bold" />
-                </RelativeLayout>
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -103,7 +108,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Thể trạng lý tưởng"
+                            android:text="@string/discover_bmi_subtitle"
                             android:textColor="#CCE0FF"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -125,7 +130,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="38dp"
                     android:layout_marginTop="14dp"
-                    android:text="Cập nhật Chiều cao / Cân nặng ✏️"
+                    android:text="@string/discover_bmi_update_btn"
                     android:textColor="@color/white"
                     android:textSize="13sp"
                     android:textStyle="bold"
@@ -141,11 +146,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/bg_card"
             app:cardCornerRadius="16dp"
             app:cardElevation="1dp"
             app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorOutlineVariant">
+            app:strokeColor="@color/border_card">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -157,14 +162,15 @@
                 <FrameLayout
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="#EFF6FF">
+                    android:background="@color/bg_pro_card">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
                         android:layout_gravity="center"
-                        android:text="🏋️"
-                        android:textSize="24sp" />
+                        android:src="@drawable/ic_fitness"
+                        app:tint="?attr/colorPrimary"
+                        android:contentDescription="@null" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -177,8 +183,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tra cứu 94 Bài Tập HomeFit"
-                        android:textColor="?attr/colorOnSurface"
+                        android:text="@string/discover_library_title"
+                        android:textColor="@color/text_primary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -186,8 +192,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Xem minh họa 2D, nhóm cơ &amp; hướng dẫn chuẩn."
-                        android:textColor="#6B7280"
+                        android:text="@string/discover_library_desc"
+                        android:textColor="@color/text_secondary"
                         android:textSize="13sp" />
                 </LinearLayout>
 
@@ -196,10 +202,10 @@
                     style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="wrap_content"
                     android:layout_height="36dp"
-                    android:text="Mở ngay"
-                    android:textColor="#0066FF"
+                    android:text="@string/discover_library_btn"
+                    android:textColor="?attr/colorPrimary"
                     android:textSize="12sp"
-                    app:backgroundTint="#EFF6FF"
+                    app:backgroundTint="@color/bg_pro_card"
                     app:cornerRadius="18dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -209,8 +215,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Góc Kiến Thức &amp; Mẹo Tập Luyện"
-            android:textColor="?attr/colorOnSurface"
+            android:text="@string/discover_tips_section"
+            android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -234,10 +240,11 @@
                     android:layout_marginEnd="12dp"
                     android:clickable="true"
                     android:focusable="true"
-                    app:cardBackgroundColor="@color/white"
+                    app:cardBackgroundColor="@color/bg_card"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="1dp"
-                    app:strokeWidth="0dp">
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/border_card">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -248,8 +255,8 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🥗 Dinh Dưỡng HomeFit"
-                            android:textColor="#0066FF"
+                            android:text="@string/discover_tip1_category"
+                            android:textColor="?attr/colorPrimary"
                             android:textSize="13sp"
                             android:textStyle="bold" />
 
@@ -258,8 +265,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:text="Bí quyết ăn uống cân bằng tăng 200% hiệu quả tập"
-                            android:textColor="?attr/colorOnSurface"
+                            android:text="@string/discover_tip1_title"
+                            android:textColor="@color/text_primary"
                             android:textSize="15sp"
                             android:textStyle="bold" />
 
@@ -268,8 +275,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:text="Kết hợp đạm và xơ hợp lý giúp cơ bắp phục hồi nhanh hơn sau mỗi buổi tập. Bấm để đọc chi tiết ➔"
-                            android:textColor="#6B7280"
+                            android:text="@string/discover_tip1_desc"
+                            android:textColor="@color/text_secondary"
                             android:textSize="13sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -282,10 +289,11 @@
                     android:layout_marginEnd="12dp"
                     android:clickable="true"
                     android:focusable="true"
-                    app:cardBackgroundColor="@color/white"
+                    app:cardBackgroundColor="@color/bg_card"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="1dp"
-                    app:strokeWidth="0dp">
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/border_card">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -296,8 +304,8 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="💤 Mẹo Phục Hồi Cơ Bắp"
-                            android:textColor="#0066FF"
+                            android:text="@string/discover_tip2_category"
+                            android:textColor="?attr/colorPrimary"
                             android:textSize="13sp"
                             android:textStyle="bold" />
 
@@ -306,8 +314,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:text="Tầm quan trọng của kéo giãn cơ &amp; giấc ngủ"
-                            android:textColor="?attr/colorOnSurface"
+                            android:text="@string/discover_tip2_title"
+                            android:textColor="@color/text_primary"
                             android:textSize="15sp"
                             android:textStyle="bold" />
 
@@ -316,8 +324,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:text="Kéo giãn cơ 5 phút sau buổi tập giúp tránh chấn thương và giảm mỏi cơ đáng kể. Bấm để đọc chi tiết ➔"
-                            android:textColor="#6B7280"
+                            android:text="@string/discover_tip2_desc"
+                            android:textColor="@color/text_secondary"
                             android:textSize="13sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -329,10 +337,11 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
-                    app:cardBackgroundColor="@color/white"
+                    app:cardBackgroundColor="@color/bg_card"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="1dp"
-                    app:strokeWidth="0dp">
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/border_card">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -343,8 +352,8 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="👥 Cộng Đồng HomeFit"
-                            android:textColor="#0066FF"
+                            android:text="@string/discover_tip3_category"
+                            android:textColor="?attr/colorPrimary"
                             android:textSize="13sp"
                             android:textStyle="bold" />
 
@@ -353,8 +362,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:text="Hơn 100.000+ hội viên đồng hành mỗi ngày"
-                            android:textColor="?attr/colorOnSurface"
+                            android:text="@string/discover_tip3_title"
+                            android:textColor="@color/text_primary"
                             android:textSize="15sp"
                             android:textStyle="bold" />
 
@@ -363,8 +372,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:text="Chia sẻ tiến độ, động lực và hình ảnh thay đổi vóc dáng cùng cộng đồng Việt Nam. Bấm để đọc chi tiết ➔"
-                            android:textColor="#6B7280"
+                            android:text="@string/discover_tip3_desc"
+                            android:textColor="@color/text_secondary"
                             android:textSize="13sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>

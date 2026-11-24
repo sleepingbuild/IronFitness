@@ -31,10 +31,10 @@
 
                     <ImageButton
                         android:id="@+id/btnBack"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:layout_alignParentStart="true"
-                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:background="@drawable/bg_circle_translucent_dark"
                         android:src="@drawable/ic_close"
                         app:tint="@color/white" />
 
@@ -44,9 +44,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="36dp"
                         android:layout_alignParentEnd="true"
-                        android:text="Phục hồi"
+                        android:text="@string/pro_restore"
                         android:textColor="@color/white"
-                        app:backgroundTint="#3385FF"
+                        app:backgroundTint="#33FFFFFF"
                         app:cornerRadius="18dp" />
                 </RelativeLayout>
             </RelativeLayout>
@@ -61,7 +61,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Mở khóa kế hoạch cá nhân của bạn!"
+                    android:text="@string/pro_unlock_personal_plan"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="24sp"
                     android:textStyle="bold" />
@@ -74,7 +74,7 @@
                     android:layout_marginTop="16dp"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="1dp"
-                    app:strokeColor="#E5E7EB"
+                    app:strokeColor="@color/border_card"
                     app:strokeWidth="1dp">
 
                     <RelativeLayout
@@ -100,7 +100,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Hàng tháng"
+                                android:text="@string/pro_monthly"
                                 android:textColor="?attr/colorOnSurface"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -109,7 +109,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="232.000 đ/tháng"
+                                android:text="@string/pro_monthly_price"
                                 android:textColor="?attr/colorOnSurfaceVariant"
                                 android:textSize="14sp" />
                         </LinearLayout>
@@ -122,10 +122,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    app:cardBackgroundColor="#EFF6FF"
+                    app:cardBackgroundColor="@color/bg_pro_card"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="2dp"
-                    app:strokeColor="#0066FF"
+                    app:strokeColor="@color/hf_primary"
                     app:strokeWidth="2dp">
 
                     <RelativeLayout
@@ -142,7 +142,7 @@
                             android:background="@drawable/bg_badge_save"
                             android:paddingHorizontal="12dp"
                             android:paddingVertical="5dp"
-                            android:text="TIẾT KIỆM 67%"
+                            android:text="@string/pro_save_67"
                             android:textColor="@color/white"
                             android:textSize="12sp"
                             android:textStyle="bold" />
@@ -166,7 +166,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Giảm giá cho người mới"
+                                android:text="@string/pro_yearly_discount"
                                 android:textColor="?attr/colorOnSurface"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -175,7 +175,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="Chỉ 928.000 đ/năm"
+                                android:text="@string/pro_yearly_price"
                                 android:textColor="?attr/colorOnSurfaceVariant"
                                 android:textSize="14sp" />
                         </LinearLayout>
@@ -188,7 +188,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     app:cardCornerRadius="16dp"
-                    app:strokeColor="#E5E7EB"
+                    app:strokeColor="@color/border_card"
                     app:strokeWidth="1dp">
 
                     <LinearLayout
@@ -202,7 +202,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Bật chế độ dùng thử miễn phí trong 7 ngày"
+                            android:text="@string/pro_enable_7_day_trial"
                             android:textColor="?attr/colorOnSurface"
                             android:textSize="14sp"
                             android:textStyle="bold" />
@@ -219,7 +219,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
-                    android:text="Bạn còn có thể nhận được"
+                    android:text="@string/pro_you_can_also_get"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -235,7 +235,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
-                        android:text="🔒  Bài tập mục tiêu không giới hạn"
+                        android:text="@string/pro_feature_1"
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="15sp" />
 
@@ -243,7 +243,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
-                        android:text="🔥  Mở khóa toàn bộ 94+ bài tập chuyên sâu &amp; lộ trình 24 ngày"
+                        android:text="@string/pro_feature_2"
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="15sp" />
 
@@ -251,7 +251,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
-                        android:text="👍  Kết quả rõ rệt chỉ sau 4 tuần"
+                        android:text="@string/pro_feature_3"
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="15sp" />
 
@@ -259,7 +259,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
-                        android:text="⭐  Thêm bài tập mới liên tục"
+                        android:text="@string/pro_feature_4"
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="15sp" />
 
@@ -267,7 +267,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
-                        android:text="🚫  Xóa quảng cáo"
+                        android:text="@string/pro_feature_5"
                         android:textColor="?attr/colorOnSurface"
                         android:textSize="15sp" />
                 </LinearLayout>
@@ -277,7 +277,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:layout_marginBottom="20dp"
-                    android:text="Đồng bộ tiến độ tập luyện &amp; chỉ số sức khỏe trên mọi thiết bị"
+                    android:text="@string/pro_sync_desc"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -291,7 +291,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/white"
+        android:background="@color/bg_screen"
         android:elevation="8dp"
         android:padding="16dp">
 
@@ -299,7 +299,7 @@
             android:id="@+id/btnStartPro"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="KHỞI ĐẦU ➔"
+            android:text="@string/start_workout_upper"
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"

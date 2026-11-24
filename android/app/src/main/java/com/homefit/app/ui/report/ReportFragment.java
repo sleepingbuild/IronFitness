@@ -148,9 +148,9 @@ public class ReportFragment extends Fragment {
         float diff = Math.abs(currentW - targetW);
         if (tvWeightProgressSubtitle != null) {
             if (diff < 0.2f) {
-                tvWeightProgressSubtitle.setText("🎉 Đã hoàn thành mục tiêu cân nặng!");
+                tvWeightProgressSubtitle.setText(R.string.weight_goal_reached);
             } else {
-                tvWeightProgressSubtitle.setText(String.format(Locale.US, "Còn %.1f kg nữa đạt mục tiêu 🎯", diff));
+                tvWeightProgressSubtitle.setText(getString(R.string.weight_remaining_format, diff));
             }
         }
         if (pbWeightProgress != null) {
@@ -164,7 +164,7 @@ public class ReportFragment extends Fragment {
         }
 
         if (tvHeightValue != null) {
-            tvHeightValue.setText(String.format(Locale.US, "Chiều cao: %.0f cm ✏️", heightCm));
+            tvHeightValue.setText(getString(R.string.height_format, Math.round(heightCm)));
         }
 
         if (heightCm > 0 && currentW > 0) {
@@ -175,12 +175,12 @@ public class ReportFragment extends Fragment {
         // Badges setup
         if (badgeAdapter != null) {
             List<BadgeAdapter.BadgeItem> badges = new ArrayList<>();
-            badges.add(new BadgeAdapter.BadgeItem("🏆", "Khởi đầu bền bỉ", "Hoàn thành 3 buổi tập", workoutCount >= 3));
-            badges.add(new BadgeAdapter.BadgeItem("🔥", "Chiến binh tuần lễ", "Duy trì Chuỗi Streak 7 ngày", streakResult.streakCount >= 7));
-            badges.add(new BadgeAdapter.BadgeItem("⚡", "Đốt cháy 1.000 kcal", "Tích lũy tiêu thụ 1.000 kcal", totalKcal >= 1000));
-            badges.add(new BadgeAdapter.BadgeItem("👑", "Chinh phục Thử thách", "Tập đủ 24 buổi Thử thách", workoutCount >= 24));
-            badges.add(new BadgeAdapter.BadgeItem("🥇", "Tập luyện chăm chỉ", "Hoàn thành 10 buổi tập", workoutCount >= 10));
-            badges.add(new BadgeAdapter.BadgeItem("🎯", "Kiên trì vượt khó", "Hoàn thành 5 buổi tập vừa sức", workoutCount >= 5));
+            badges.add(new BadgeAdapter.BadgeItem("🏆", getString(R.string.badge_1_title), getString(R.string.badge_1_desc), workoutCount >= 3));
+            badges.add(new BadgeAdapter.BadgeItem("🔥", getString(R.string.badge_2_title), getString(R.string.badge_2_desc), streakResult.streakCount >= 7));
+            badges.add(new BadgeAdapter.BadgeItem("⚡", getString(R.string.badge_3_title), getString(R.string.badge_3_desc), totalKcal >= 1000));
+            badges.add(new BadgeAdapter.BadgeItem("👑", getString(R.string.badge_4_title), getString(R.string.badge_4_desc), workoutCount >= 24));
+            badges.add(new BadgeAdapter.BadgeItem("🥇", getString(R.string.badge_5_title), getString(R.string.badge_5_desc), workoutCount >= 10));
+            badges.add(new BadgeAdapter.BadgeItem("🎯", getString(R.string.badge_6_title), getString(R.string.badge_6_desc), workoutCount >= 5));
             badgeAdapter.submitList(badges);
         }
     }

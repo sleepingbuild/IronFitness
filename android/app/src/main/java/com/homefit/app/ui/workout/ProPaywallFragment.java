@@ -57,7 +57,7 @@ public class ProPaywallFragment extends Fragment {
         });
 
         btnRestore.setOnClickListener(v ->
-            Toast.makeText(requireContext(), "Đã khôi phục giao dịch mua", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.pro_restored_toast), Toast.LENGTH_SHORT).show()
         );
 
         btnStartPro.setOnClickListener(v -> openCheckoutScreen());
@@ -72,7 +72,7 @@ public class ProPaywallFragment extends Fragment {
             boolean isPro = profile != null && profile.isPremium;
             AppExecutors.mainThread().execute(() -> {
                 if (btnStartPro != null) {
-                    btnStartPro.setText(isPro ? "GIA HẠN ➔" : "KHỞI ĐẦU ➔");
+                    btnStartPro.setText(isPro ? R.string.renew_workout_upper : R.string.start_workout_upper);
                 }
             });
         });

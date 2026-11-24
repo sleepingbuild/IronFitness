@@ -151,14 +151,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_xl"
-            android:text="Gói PRO" />
+            android:text="@string/settings_pro_section" />
 
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.HomeFit.Card.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_md"
-            app:cardBackgroundColor="#EFF6FF"
+            app:cardBackgroundColor="@color/bg_pro_card"
             app:strokeColor="?attr/colorPrimary"
             app:strokeWidth="1dp">
 
@@ -188,30 +188,187 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/space_md"
-                        android:text="Nâng cấp lên PRO"
+                        android:text="@string/settings_pro_title_upgrade"
                         android:textColor="?attr/colorPrimary"
                         android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvProBadge"
+                        style="@style/TextAppearance.HomeFit.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/space_sm"
+                        android:background="@drawable/bg_pro_badge"
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="4dp"
+                        android:textColor="#D97706"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/tvProDesc"
                     style="@style/TextAppearance.HomeFit.BodySmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/space_xs"
-                    android:text="Mở khóa tất cả bài tập mục tiêu không giới hạn, loại bỏ hoàn toàn quảng cáo."
+                    android:text="@string/settings_pro_desc"
                     android:textColor="?attr/colorOnSurfaceVariant" />
+
+                <TextView
+                    android:id="@+id/tvProExpiryDate"
+                    style="@style/TextAppearance.HomeFit.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnUpgradePro"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
                     android:layout_marginTop="@dimen/space_md"
-                    android:text="MUA GÓI PRO ➔"
+                    android:text="@string/settings_pro_btn_buy"
                     android:textColor="@color/white"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     app:backgroundTint="?attr/colorPrimary"
                     app:cornerRadius="26dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Phần 1.6: Giao diện / Appearance -->
+        <TextView
+            style="@style/TextAppearance.HomeFit.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xl"
+            android:text="@string/settings_appearance_section" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardAppearanceSetting"
+            style="@style/Widget.HomeFit.Card.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="@dimen/space_lg">
+
+                <ImageView
+                    android:id="@+id/ivAppearanceIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_settings"
+                    app:tint="?attr/colorPrimary"
+                    android:contentDescription="@null" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/space_md"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TextAppearance.HomeFit.Subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_appearance_title"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvCurrentThemeMode"
+                        style="@style/TextAppearance.HomeFit.BodySmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_xs"
+                        android:text="@string/theme_system"
+                        android:textColor="?attr/colorPrimary" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:contentDescription="@null"
+                    app:tint="?attr/colorOnSurfaceVariant" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Phần 1.8: Ngôn ngữ / Language -->
+        <TextView
+            style="@style/TextAppearance.HomeFit.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xl"
+            android:text="@string/settings_language_section" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardLanguageSetting"
+            style="@style/Widget.HomeFit.Card.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="@dimen/space_lg">
+
+                <ImageView
+                    android:id="@+id/ivCurrentFlag"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_flag_vi"
+                    android:contentDescription="@null" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/space_md"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TextAppearance.HomeFit.Subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_language_title"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvCurrentLanguage"
+                        style="@style/TextAppearance.HomeFit.BodySmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_xs"
+                        android:text="@string/language_vi"
+                        android:textColor="?attr/colorPrimary" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:contentDescription="@null"
+                    app:tint="?attr/colorOnSurfaceVariant" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

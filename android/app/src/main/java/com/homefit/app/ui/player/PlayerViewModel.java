@@ -166,53 +166,9 @@ public class PlayerViewModel extends AndroidViewModel {
     }
 
     private List<LocalWorkoutDto> tryLoadWorkoutItemsFromRoom(String groupKey, String difficulty, String groupName) {
-        AppDatabase db = AppDatabase.getInstance(getApplication());
-        List<com.homefit.app.data.local.entity.WorkoutEntity> allWorkouts = db.workoutDao().getAllNow();
-        if (allWorkouts == null || allWorkouts.isEmpty()) return null;
-
-        com.homefit.app.data.local.entity.WorkoutEntity matched = null;
-        String g = groupKey != null ? groupKey.toLowerCase(Locale.US) : "";
-        String d = difficulty != null ? difficulty.toLowerCase(Locale.US) : "";
-        String n = groupName != null ? groupName.toLowerCase(Locale.US) : "";
-
-        for (var w : allWorkouts) {
-            String wTitle = w.titleVi != null ? w.titleVi.toLowerCase(Locale.US) : "";
-            String wGoal = w.goal != null ? w.goal.toLowerCase(Locale.US) : "";
-            String wLevel = w.level != null ? w.level.toLowerCase(Locale.US) : "";
-
-            if (g.startsWith("challenge_")) {
-                String lvlVi = g.contains("easy") ? "dễ" : (g.contains("hard") ? "khó" : "trung bình");
-                if (wTitle.contains("ngày " + d) && (wTitle.contains(lvlVi) || wLevel.equalsIgnoreCase(g.replace("challenge_", "")))) {
-                    matched = w;
-                    break;
-                }
-            } else if (!n.isEmpty() && wTitle.contains(n)) {
-                matched = w;
-                break;
-            } else if (!wGoal.isEmpty() && wGoal.equalsIgnoreCase(g) && (wLevel.equalsIgnoreCase(d) || wLevel.isEmpty())) {
-                matched = w;
-                break;
-            }
-        }
-
-        if (matched != null) {
-            List<com.homefit.app.data.local.entity.WorkoutItemEntity> items = db.workoutItemDao().getByWorkoutIdNow(matched.id);
-            if (items != null && !items.isEmpty()) {
-                List<LocalWorkoutDto> dtos = new ArrayList<>();
-                for (var item : items) {
-                    LocalWorkoutDto dto = new LocalWorkoutDto();
-                    dto.id = String.valueOf(item.exerciseId);
-                    dto.name = item.exerciseName;
-                    dto.mediaUrl = item.exerciseMediaUrl;
-                    dto.reps_sets = "time".equalsIgnoreCase(item.measure) ? item.value + "s" : item.value + " lần";
-                    dto.target = "Nghỉ " + item.restAfterSec + "s";
-                    dto.instructions = new ArrayList<>();
-                    dto.instructions.add("Thực hiện " + item.exerciseName + " theo đúng kỹ thuật.");
-                    dto.tips = "Giữ nhịp thở đều.";
-                    dtos.add(dto);
-                }
-                return dtos;
-            }
+        LocalExerciseGroupDto dto = com.homefit.app.data.repository.WorkoutLoaderHelper.loadWorkoutFromRoom(getApplication(), groupKey, difficulty, groupName);
+        if (dto != null && dto.workouts != null && !dto.workouts.isEmpty()) {
+            return dto.workouts;
         }
         return null;
     }

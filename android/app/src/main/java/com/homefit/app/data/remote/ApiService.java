@@ -74,9 +74,22 @@ public interface ApiService {
                                        @Query("level") String level,
                                        @Query("goal") String goal);
 
+    @GET("workouts/{id}")
+    Call<WorkoutDto> getWorkoutDetail(@retrofit2.http.Path("id") long id);
+
     // ---- Khám phá ----
     @GET("discover")
     Call<List<DiscoverDto>> getDiscoverItems();
+
+    // ---- Payment & VietQR & Google Play ----
+    @POST("payments/create")
+    Call<com.homefit.app.data.remote.dto.CreateOrderResponseDto> createOrder(@Body com.homefit.app.data.remote.dto.CreateOrderRequestDto body);
+
+    @GET("payments/status/{orderCode}")
+    Call<com.homefit.app.data.remote.dto.PaymentStatusResponseDto> getPaymentStatus(@retrofit2.http.Path("orderCode") String orderCode);
+
+    @POST("payments/google-play/verify")
+    Call<UserDto> verifyGooglePlayPayment(@Body com.homefit.app.data.remote.dto.GooglePlayVerifyRequestDto body);
 
     // ---- Lịch sử tập ----
     @POST("workout-sessions")

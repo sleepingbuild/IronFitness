@@ -57,6 +57,7 @@ public class BadgeAdapter extends RecyclerView.Adapter<BadgeAdapter.BadgeViewHol
     }
 
     static class BadgeViewHolder extends RecyclerView.ViewHolder {
+        private final com.google.android.material.card.MaterialCardView cardBadgeContainer;
         private final TextView tvBadgeIcon;
         private final TextView tvBadgeTitle;
         private final TextView tvBadgeDesc;
@@ -64,6 +65,7 @@ public class BadgeAdapter extends RecyclerView.Adapter<BadgeAdapter.BadgeViewHol
 
         public BadgeViewHolder(@NonNull View itemView) {
             super(itemView);
+            cardBadgeContainer = itemView.findViewById(R.id.cardBadgeContainer);
             tvBadgeIcon = itemView.findViewById(R.id.tvBadgeIcon);
             tvBadgeTitle = itemView.findViewById(R.id.tvBadgeTitle);
             tvBadgeDesc = itemView.findViewById(R.id.tvBadgeDesc);
@@ -75,16 +77,25 @@ public class BadgeAdapter extends RecyclerView.Adapter<BadgeAdapter.BadgeViewHol
             tvBadgeTitle.setText(item.title);
             tvBadgeDesc.setText(item.description);
 
+            android.content.Context ctx = itemView.getContext();
             if (item.isUnlocked) {
-                tvBadgeStatus.setText("Đã mở khóa ✨");
+                if (cardBadgeContainer != null) {
+                    cardBadgeContainer.setCardBackgroundColor(ctx.getColor(R.color.bg_card_elevated));
+                }
+                tvBadgeTitle.setTextColor(ctx.getColor(R.color.text_primary));
+                tvBadgeStatus.setText(R.string.badge_status_unlocked);
                 tvBadgeStatus.setBackgroundResource(R.drawable.bg_chip_active);
-                tvBadgeStatus.setTextColor(itemView.getContext().getColor(R.color.hf_primary));
+                tvBadgeStatus.setTextColor(ctx.getColor(R.color.hf_primary));
                 itemView.setAlpha(1.0f);
             } else {
-                tvBadgeStatus.setText("Chưa đạt 🔒");
+                if (cardBadgeContainer != null) {
+                    cardBadgeContainer.setCardBackgroundColor(ctx.getColor(R.color.bg_card));
+                }
+                tvBadgeTitle.setTextColor(ctx.getColor(R.color.text_secondary));
+                tvBadgeStatus.setText(R.string.badge_status_locked);
                 tvBadgeStatus.setBackgroundResource(R.drawable.bg_chip_inactive);
-                tvBadgeStatus.setTextColor(itemView.getContext().getColor(R.color.hf_on_surface_variant));
-                itemView.setAlpha(0.6f);
+                tvBadgeStatus.setTextColor(ctx.getColor(R.color.hf_on_surface_variant));
+                itemView.setAlpha(0.7f);
             }
         }
     }

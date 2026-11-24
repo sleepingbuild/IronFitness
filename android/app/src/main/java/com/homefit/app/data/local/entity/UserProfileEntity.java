@@ -27,4 +27,7 @@ public class UserProfileEntity {
     public Double weightKg;
 
     public boolean isPremium;
+
+    @Nullable
+    public Long proExpiryDate;
 }

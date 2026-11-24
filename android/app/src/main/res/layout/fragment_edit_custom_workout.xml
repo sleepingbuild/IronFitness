@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F8F8"
+    android:background="@color/bg_screen"
     android:orientation="vertical">
 
     <!-- Top Bar -->
@@ -30,10 +30,11 @@
             android:layout_weight="1"
             android:layout_marginStart="8dp"
             android:background="@null"
-            android:hint="Buổi tập của tôi 1"
+            android:hint="@string/my_workout_format"
             android:inputType="textPersonName"
             android:maxLength="40"
             android:textColor="?attr/colorOnSurface"
+            android:textColorHint="?attr/colorOnSurfaceVariant"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -60,8 +61,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            tools:text="0 phút • 0 bài"
-            android:textColor="#6B7280"
+            tools:text="0 min • 0 exercises"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="16sp" />
 
         <com.google.android.material.button.MaterialButton
@@ -69,9 +70,11 @@
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Thêm bài tập"
+            android:text="@string/add_exercises_title"
+            android:textColor="?attr/colorPrimary"
             android:textSize="14sp"
             app:icon="@drawable/ic_play_arrow_24"
+            app:iconTint="?attr/colorPrimary"
             app:strokeColor="?attr/colorPrimary" />
     </LinearLayout>
 
@@ -82,7 +85,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="12dp"
-        android:background="#FFFBEB"
+        android:background="@color/bg_card"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="12dp"
@@ -100,8 +103,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            tools:text="Nên thêm bài khởi động."
-            android:textColor="#B45309"
+            tools:text="At least 3 exercises are needed to save."
+            android:textColor="#D97706"
             android:textSize="14sp" />
 
         <Button
@@ -128,7 +131,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/bg_screen"
         android:elevation="4dp"
         android:orientation="horizontal"
         android:padding="16dp">
@@ -139,9 +142,13 @@
             android:layout_width="0dp"
             android:layout_height="52dp"
             android:layout_weight="1"
-            android:text="Lưu"
+            android:text="@string/save"
+            android:textColor="@color/text_primary"
             android:textSize="16sp"
             android:textStyle="bold"
+            app:backgroundTint="@color/bg_card"
+            app:strokeColor="?attr/colorPrimary"
+            app:strokeWidth="1dp"
             app:cornerRadius="26dp" />
 
         <com.google.android.material.button.MaterialButton
@@ -150,7 +157,7 @@
             android:layout_height="52dp"
             android:layout_marginStart="12dp"
             android:layout_weight="1"
-            android:text="Khởi đầu"
+            android:text="@string/start"
             android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold"

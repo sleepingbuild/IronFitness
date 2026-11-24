@@ -96,8 +96,10 @@ public class ExerciseDetailBottomSheetDialogFragment extends BottomSheetDialogFr
         MaterialButton btnAdd = view.findViewById(R.id.btnAdd);
 
         // Header: Tên bài viết hoa
-        String name = item.exerciseName != null ? item.exerciseName.toUpperCase(Locale.getDefault()) : "BÀI TẬP";
-        tvExerciseTitle.setText(name);
+        String localizedName = item.exerciseName != null
+                ? com.homefit.app.util.LocalizationHelper.getLocalizedExerciseName(requireContext(), item)
+                : "BÀI TẬP";
+        tvExerciseTitle.setText(localizedName.toUpperCase(Locale.getDefault()));
 
         btnClose.setOnClickListener(v -> dismiss());
 
@@ -121,22 +123,11 @@ public class ExerciseDetailBottomSheetDialogFragment extends BottomSheetDialogFr
         }
 
         // Mục HƯỚNG DẪN
-        StringBuilder sb = new StringBuilder();
-        if (item.instructions != null && !item.instructions.isEmpty()) {
-            int stepNum = 1;
-            for (String step : item.instructions) {
-                if (sb.length() > 0) sb.append("\n");
-                sb.append(stepNum++).append(". ").append(step);
-            }
-        } else if (item.target != null && !item.target.isBlank()) {
-            sb.append(item.target);
-        } else {
-            sb.append("Giữ tư thế chuẩn, siết chặt cơ và thở đều nhịp nhàng.");
-        }
-        tvInstructions.setText(sb.toString());
+        String localizedDesc = com.homefit.app.util.LocalizationHelper.getLocalizedExerciseDescription(requireContext(), item);
+        tvInstructions.setText(localizedDesc);
 
         // Mục VÙNG TẬP TRUNG (Chips & Sơ đồ cơ bắp)
-        setupTargetMuscles(name, item.target, chipMuscle1, chipMuscle2, chipMuscle3, ivMuscleDiagram);
+        setupTargetMuscles(localizedName, item.target, chipMuscle1, chipMuscle2, chipMuscle3, ivMuscleDiagram);
 
         // Nút THÊM
         btnAdd.setOnClickListener(v -> {
@@ -162,34 +153,34 @@ public class ExerciseDetailBottomSheetDialogFragment extends BottomSheetDialogFr
         String coverUrl;
 
         if (combined.contains("bụng") || combined.contains("plank") || combined.contains("crunch") || combined.contains("abs")) {
-            chip1.setText("• Cơ bụng");
-            chip2.setText("• Cơ xô");
-            chip3.setText("• Cơ lõi");
+            chip1.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Cơ bụng"));
+            chip2.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Cơ xô"));
+            chip3.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Cơ lõi"));
             coverUrl = baseUrl + "abs.png";
         } else if (combined.contains("ngực") || combined.contains("push") || combined.contains("chống đẩy") || combined.contains("chest")) {
-            chip1.setText("• Ngực");
-            chip2.setText("• Cơ tay sau");
-            chip3.setText("• Vai");
+            chip1.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Ngực"));
+            chip2.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Cơ tay sau"));
+            chip3.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Vai"));
             coverUrl = baseUrl + "chest.png";
         } else if (combined.contains("tay") || combined.contains("dip") || combined.contains("curl") || combined.contains("bicep") || combined.contains("tricep") || combined.contains("arms")) {
-            chip1.setText("• Cơ tay trước");
-            chip2.setText("• Cơ tay sau");
-            chip3.setText("• Cẳng tay");
+            chip1.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Cơ tay trước"));
+            chip2.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Cơ tay sau"));
+            chip3.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Cẳng tay"));
             coverUrl = baseUrl + "arms.png";
         } else if (combined.contains("chân") || combined.contains("squat") || combined.contains("lunge") || combined.contains("calf") || combined.contains("bridge") || combined.contains("mông") || combined.contains("legs")) {
-            chip1.setText("• Cơ đùi trước");
-            chip2.setText("• Cơ mông");
-            chip3.setText("• Bắp chân");
+            chip1.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Cơ đùi trước"));
+            chip2.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Cơ mông"));
+            chip3.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Bắp chân"));
             coverUrl = baseUrl + "legs.png";
         } else if (combined.contains("lưng") || combined.contains("superman") || combined.contains("bird dog") || combined.contains("back")) {
-            chip1.setText("• Cơ lưng dưới");
-            chip2.setText("• Cơ xô");
-            chip3.setText("• Cơ vai sau");
+            chip1.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Cơ lưng dưới"));
+            chip2.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Cơ xô"));
+            chip3.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Cơ vai sau"));
             coverUrl = baseUrl + "back.png";
         } else {
-            chip1.setText("• Toàn thân");
-            chip2.setText("• Cơ lõi");
-            chip3.setText("• Tim mạch");
+            chip1.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Toàn thân"));
+            chip2.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Cơ lõi"));
+            chip3.setText("• " + com.homefit.app.util.LocalizationHelper.getLocalizedTarget(requireContext(), "Tim mạch"));
             coverUrl = baseUrl + "fullbody.png";
         }
 

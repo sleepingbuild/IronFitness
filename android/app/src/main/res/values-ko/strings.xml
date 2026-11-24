@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">IronFitness</string>
+
+    <!-- Nav Bottom Bar -->
+    <string name="nav_workout">운동</string>
+    <string name="nav_discover">탐색</string>
+    <string name="nav_report">프로필</string>
+    <string name="nav_settings">설정</string>
+
+    <!-- Home Greetings & Subtitles -->
+    <string name="home_greeting_morning">좋은 아침입니다!</string>
+    <string name="home_greeting_afternoon">좋은 오후입니다!</string>
+    <string name="home_greeting_evening">좋은 저녁입니다!</string>
+    <string name="home_subtitle_default">오늘의 목표를 달성할 준비가 되셨나요</string>
+    <string name="home_subtitle_fatloss">목표 소모 칼로리 ~%1$d kcal/일</string>
+    <string name="home_subtitle_muscle">IronFitness와 함께 근육량을 키우세요</string>
+    <string name="home_subtitle_abs">오늘의 복근 운동을 시작하세요</string>
+    <string name="home_subtitle_keepfit">슬림하고 유연한 몸매 유지하기</string>
+
+    <!-- Home Section Headers & Chips -->
+    <string name="home_section_focus">집중 부위</string>
+    <string name="home_chip_abs">복근</string>
+    <string name="home_chip_arms">팔</string>
+    <string name="home_chip_chest">가슴</string>
+    <string name="home_chip_legs">다리</string>
+    <string name="home_chip_fullbody">전신</string>
+    <string name="home_filter_under7">&lt;7분</string>
+    <string name="home_filter_7to15">7-15분</string>
+    <string name="home_filter_over15">&gt;15분</string>
+    <string name="home_section_foryou">맞춤 추천</string>
+    <string name="home_more">더보기 &gt;</string>
+    <string name="home_section_short">짧은 운동</string>
+    <string name="home_section_goals">인기 목표</string>
+    <string name="home_chip_muscle">근육 증가</string>
+    <string name="home_chip_fatloss">체지방 감량</string>
+    <string name="home_chip_keepfit">체형 유지</string>
+    <string name="home_section_custom">맞춤 운동</string>
+    <string name="home_custom_banner_title">나만의\n운동 만들기</string>
+    <string name="home_custom_banner_go">시작</string>
+
+    <!-- Discover Section -->
+    <string name="discover_title">건강 도구 및 탐색</string>
+    <string name="discover_bmi_title">BMI 지수 및 추천</string>
+    <string name="discover_bmi_subtitle">이상적인 체형</string>
+    <string name="discover_bmi_update_btn">키 / 체중 업데이트</string>
+    <string name="discover_library_title">94개 IronFitness 운동 검색</string>
+    <string name="discover_library_desc">2D 애니메이션, 근육 부위 및 가이드 보기.</string>
+    <string name="discover_library_btn">지금 열기</string>
+    <string name="discover_tips_section">운동 지식 및 팁</string>
+    <string name="discover_tip1_category">영양 가이드</string>
+    <string name="discover_tip1_title">운동 효과를 200% 높이는 식단 비결</string>
+    <string name="discover_tip1_desc">단백질과 섬유질 조합으로 근육 회복을 돕습니다. 자세히 보기 ➔</string>
+    <string name="discover_tip2_category">근육 회복 팁</string>
+    <string name="discover_tip2_title">스트레칭과 수면의 중요성</string>
+    <string name="discover_tip2_desc">운동 후 5분 스트레칭으로 부상을 예방하세요. 자세히 보기 ➔</string>
+    <string name="discover_tip3_category">IronFitness 커뮤니티</string>
+    <string name="discover_tip3_title">매일 100,000명 이상의 회원과 함께하세요</string>
+    <string name="discover_tip3_desc">운동 진행 상황과 동기 부여를 공유하세요. 자세히 보기 ➔</string>
+
+    <!-- BMI Badges & Recommendations -->
+    <string name="bmi_badge_underweight">저체중</string>
+    <string name="bmi_badge_normal">정상</string>
+    <string name="bmi_badge_overweight">과체중</string>
+    <string name="bmi_badge_obese">비만</string>
+    <string name="bmi_rec_underweight">추천: 근육 증가 및 상체 + 코어 운동으로 순근육량을 늘리세요.</string>
+    <string name="bmi_rec_normal">추천: 매일 전신 및 카디오 운동으로 균형 잡힌 체형을 유지하세요.</string>
+    <string name="bmi_rec_overweight">추천: 체지방 감량 및 전신 HIIT 운동으로 칼로리를 빠르게 소모하세요.</string>
+    <string name="bmi_rec_obese">추천: 가벼운 지방 소모 및 스트레칭으로 관절을 보호하며 시작하세요.</string>
+
+    <!-- Report & Personal Section -->
+    <string name="report_title">개인 리포트</string>
+    <string name="report_workouts">운동 횟수</string>
+    <string name="report_minutes">분</string>
+    <string name="report_7days_title">최근 7일간 운동 시간</string>
+    <string name="report_weight_title">체중 변화</string>
+    <string name="report_btn_log_weight">기록하기 ⚖️</string>
+    <string name="report_current_weight">현재</string>
+    <string name="report_target_weight">목표</string>
+    <string name="report_bmi_title">BMI 지수</string>
+    <string name="report_btn_edit_bmi">수정 ✏️</string>
+    <string name="report_badges_title">업적 배지</string>
+
+    <!-- Badges Strings -->
+    <string name="height_format">키: %1$d cm ✏️</string>
+    <string name="badge_status_unlocked">잠금 해제 ✨</string>
+    <string name="badge_status_locked">잠김 🔒</string>
+    <string name="badge_1_title">꾸준한 시작</string>
+    <string name="badge_1_desc">운동 3회 완료</string>
+    <string name="badge_2_title">주간 전사</string>
+    <string name="badge_2_desc">7일 연속 운동 달성</string>
+    <string name="badge_3_title">1,000 kcal 소모</string>
+    <string name="badge_3_desc">누적 1,000 kcal 소모</string>
+    <string name="badge_4_title">도전 정복자</string>
+    <string name="badge_4_desc">도전 운동 24회 완료</string>
+    <string name="badge_5_title">열심히 하는 사람</string>
+    <string name="badge_5_desc">운동 10회 완료</string>
+    <string name="badge_6_title">끈기의 마스터</string>
+    <string name="badge_6_desc">중급 운동 5회 완료</string>
+
+    <!-- Settings PRO Section -->
+    <string name="settings_pro_section">PRO 플랜</string>
+    <string name="settings_pro_title_upgrade">PRO로 업그레이드</string>
+    <string name="settings_pro_title_active">PRO 플랜 이용 중</string>
+    <string name="settings_pro_title_active_with_days">PRO 플랜 • %d일 남음</string>
+    <string name="settings_pro_expired">PRO 플랜이 만료되었습니다</string>
+    <string name="settings_pro_active_badge">%d일 남음</string>
+    <string name="settings_pro_expiry_date">만료일: %s</string>
+    <string name="settings_pro_btn_buy">PRO 구매하기 ➔</string>
+    <string name="settings_pro_btn_renew">PRO 연장하기 ➔</string>
+    <string name="settings_pro_desc">모든 프리미엄 운동을 잠금 해제하고 광고를 제거하세요.</string>
+
+    <!-- Appearance & Theme Settings -->
+    <string name="settings_appearance_section">화면 테마 / Appearance</string>
+    <string name="settings_appearance_title">테마 모드</string>
+    <string name="settings_appearance_desc">라이트 모드 또는 다크 모드로 변경</string>
+    <string name="theme_system">시스템 기본값</string>
+    <string name="theme_light">라이트 모드</string>
+    <string name="theme_dark">다크 모드</string>
+    <string name="theme_dialog_title">테마 모드 선택</string>
+
+    <!-- Language Settings -->
+    <string name="settings_language_section">언어 / Language</string>
+    <string name="settings_language_title">표시 언어</string>
+    <string name="settings_language_desc">앱 표시 언어 및 음성 안내 언어 변경</string>
+    <string name="language_vi">Tiếng Việt (베트남어)</string>
+    <string name="language_en">English (영어)</string>
+    <string name="language_ko">한국어</string>
+    <string name="language_ja">日本語 (일본어)</string>
+    <string name="language_dialog_title">언어 선택 / Select Language</string>
+
+    <!-- Settings general -->
+    <string name="settings_title">설정</string>
+    <string name="settings_subtitle">매일 알림 및 계정 관리</string>
+    <string name="settings_reminder_section">일일 운동 알림</string>
+    <string name="settings_reminder_switch_title">매일 알림 활성화</string>
+    <string name="settings_reminder_switch_desc">제시간에 운동할 수 있도록 알림을 보냅니다</string>
+    <string name="settings_reminder_time_label">알림 시간</string>
+    <string name="settings_reminder_change_time">시간 변경</string>
+    <string name="settings_reminder_picker_title">알림 시간 설정</string>
+    <string name="settings_reminder_status_on">매일 %1$s에 알림이 설정되었습니다</string>
+    <string name="settings_reminder_status_off">알림이 꺼져 있습니다</string>
+    <string name="settings_reminder_saved_on">매일 %1$s에 알림이 저장되었습니다</string>
+    <string name="settings_reminder_saved_off">일일 알림이 꺼졌습니다</string>
+    <string name="settings_account_section">계정</string>
+    <string name="settings_account_default_name">IronFitness 회원</string>
+    <string name="settings_account_plan_premium">PRO 프리미엄 계정 (광고 없음)</string>
+    <string name="settings_account_plan_standard">일반 계정 (광고 포함)</string>
+    <string name="settings_logout_btn">로그아웃</string>
+    <string name="settings_logout_dialog_title">로그아웃하시겠습니까?</string>
+    <string name="settings_logout_dialog_msg">다시 로그인해야 합니다. 운동 기록은 안전하게 보존됩니다.</string>
+
+    <!-- Payment & VietQR -->
+    <string name="payment_title">VietQR 계좌이체 결제</string>
+    <string name="payment_order_code">주문 번호: %1$s</string>
+    <string name="payment_copy_stk">계좌번호 복사</string>
+    <string name="payment_copy_content">입금 메모 복사</string>
+    <string name="payment_save_qr">QR 코드 저장</string>
+    <string name="payment_check_status">결제 상태 확인</string>
+    <string name="payment_status_pending">은행 입금 확인 중 (%1$s)...</string>
+    <string name="payment_success">결제 성공! IronFitness PRO 회원이 되셨습니다!</string>
+    <string name="payment_stk_copied">계좌번호가 클립보드에 복사되었습니다</string>
+    <string name="payment_content_copied">입금 메모가 클립보드에 복사되었습니다</string>
+
+    <!-- Additional UI & Multi-Language Strings -->
+    <string name="weight_remaining_format">목표까지 %.1f kg 남음</string>
+    <string name="weight_goal_reached">🎉 체중 목표를 달성했습니다!</string>
+    <string name="session_progress_format">%1$d/%2$d 세션</string>
+    <string name="full_body">전신</string>
+    <string name="no_equipment">맨몸</string>
+    <string name="start">시작</string>
+    <string name="start_workout_now">지금 운동</string>
+    <string name="start_workout_upper">시작 ➔</string>
+    <string name="renew_workout_upper">갱신 ➔</string>
+    <string name="pro_unlock_personal_plan">나만의 맞춤 운동 플랜을 잠금 해제하세요!</string>
+    <string name="pro_monthly">월간</string>
+    <string name="pro_monthly_price">₩12,000 / 월</string>
+    <string name="pro_yearly_discount">신규 회원 할인</string>
+    <string name="pro_yearly_price">연 ₩49,000</string>
+    <string name="pro_save_67">67% 할인</string>
+    <string name="pro_enable_7_day_trial">7일 무료 체험 활성화</string>
+    <string name="pro_you_can_also_get">추가로 제공되는 혜택</string>
+    <string name="pro_feature_1">🔒  무제한 부위별 운동</string>
+    <string name="pro_feature_2">🔥  94개 이상의 전문 운동 &amp; 24일 코스 해제</string>
+    <string name="pro_feature_3">👍  4주 만에 뚜렷한 효과</string>
+    <string name="pro_feature_4">⭐  지속적인 신규 운동 업데이트</string>
+    <string name="pro_feature_5">🚫  모든 광고 제거</string>
+    <string name="pro_sync_desc">모든 기기에서 운동 진행 상황 및 건강 데이터 동기화</string>
+    <string name="pro_restore">복원</string>
+    <string name="pro_restored_toast">구매 내역이 복원되었습니다</string>
+    <string name="custom_workouts_title">맞춤 운동</string>
+    <string name="custom_workout_empty_desc">목표에 맞는 개인 맞춤형 계획을 설계할 수 있습니다.</string>
+    <string name="create">생성</string>
+    <string name="create_new_workout">새 운동 생성</string>
+    <string name="my_workout_format">내 운동 %d</string>
+    <string name="add_exercises_title">운동 추가</string>
+    <string name="all_focus_areas_count">모든 부위 (%d)</string>
+    <string name="search_exercises">운동 검색</string>
+    <string name="done">완료</string>
+    <string name="add_count">추가 (%d)</string>
+    <string name="warning_min_3_exercises">운동을 저장하려면 최소 3개의 운동이 필요합니다.</string>
+    <string name="edit_action">편집 &gt;</string>
+    <string name="exercises_header">운동</string>
+    <string name="edit">편집</string>
+    <string name="delete">삭제</string>
+    <string name="save">저장</string>
+    <string name="update_goal_survey">목표 설문 업데이트 🎯</string>
+</resources>

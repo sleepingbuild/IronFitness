@@ -175,7 +175,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Toàn thân"
+                        android:text="@string/full_body"
                         android:textColor="?attr/colorOnPrimary"
                         android:textSize="14sp"
                         android:paddingHorizontal="12dp"
@@ -190,14 +190,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Không dụng cụ"
+                        android:text="@string/no_equipment"
                         android:textColor="?attr/colorOnPrimary"
                         android:textSize="14sp"
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="6dp"
                         android:background="@drawable/bg_chip_inactive"
                         android:backgroundTint="#33FFFFFF"
-                        app:drawableStartCompat="@drawable/ic_fitness"
+                        app:drawableStartCompat="@drawable/ic_bodyweight"
                         app:drawableTint="?attr/colorOnPrimary"
                         android:drawablePadding="4dp"/>
                 </LinearLayout>
@@ -206,7 +206,7 @@
                     android:id="@+id/btnStartChallenge"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:text="BẮT ĐẦU"
+                    android:text="@string/start"
                     android:textColor="?attr/colorPrimary"
                     app:backgroundTint="?attr/colorOnPrimary"
                     app:cornerRadius="999dp"
@@ -218,7 +218,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cơ thể tập trung"
+            android:text="@string/home_section_focus"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnSurface"
@@ -242,7 +242,7 @@
                     android:id="@+id/chipBung"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
-                    android:text="Bụng"
+                    android:text="@string/home_chip_abs"
                     android:gravity="center"
                     android:textColor="?attr/colorPrimary"
                     android:textStyle="bold"
@@ -254,7 +254,7 @@
                     android:id="@+id/chipTay"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
-                    android:text="Tay"
+                    android:text="@string/home_chip_arms"
                     android:gravity="center"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:background="@drawable/bg_chip_inactive"
@@ -265,7 +265,7 @@
                     android:id="@+id/chipNguc"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
-                    android:text="Ngực"
+                    android:text="@string/home_chip_chest"
                     android:gravity="center"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:background="@drawable/bg_chip_inactive"
@@ -276,7 +276,7 @@
                     android:id="@+id/chipChan"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
-                    android:text="Chân"
+                    android:text="@string/home_chip_legs"
                     android:gravity="center"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:background="@drawable/bg_chip_inactive"
@@ -287,7 +287,7 @@
                     android:id="@+id/chipToanThan"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
-                    android:text="Toàn thân"
+                    android:text="@string/home_chip_fullbody"
                     android:gravity="center"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:background="@drawable/bg_chip_inactive"
@@ -323,7 +323,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:layout_marginEnd="8dp"
-                    android:text="&lt;7 phút"
+                    android:text="@string/home_filter_under7"
                     android:gravity="center"
                     android:textColor="?attr/colorOnSurface"
                     android:background="@drawable/bg_chip_inactive"
@@ -339,7 +339,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:layout_marginEnd="8dp"
-                    android:text="7-15 phút"
+                    android:text="@string/home_filter_7to15"
                     android:gravity="center"
                     android:textColor="?attr/colorOnSurface"
                     android:background="@drawable/bg_chip_inactive"
@@ -354,7 +354,7 @@
                     android:id="@+id/btnFilterOver15"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
-                    android:text=">15 phút"
+                    android:text="@string/home_filter_over15"
                     android:gravity="center"
                     android:textColor="?attr/colorOnSurface"
                     android:background="@drawable/bg_chip_inactive"
@@ -377,7 +377,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chỉ dành cho bạn"
+                android:text="@string/home_section_foryou"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface"
@@ -388,7 +388,7 @@
                 android:id="@+id/btnMoreForYou"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thêm >"
+                android:text="@string/home_more"
                 android:textColor="?attr/colorPrimary"
                 android:textStyle="bold"
                 android:layout_alignParentEnd="true"
@@ -436,6 +436,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvForYouCalorieTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Đốt cháy calo toàn thân"
@@ -444,6 +445,7 @@
                         android:textSize="16sp"/>
 
                     <TextView
+                        android:id="@+id/tvForYouCalorieSub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="28 phút • Khó"
@@ -485,6 +487,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvForYouLegTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Thử thách sức mạnh chân"
@@ -493,6 +496,7 @@
                         android:textSize="16sp"/>
 
                     <TextView
+                        android:id="@+id/tvForYouLegSub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="21 phút • Trung bình"
@@ -512,7 +516,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Buổi ngắn"
+                android:text="@string/home_section_short"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface"
@@ -523,7 +527,7 @@
                 android:id="@+id/btnMoreStretch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thêm >"
+                android:text="@string/home_more"
                 android:textColor="?attr/colorPrimary"
                 android:textStyle="bold"
                 android:layout_alignParentEnd="true"
@@ -568,6 +572,7 @@
                         android:background="#66000000"/>
 
                     <TextView
+                        android:id="@+id/tvTabataTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="6 phút với Tabata"
@@ -602,6 +607,7 @@
                         android:background="#66000000"/>
 
                     <TextView
+                        android:id="@+id/tvStretchBackTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Kéo giãn Lưng"
@@ -619,7 +625,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mục tiêu phổ biến"
+            android:text="@string/home_section_goals"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnSurface"
@@ -643,7 +649,7 @@
                     android:id="@+id/chipGoalBuildMuscle"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
-                    android:text="Xây dựng cơ bắp"
+                    android:text="@string/home_chip_muscle"
                     android:gravity="center"
                     android:textColor="?attr/colorPrimary"
                     android:textStyle="bold"
@@ -657,7 +663,7 @@
                     android:id="@+id/chipGoalFatLoss"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
-                    android:text="Đốt cháy mỡ"
+                    android:text="@string/home_chip_fatloss"
                     android:gravity="center"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:background="@drawable/bg_chip_inactive"
@@ -670,7 +676,7 @@
                     android:id="@+id/chipGoalKeepFit"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
-                    android:text="Giữ dáng"
+                    android:text="@string/home_chip_keepfit"
                     android:gravity="center"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:background="@drawable/bg_chip_inactive"
@@ -693,7 +699,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tùy chỉnh bài tập"
+            android:text="@string/home_section_custom"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnSurface"
@@ -722,7 +728,7 @@
                     android:id="@+id/tvCustomTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TẠO CỦA\nRIÊNG BẠN"
+                    android:text="@string/home_custom_banner_title"
                     android:textColor="?attr/colorOnPrimary"
                     android:textSize="20sp"
                     android:textStyle="bold"
@@ -732,7 +738,7 @@
                 <com.google.android.material.button.MaterialButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="ĐI"
+                    android:text="@string/home_custom_banner_go"
                     android:textColor="?attr/colorPrimary"
                     app:backgroundTint="?attr/colorOnPrimary"
                     app:cornerRadius="24dp"
