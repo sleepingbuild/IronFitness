@@ -93,15 +93,20 @@ public class ChallengeDayFragment extends Fragment {
     }
 
     private void loadSessionData() {
+        if (!isAdded() || getContext() == null) return;
+        final android.content.Context appContext = requireContext().getApplicationContext();
+
         com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
-            com.homefit.app.data.local.AppDatabase db = com.homefit.app.data.local.AppDatabase.getInstance(requireContext().getApplicationContext());
+            com.homefit.app.data.local.AppDatabase db = com.homefit.app.data.local.AppDatabase.getInstance(appContext);
             var allWorkouts = db.workoutDao().getAllNow();
             com.homefit.app.data.local.entity.WorkoutEntity matched = null;
             if (allWorkouts != null) {
                 String lvlVi = level.contains("easy") ? "dễ" : (level.contains("hard") ? "khó" : "trung bình");
                 for (var w : allWorkouts) {
-                    String wTitle = w.titleVi.toLowerCase(Locale.US);
-                    if (wTitle.contains("ngày " + dayIndex) && (wTitle.contains(lvlVi) || w.level.equalsIgnoreCase(level))) {
+                    if (w == null) continue;
+                    String wTitle = w.titleVi != null ? w.titleVi.toLowerCase(Locale.US) : "";
+                    String wLevel = w.level != null ? w.level : "";
+                    if (wTitle.contains("ngày " + dayIndex) && (wTitle.contains(lvlVi) || wLevel.equalsIgnoreCase(level))) {
                         matched = w;
                         break;
                     }
@@ -114,10 +119,11 @@ public class ChallengeDayFragment extends Fragment {
                 if (items != null && !items.isEmpty()) {
                     syncedList = new java.util.ArrayList<>();
                     for (var item : items) {
+                        if (item == null) continue;
                         LocalExerciseGroupDto.LocalWorkoutDto dto = new LocalExerciseGroupDto.LocalWorkoutDto();
                         dto.id = String.valueOf(item.exerciseId);
-                        dto.name = item.exerciseName;
-                        dto.mediaUrl = item.exerciseMediaUrl;
+                        dto.name = item.exerciseName != null ? item.exerciseName : "";
+                        dto.mediaUrl = item.exerciseMediaUrl != null ? item.exerciseMediaUrl : "";
                         dto.reps_sets = "time".equalsIgnoreCase(item.measure) ? item.value + "s" : item.value + " lần";
                         dto.target = "Nghỉ " + item.restAfterSec + "s";
                         syncedList.add(dto);
@@ -128,7 +134,7 @@ public class ChallengeDayFragment extends Fragment {
             final java.util.List<LocalExerciseGroupDto.LocalWorkoutDto> finalSynced = syncedList;
 
             com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
-                if (!isAdded()) return;
+                if (!isAdded() || getContext() == null) return;
                 currentSession = repository.getSessionForDay(level, dayIndex);
                 if (currentSession != null) {
                     tvDayTitle.setText("NGÀY " + dayIndex);

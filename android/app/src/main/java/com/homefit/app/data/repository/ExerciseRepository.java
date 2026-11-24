@@ -124,11 +124,16 @@ public class ExerciseRepository {
                 AppExecutors.diskIO().execute(() -> {
                     List<com.homefit.app.data.local.entity.WorkoutEntity> workoutEntities = new ArrayList<>();
                     List<com.homefit.app.data.local.entity.WorkoutItemEntity> itemEntities = new ArrayList<>();
-                    for (com.homefit.app.data.remote.dto.WorkoutDto d : body) {
-                        workoutEntities.add(Mappers.toEntity(d));
-                        if (d.items != null) {
-                            for (com.homefit.app.data.remote.dto.WorkoutDto.WorkoutItemDto itemDto : d.items) {
-                                itemEntities.add(Mappers.toEntity(itemDto, d.id != null ? d.id : 0L));
+                    if (body != null) {
+                        for (com.homefit.app.data.remote.dto.WorkoutDto d : body) {
+                            if (d == null) continue;
+                            workoutEntities.add(Mappers.toEntity(d));
+                            if (d.items != null) {
+                                for (com.homefit.app.data.remote.dto.WorkoutDto.WorkoutItemDto itemDto : d.items) {
+                                    if (itemDto != null) {
+                                        itemEntities.add(Mappers.toEntity(itemDto, d.id != null ? d.id : 0L));
+                                    }
+                                }
                             }
                         }
                     }
@@ -136,9 +141,11 @@ public class ExerciseRepository {
                         if (!workoutEntities.isEmpty()) {
                             db.workoutDao().upsertAll(workoutEntities);
                         }
-                        for (com.homefit.app.data.remote.dto.WorkoutDto d : body) {
-                            if (d.id != null) {
-                                db.workoutItemDao().deleteByWorkoutId(d.id);
+                        if (body != null) {
+                            for (com.homefit.app.data.remote.dto.WorkoutDto d : body) {
+                                if (d != null && d.id != null) {
+                                    db.workoutItemDao().deleteByWorkoutId(d.id);
+                                }
                             }
                         }
                         if (!itemEntities.isEmpty()) {

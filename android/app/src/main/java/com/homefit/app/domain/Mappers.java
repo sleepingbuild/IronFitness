@@ -125,7 +125,7 @@ public final class Mappers {
     @NonNull
     public static com.homefit.app.data.local.entity.WorkoutItemEntity toEntity(@NonNull WorkoutDto.WorkoutItemDto d, long defaultWorkoutId) {
         com.homefit.app.data.local.entity.WorkoutItemEntity e = new com.homefit.app.data.local.entity.WorkoutItemEntity();
-        e.id = d.id != null ? d.id : System.nanoTime();
+        e.id = d.id != null ? d.id : (System.currentTimeMillis() * 1000L + (long)(Math.random() * 1000));
         e.workoutId = d.workoutId != null ? d.workoutId : defaultWorkoutId;
         e.exerciseId = d.exerciseId != null ? d.exerciseId : 0L;
         e.position = d.orderIndex != null ? d.orderIndex : d.position;

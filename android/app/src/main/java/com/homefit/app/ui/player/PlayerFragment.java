@@ -402,27 +402,29 @@ public class PlayerFragment extends Fragment {
     }
 
     private void loadRestingMedia(LocalWorkoutDto current) {
-        if (!isAdded() || binding == null) return;
+        if (!isAdded() || binding == null || getContext() == null) return;
+        final android.content.Context appContext = requireContext().getApplicationContext();
         if (current != null && current.mediaUrl != null && !current.mediaUrl.isEmpty()) {
             MediaLoader.loadFullWithName(binding.ivNextThumb, current.name, current.mediaUrl, "GIF");
         } else if (current != null && current.name != null) {
             String name = current.name;
             com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
-                if (!isAdded()) return;
-                var list = com.homefit.app.data.local.AppDatabase.getInstance(requireContext().getApplicationContext()).exerciseDao().getAllNow();
+                var list = com.homefit.app.data.local.AppDatabase.getInstance(appContext).exerciseDao().getAllNow();
                 String foundUrl = "";
-                String normCurrent = name.toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
-                for (var e : list) {
-                    if (e.name == null) continue;
-                    String normE = e.name.toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
-                    if (e.name.equalsIgnoreCase(name) || (!normE.isEmpty() && normCurrent.contains(normE))) {
-                        foundUrl = e.mediaUrl;
-                        break;
+                if (list != null) {
+                    String normCurrent = name.toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                    for (var e : list) {
+                        if (e == null || e.name == null) continue;
+                        String normE = e.name.toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                        if (e.name.equalsIgnoreCase(name) || (!normE.isEmpty() && normCurrent.contains(normE))) {
+                            foundUrl = e.mediaUrl;
+                            break;
+                        }
                     }
                 }
                 final String url = foundUrl;
                 com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
-                    if (binding != null && isAdded()) {
+                    if (binding != null && isAdded() && getContext() != null) {
                         MediaLoader.loadFullWithName(binding.ivNextThumb, name, url, "GIF");
                     }
                 });
@@ -433,10 +435,13 @@ public class PlayerFragment extends Fragment {
     }
 
     private void loadExerciseDetailsAndMedia(LocalWorkoutDto current) {
-        if (binding == null || !isAdded()) return;
+        if (binding == null || !isAdded() || getContext() == null) return;
+        final android.content.Context appContext = requireContext().getApplicationContext();
+        android.content.Context ctx = getContext();
+
         if (current == null) {
-            binding.tvExerciseDescription.setText(com.homefit.app.util.LocalizationHelper.getLocalizedExerciseDescription(requireContext(), null));
-            binding.tvTargetMuscleCaption.setText(com.homefit.app.util.LocalizationHelper.getLocalizedTargetCaption(requireContext(), "Toàn thân"));
+            binding.tvExerciseDescription.setText(com.homefit.app.util.LocalizationHelper.getLocalizedExerciseDescription(ctx, null));
+            binding.tvTargetMuscleCaption.setText(com.homefit.app.util.LocalizationHelper.getLocalizedTargetCaption(ctx, "Toàn thân"));
             binding.ivMedia.setImageResource(R.drawable.bg_media_placeholder);
             return;
         }
@@ -445,7 +450,7 @@ public class PlayerFragment extends Fragment {
         if (current.target != null && !current.target.isBlank()) {
             targetMuscle = current.target;
         } else if (groupKey != null && !groupKey.isBlank()) {
-            String groupLoc = com.homefit.app.util.LocalizationHelper.getLocalizedGroup(requireContext(), groupKey);
+            String groupLoc = com.homefit.app.util.LocalizationHelper.getLocalizedGroup(ctx, groupKey);
             if (groupLoc != null && !groupLoc.isBlank()) {
                 targetMuscle = groupLoc;
             }
@@ -458,9 +463,9 @@ public class PlayerFragment extends Fragment {
             else if (nameLower.contains("chân") || nameLower.contains("squat") || nameLower.contains("lunge") || nameLower.contains("leg")) targetMuscle = "Cơ Chân & Mông";
             else if (nameLower.contains("lưng") || nameLower.contains("back")) targetMuscle = "Cơ Lưng";
         }
-        binding.tvTargetMuscleCaption.setText(com.homefit.app.util.LocalizationHelper.getLocalizedTargetCaption(requireContext(), targetMuscle));
+        binding.tvTargetMuscleCaption.setText(com.homefit.app.util.LocalizationHelper.getLocalizedTargetCaption(ctx, targetMuscle));
 
-        String locDesc = com.homefit.app.util.LocalizationHelper.getLocalizedExerciseDescription(requireContext(), current);
+        String locDesc = com.homefit.app.util.LocalizationHelper.getLocalizedExerciseDescription(ctx, current);
         binding.tvExerciseDescription.setText(locDesc);
 
         MediaLoader.loadFullWithName(binding.ivMedia, current.name, current.mediaUrl, "GIF");
@@ -468,23 +473,24 @@ public class PlayerFragment extends Fragment {
         if (current.name != null) {
             String name = current.name;
             com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
-                if (!isAdded()) return;
-                var list = com.homefit.app.data.local.AppDatabase.getInstance(requireContext().getApplicationContext()).exerciseDao().getAllNow();
+                var list = com.homefit.app.data.local.AppDatabase.getInstance(appContext).exerciseDao().getAllNow();
                 com.homefit.app.data.local.entity.ExerciseEntity match = null;
-                String normCurrent = name.toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
-                for (var e : list) {
-                    if (e.name == null) continue;
-                    String normE = e.name.toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
-                    if (e.name.equalsIgnoreCase(name)
-                            || (!normE.isEmpty() && normCurrent.contains(normE))
-                            || (!normCurrent.isEmpty() && normE.contains(normCurrent))) {
-                        match = e;
-                        break;
+                if (list != null) {
+                    String normCurrent = name.toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                    for (var e : list) {
+                        if (e == null || e.name == null) continue;
+                        String normE = e.name.toLowerCase(Locale.US).replaceAll("[^a-zA-Z0-9]", "");
+                        if (e.name.equalsIgnoreCase(name)
+                                || (!normE.isEmpty() && normCurrent.contains(normE))
+                                || (!normCurrent.isEmpty() && normE.contains(normCurrent))) {
+                            match = e;
+                            break;
+                        }
                     }
                 }
                 final var finalMatch = match;
                 com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
-                    if (binding == null || !isAdded()) return;
+                    if (binding == null || !isAdded() || getContext() == null) return;
                     if (finalMatch != null) {
                         String matchDesc = com.homefit.app.util.LocalizationHelper.getLocalizedExerciseDescription(requireContext(), finalMatch);
                         if (matchDesc != null && !matchDesc.isBlank()) {

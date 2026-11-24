@@ -159,23 +159,28 @@ public class ExerciseListFragment extends Fragment {
     }
 
     private void loadData() {
+        if (!isAdded() || getContext() == null) return;
+        final android.content.Context appContext = requireContext().getApplicationContext();
+
         com.homefit.app.util.AppExecutors.diskIO().execute(() -> {
             LocalExerciseGroupDto roomGroup = com.homefit.app.data.repository.WorkoutLoaderHelper.loadWorkoutFromRoom(
-                    requireContext().getApplicationContext(), groupKey, difficulty, groupName
+                    appContext, groupKey, difficulty, groupName
             );
 
             com.homefit.app.util.AppExecutors.mainThread().execute(() -> {
-                if (!isAdded() || binding == null) return;
+                if (!isAdded() || binding == null || getContext() == null) return;
 
                 if (roomGroup != null && roomGroup.workouts != null && !roomGroup.workouts.isEmpty()) {
                     currentGroup = roomGroup;
                 } else {
-                    AssetExerciseRepository repo = new AssetExerciseRepository(requireContext());
+                    AssetExerciseRepository repo = new AssetExerciseRepository(appContext);
                     List<LocalExerciseGroupDto> all = repo.getAllGroups();
-                    for (LocalExerciseGroupDto g : all) {
-                        if (g.group.equalsIgnoreCase(groupKey) && g.difficulty.equalsIgnoreCase(difficulty)) {
-                            currentGroup = g;
-                            break;
+                    if (all != null) {
+                        for (LocalExerciseGroupDto g : all) {
+                            if (g != null && g.group != null && g.group.equalsIgnoreCase(groupKey) && g.difficulty != null && g.difficulty.equalsIgnoreCase(difficulty)) {
+                                currentGroup = g;
+                                break;
+                            }
                         }
                     }
                     if (currentGroup == null) {
@@ -184,11 +189,29 @@ public class ExerciseListFragment extends Fragment {
                 }
 
                 if (currentGroup != null) {
+                    android.content.Context ctx = requireContext();
                     String fullTitle = (currentGroup.group_name != null ? currentGroup.group_name : "") + " " + (currentGroup.difficulty != null ? currentGroup.difficulty : "");
-                    binding.tvTitle.setText(com.homefit.app.util.LocalizationHelper.localizeWorkoutTitle(requireContext(), fullTitle.trim()));
+                    binding.tvTitle.setText(com.homefit.app.util.LocalizationHelper.localizeWorkoutTitle(ctx, fullTitle.trim()));
                     int count = currentGroup.workouts != null ? currentGroup.workouts.size() : 0;
-                    binding.tvDuration.setText(com.homefit.app.util.LocalizationHelper.localizeSubtitle(requireContext(), count, currentGroup.difficulty).split("•")[0].trim());
-                    binding.tvCount.setText(com.homefit.app.util.LocalizationHelper.getLocalizedDurationAndCount(requireContext(), count, count).split("•")[1].trim());
+
+                    String subtitleStr = com.homefit.app.util.LocalizationHelper.localizeSubtitle(ctx, count, currentGroup.difficulty);
+                    if (subtitleStr != null && subtitleStr.contains("•")) {
+                        binding.tvDuration.setText(subtitleStr.split("•")[0].trim());
+                    } else {
+                        binding.tvDuration.setText(count + " phút");
+                    }
+
+                    String durCountStr = com.homefit.app.util.LocalizationHelper.getLocalizedDurationAndCount(ctx, count, count);
+                    if (durCountStr != null && durCountStr.contains("•")) {
+                        String[] parts = durCountStr.split("•");
+                        if (parts.length > 1) {
+                            binding.tvCount.setText(parts[1].trim());
+                        } else {
+                            binding.tvCount.setText(count + " Bài tập");
+                        }
+                    } else {
+                        binding.tvCount.setText(count + " Bài tập");
+                    }
 
                     adapter.submitList(currentGroup.workouts);
                     displayHeaderBanner();

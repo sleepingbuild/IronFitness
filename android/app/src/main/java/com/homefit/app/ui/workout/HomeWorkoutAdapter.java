@@ -84,9 +84,10 @@ public class HomeWorkoutAdapter extends RecyclerView.Adapter<HomeWorkoutAdapter.
             binding.tvName.setText(title);
 
             int mainBlockCount = count;
-            if (count > 0 && dto.duration_min > 0) {
+            if (count > 0 && dto.duration_min > 0 && dto.workouts != null) {
                 int nonMainCount = 0;
                 for (LocalExerciseGroupDto.LocalWorkoutDto w : dto.workouts) {
+                    if (w == null) continue;
                     if ("Warm-up".equalsIgnoreCase(w.target) || "Cool-down".equalsIgnoreCase(w.target)) {
                         nonMainCount++;
                     }

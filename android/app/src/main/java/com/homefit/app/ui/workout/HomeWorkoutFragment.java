@@ -165,14 +165,15 @@ public class HomeWorkoutFragment extends Fragment {
     }
 
     private void updateStreakUI() {
-        if (!isAdded()) return;
+        if (!isAdded() || getContext() == null) return;
+        final android.content.Context appContext = requireContext().getApplicationContext();
         AppExecutors.diskIO().execute(() -> {
-            AppDatabase db = AppDatabase.getInstance(requireContext());
+            AppDatabase db = AppDatabase.getInstance(appContext);
             List<Long> completedTimes = db.workoutLogDao().getAllCompletedTimesNow();
             StreakCalculator.Result streakResult = StreakCalculator.calculateStreak(completedTimes);
 
             AppExecutors.mainThread().execute(() -> {
-                if (binding != null) {
+                if (binding != null && isAdded() && getContext() != null) {
                     binding.tvStreakCount.setText(String.valueOf(streakResult.streakCount));
                     if (streakResult.isFlameActive) {
                         int activeColor = requireContext().getColor(R.color.hf_streak);
@@ -189,12 +190,13 @@ public class HomeWorkoutFragment extends Fragment {
     }
 
     private void updateProStateUI() {
-        if (!isAdded()) return;
+        if (!isAdded() || getContext() == null) return;
+        final android.content.Context appContext = requireContext().getApplicationContext();
         AppExecutors.diskIO().execute(() -> {
-            UserProfileEntity profile = AppDatabase.getInstance(requireContext()).userProfileDao().getNow();
+            UserProfileEntity profile = AppDatabase.getInstance(appContext).userProfileDao().getNow();
             boolean isPro = profile != null && profile.isPremium;
             AppExecutors.mainThread().execute(() -> {
-                if (binding != null) {
+                if (binding != null && isAdded()) {
                     if (isPro) {
                         binding.ivProIcon.setImageResource(R.drawable.ic_crown);
                     } else {
@@ -292,14 +294,14 @@ public class HomeWorkoutFragment extends Fragment {
     private void resetChip(android.widget.TextView tv) {
         if (tv == null) return;
         tv.setBackgroundResource(R.drawable.bg_chip_inactive);
-        tv.setTextColor(requireContext().getColor(R.color.hf_on_surface_variant));
+        tv.setTextColor(tv.getContext().getColor(R.color.hf_on_surface_variant));
         tv.setTypeface(null, android.graphics.Typeface.NORMAL);
     }
 
     private void setActiveChip(android.widget.TextView tv) {
         if (tv == null) return;
         tv.setBackgroundResource(R.drawable.bg_chip_active);
-        tv.setTextColor(requireContext().getColor(R.color.hf_primary));
+        tv.setTextColor(tv.getContext().getColor(R.color.hf_primary));
         tv.setTypeface(null, android.graphics.Typeface.BOLD);
     }
 
@@ -327,12 +329,15 @@ public class HomeWorkoutFragment extends Fragment {
     }
 
     private void onGroupClicked(LocalExerciseGroupDto group) {
+        if (!isAdded() || getContext() == null) return;
+        final android.content.Context appContext = requireContext().getApplicationContext();
         if (group != null && ("muscle".equalsIgnoreCase(group.group) || "fatloss".equalsIgnoreCase(group.group) || "keepfit".equalsIgnoreCase(group.group))) {
             AppExecutors.diskIO().execute(() -> {
-                UserProfileEntity profile = AppDatabase.getInstance(requireContext()).userProfileDao().getNow();
+                UserProfileEntity profile = AppDatabase.getInstance(appContext).userProfileDao().getNow();
                 boolean isPro = profile != null && profile.isPremium;
 
                 AppExecutors.mainThread().execute(() -> {
+                    if (!isAdded() || getContext() == null) return;
                     if (!isPro) {
                         Bundle args = new Bundle();
                         args.putString("title", group.group_name + " " + group.difficulty);
@@ -347,7 +352,7 @@ public class HomeWorkoutFragment extends Fragment {
                     }
                 });
             });
-        } else {
+        } else if (group != null) {
             openGroup(group);
         }
     }

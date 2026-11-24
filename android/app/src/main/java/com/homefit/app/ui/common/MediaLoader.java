@@ -218,19 +218,22 @@ public final class MediaLoader {
     }
 
     public static void loadThumbnailWithName(@NonNull ImageView target, @Nullable String exerciseName, @Nullable String url, @Nullable String mediaType) {
-        Glide.with(target).clear(target);
-        if (mediaType != null && isVideo(mediaType)) {
-            target.setImageResource(R.drawable.ic_media_video);
-            return;
-        }
-        String fullUrl = resolveExerciseMediaUrl(exerciseName, url);
-        Glide.with(target)
-                .asBitmap()
-                .load(fullUrl)
-                .placeholder(R.drawable.bg_media_placeholder)
-                .error(Glide.with(target).asBitmap().load(getFallback2dMediaUrl(exerciseName)))
-                .fitCenter()
-                .into(target);
+        if (target == null || target.getContext() == null) return;
+        try {
+            Glide.with(target).clear(target);
+            if (mediaType != null && isVideo(mediaType)) {
+                target.setImageResource(R.drawable.ic_media_video);
+                return;
+            }
+            String fullUrl = resolveExerciseMediaUrl(exerciseName, url);
+            Glide.with(target)
+                    .asBitmap()
+                    .load(fullUrl)
+                    .placeholder(R.drawable.bg_media_placeholder)
+                    .error(Glide.with(target).asBitmap().load(getFallback2dMediaUrl(exerciseName)))
+                    .fitCenter()
+                    .into(target);
+        } catch (Exception ignored) {}
     }
 
     /** Ảnh lớn cho màn chi tiết: GIF được phát. */
@@ -239,17 +242,20 @@ public final class MediaLoader {
     }
 
     public static void loadFullWithName(@NonNull ImageView target, @Nullable String exerciseName, @Nullable String url, @Nullable String mediaType) {
-        Glide.with(target).clear(target);
-        if (mediaType != null && isVideo(mediaType)) {
-            target.setImageResource(R.drawable.ic_media_video);
-            return;
-        }
-        String fullUrl = resolveExerciseMediaUrl(exerciseName, url);
-        Glide.with(target)
-                .load(fullUrl)
-                .placeholder(R.drawable.bg_media_placeholder)
-                .error(Glide.with(target).load(getFallback2dMediaUrl(exerciseName)))
-                .fitCenter()
-                .into(target);
+        if (target == null || target.getContext() == null) return;
+        try {
+            Glide.with(target).clear(target);
+            if (mediaType != null && isVideo(mediaType)) {
+                target.setImageResource(R.drawable.ic_media_video);
+                return;
+            }
+            String fullUrl = resolveExerciseMediaUrl(exerciseName, url);
+            Glide.with(target)
+                    .load(fullUrl)
+                    .placeholder(R.drawable.bg_media_placeholder)
+                    .error(Glide.with(target).load(getFallback2dMediaUrl(exerciseName)))
+                    .fitCenter()
+                    .into(target);
+        } catch (Exception ignored) {}
     }
 }

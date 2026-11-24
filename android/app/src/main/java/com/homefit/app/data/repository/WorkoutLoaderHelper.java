@@ -34,17 +34,18 @@ public final class WorkoutLoaderHelper {
         if (items == null || items.isEmpty()) return null;
 
         LocalExerciseGroupDto dto = new LocalExerciseGroupDto();
-        dto.group = matched.goal != null && !matched.goal.isEmpty() ? matched.goal : matched.type;
-        dto.group_name = matched.titleVi;
-        dto.difficulty = matched.level;
-        dto.coverImageUrl = matched.coverImageUrl;
+        dto.group = matched.goal != null && !matched.goal.isEmpty() ? matched.goal : (matched.type != null ? matched.type : "");
+        dto.group_name = matched.titleVi != null ? matched.titleVi : "";
+        dto.difficulty = matched.level != null ? matched.level : "";
+        dto.coverImageUrl = matched.coverImageUrl != null ? matched.coverImageUrl : "";
 
         List<LocalExerciseGroupDto.LocalWorkoutDto> workouts = new ArrayList<>();
         for (WorkoutItemEntity item : items) {
+            if (item == null) continue;
             LocalExerciseGroupDto.LocalWorkoutDto w = new LocalExerciseGroupDto.LocalWorkoutDto();
             w.id = String.valueOf(item.exerciseId);
-            w.name = item.exerciseName;
-            w.mediaUrl = item.exerciseMediaUrl;
+            w.name = item.exerciseName != null ? item.exerciseName : "";
+            w.mediaUrl = item.exerciseMediaUrl != null ? item.exerciseMediaUrl : "";
 
             if ("time".equalsIgnoreCase(item.measure) || "giây".equalsIgnoreCase(item.measure)) {
                 w.reps_sets = item.value + " giây";
@@ -66,15 +67,18 @@ public final class WorkoutLoaderHelper {
                                                       @Nullable String groupKey,
                                                       @Nullable String difficulty,
                                                       @Nullable String groupName) {
+        if (workouts == null || workouts.isEmpty()) return null;
         String g = groupKey != null ? groupKey.toLowerCase(Locale.US) : "";
         String d = difficulty != null ? difficulty.toLowerCase(Locale.US) : "";
         String n = groupName != null ? groupName.toLowerCase(Locale.US) : "";
 
         // 1. Match by exact titleVi or title containing groupName
         for (WorkoutEntity w : workouts) {
+            if (w == null) continue;
             String title = w.titleVi != null ? w.titleVi.toLowerCase(Locale.US) : "";
+            String level = w.level != null ? w.level : "";
             if (!n.isEmpty() && (title.equals(n) || title.contains(n) || n.contains(title))) {
-                if (d.isEmpty() || w.level.equalsIgnoreCase(d)) {
+                if (d.isEmpty() || level.equalsIgnoreCase(d)) {
                     return w;
                 }
             }
@@ -85,8 +89,10 @@ public final class WorkoutLoaderHelper {
             String targetLevel = g.replace("challenge_", "");
             String lvlVi = targetLevel.contains("easy") ? "dễ" : (targetLevel.contains("hard") ? "khó" : "trung bình");
             for (WorkoutEntity w : workouts) {
+                if (w == null) continue;
                 String title = w.titleVi != null ? w.titleVi.toLowerCase(Locale.US) : "";
-                if (title.contains("ngày " + d) && (title.contains(lvlVi) || w.level.equalsIgnoreCase(targetLevel))) {
+                String level = w.level != null ? w.level : "";
+                if (title.contains("ngày " + d) && (title.contains(lvlVi) || level.equalsIgnoreCase(targetLevel))) {
                     return w;
                 }
             }
@@ -97,16 +103,18 @@ public final class WorkoutLoaderHelper {
             try {
                 long catId = Long.parseLong(g.replace("category_", ""));
                 for (WorkoutEntity w : workouts) {
-                    if (w.id == catId) return w;
+                    if (w != null && w.id == catId) return w;
                 }
             } catch (Exception ignored) {}
         }
 
         // 4. Match by goal and level
         for (WorkoutEntity w : workouts) {
+            if (w == null) continue;
             String goal = w.goal != null ? w.goal.toLowerCase(Locale.US) : "";
+            String level = w.level != null ? w.level : "";
             if (!g.isEmpty() && goal.equalsIgnoreCase(g)) {
-                if (d.isEmpty() || w.level.equalsIgnoreCase(d)) {
+                if (d.isEmpty() || level.equalsIgnoreCase(d)) {
                     return w;
                 }
             }
@@ -114,9 +122,11 @@ public final class WorkoutLoaderHelper {
 
         // 5. Match by primaryMuscle and level
         for (WorkoutEntity w : workouts) {
+            if (w == null) continue;
             String muscle = w.primaryMuscle != null ? w.primaryMuscle.toLowerCase(Locale.US) : "";
+            String level = w.level != null ? w.level : "";
             if (!g.isEmpty() && (muscle.equalsIgnoreCase(g) || g.contains(muscle) || muscle.contains(g))) {
-                if (d.isEmpty() || w.level.equalsIgnoreCase(d)) {
+                if (d.isEmpty() || level.equalsIgnoreCase(d)) {
                     return w;
                 }
             }
@@ -124,9 +134,11 @@ public final class WorkoutLoaderHelper {
 
         // 6. Match by type and level
         for (WorkoutEntity w : workouts) {
+            if (w == null) continue;
             String type = w.type != null ? w.type.toLowerCase(Locale.US) : "";
+            String level = w.level != null ? w.level : "";
             if (!g.isEmpty() && type.equalsIgnoreCase(g)) {
-                if (d.isEmpty() || w.level.equalsIgnoreCase(d)) {
+                if (d.isEmpty() || level.equalsIgnoreCase(d)) {
                     return w;
                 }
             }
@@ -134,6 +146,7 @@ public final class WorkoutLoaderHelper {
 
         // 7. Fallback fuzzy match
         for (WorkoutEntity w : workouts) {
+            if (w == null) continue;
             String goal = w.goal != null ? w.goal.toLowerCase(Locale.US) : "";
             String title = w.titleVi != null ? w.titleVi.toLowerCase(Locale.US) : "";
             if ((!g.isEmpty() && (goal.contains(g) || g.contains(goal)))
