@@ -108,10 +108,7 @@ public class ContentSyncApiController {
         if (w.getItems() != null) {
             for (var item : w.getItems()) {
                 Exercise ex = exerciseMap.get(item.getExerciseId());
-                String exName = ex != null ? ex.getName() : "Bài tập #" + item.getExerciseId();
-                String exMediaUrl = ex != null ? ex.getMediaUrl() : "";
-                String exMediaType = ex != null && ex.getMediaType() != null ? ex.getMediaType().name() : "GIF";
-                items.add(WorkoutItemDto.from(item, exName, exMediaUrl, exMediaType));
+                items.add(WorkoutItemDto.from(item, ex, w.getPrimaryMuscle()));
             }
         }
         return WorkoutDto.from(w, items);

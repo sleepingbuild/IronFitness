@@ -29,8 +29,14 @@ public record WorkoutItemDto(
         String exMediaUrl = ex != null ? ex.getMediaUrl() : "";
         String exMediaType = ex != null && ex.getMediaType() != null ? ex.getMediaType().name() : "GIF";
         String exDesc = ex != null && ex.getDescription() != null ? ex.getDescription() : "";
-        String muscle = ex != null && ex.getCategory() != null ? ex.getCategory().getName() : defaultMuscleGroup;
+        return from(item, exName, exMediaUrl, exMediaType, exDesc, defaultMuscleGroup);
+    }
 
+    public static WorkoutItemDto from(WorkoutItem item, String exName, String exMediaUrl, String exMediaType) {
+        return from(item, exName, exMediaUrl, exMediaType, "", "");
+    }
+
+    public static WorkoutItemDto from(WorkoutItem item, String exName, String exMediaUrl, String exMediaType, String description, String muscleGroup) {
         String unitStr = item.getMeasure();
         if ("time".equalsIgnoreCase(unitStr)) {
             unitStr = "giây";
@@ -46,11 +52,11 @@ public record WorkoutItemDto(
                 item.getExerciseId(),
                 exName, // name
                 exName, // exerciseName
-                exDesc, // description
-                muscle, // muscleGroup
+                description != null ? description : "",
+                muscleGroup != null ? muscleGroup : "",
                 exMediaUrl, // mediaUrl
                 exMediaUrl, // exerciseMediaUrl
-                exMediaType,
+                exMediaType != null ? exMediaType : "GIF",
                 item.getRoundNum(),
                 item.getMeasure(),
                 unitStr,
@@ -61,4 +67,5 @@ public record WorkoutItemDto(
         );
     }
 }
+
 
