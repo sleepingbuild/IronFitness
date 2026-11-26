@@ -104,14 +104,6 @@
                             android:textSize="14sp"
                             android:textStyle="bold"
                             tools:text="170 cm • 65.0 kg" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/discover_bmi_subtitle"
-                            android:textColor="#CCE0FF"
-                            android:textSize="13sp" />
                     </LinearLayout>
                 </LinearLayout>
 
