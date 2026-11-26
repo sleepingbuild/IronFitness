@@ -17,7 +17,6 @@ spring:
     enabled: true
     baseline-on-migrate: true
     repair-on-migrate: true
-    ignore-migration-patterns: "*:failed"
 
 homefit:
   jwt:
