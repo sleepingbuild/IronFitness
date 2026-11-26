@@ -48,6 +48,11 @@
     <string name="discover_library_desc">View 2D animations, muscle groups &amp; guides.</string>
     <string name="discover_library_btn">Open Now</string>
     <string name="discover_tips_section">Knowledge &amp; Workout Tips</string>
+    <string name="discover_app_intro_section">Featured &amp; App Info</string>
+    <string name="discover_ecosystem_section">IronFitness Ecosystem</string>
+    <string name="discover_open_btn">Open</string>
+    <string name="discover_read_more">Read More ➔</string>
+    <string name="discover_close">Close</string>
     <string name="discover_tip1_category">Nutrition Guide</string>
     <string name="discover_tip1_title">Balanced diet secrets to boost results 200%</string>
     <string name="discover_tip1_desc">Combine protein &amp; fiber for faster muscle recovery. Tap for details ➔</string>

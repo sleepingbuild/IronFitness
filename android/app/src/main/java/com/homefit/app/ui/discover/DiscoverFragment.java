@@ -1,11 +1,16 @@
 package com.homefit.app.ui.discover;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,25 +19,55 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.homefit.app.R;
 import com.homefit.app.data.local.AppDatabase;
 import com.homefit.app.data.local.entity.UserProfileEntity;
+import com.homefit.app.data.remote.dto.DiscoverDto;
+import com.homefit.app.data.repository.DiscoverRepository;
+import com.homefit.app.ui.common.MediaLoader;
 import com.homefit.app.util.AppExecutors;
 import com.homefit.app.util.BmiCalculator;
+import com.homefit.app.util.LocalizationHelper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
-import android.util.Log;
 
 public class DiscoverFragment extends Fragment {
 
     private static final String TAG = "DiscoverFragment";
+
     private TextView tvBmiScore;
     private TextView tvBmiCategoryBadge;
     private TextView tvUserStats;
     private TextView tvBmiRecommendation;
     private UserProfileEntity userProfile;
+
+    // Dynamic views for Server Discover items
+    private MaterialCardView cardDiscoverBanner;
+    private ImageView ivBannerCover;
+    private TextView tvBannerCategory;
+    private TextView tvBannerTitle;
+    private TextView tvBannerDescription;
+    private MaterialButton btnBannerAction;
+
+    private View layoutTipsSection;
+    private RecyclerView rvDiscoverTips;
+    private DiscoverTipAdapter tipAdapter;
+
+    private View layoutEcosystemSection;
+    private RecyclerView rvDiscoverEcosystem;
+    private DiscoverEcosystemAdapter ecosystemAdapter;
+
+    private DiscoverRepository discoverRepository;
 
     @Nullable
     @Override
@@ -44,6 +79,9 @@ public class DiscoverFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        discoverRepository = new DiscoverRepository(requireContext());
+
+        // BMI Views
         tvBmiScore = view.findViewById(R.id.tvBmiScore);
         tvBmiCategoryBadge = view.findViewById(R.id.tvBmiCategoryBadge);
         tvUserStats = view.findViewById(R.id.tvUserStats);
@@ -54,6 +92,7 @@ public class DiscoverFragment extends Fragment {
             btnUpdate.setOnClickListener(v -> showUpdateBmiDialog());
         }
 
+        // 94 Exercises Library view
         View cardLibrary = view.findViewById(R.id.cardExerciseLibraryTool);
         MaterialButton btnOpenLibrary = view.findViewById(R.id.btnOpenLibrary);
 
@@ -79,8 +118,219 @@ public class DiscoverFragment extends Fragment {
         if (cardLibrary != null) cardLibrary.setOnClickListener(openLibraryListener);
         if (btnOpenLibrary != null) btnOpenLibrary.setOnClickListener(openLibraryListener);
 
-        setupArticleCards(view);
+        // Dynamic Banner Views
+        cardDiscoverBanner = view.findViewById(R.id.cardDiscoverBanner);
+        ivBannerCover = view.findViewById(R.id.ivBannerCover);
+        tvBannerCategory = view.findViewById(R.id.tvBannerCategory);
+        tvBannerTitle = view.findViewById(R.id.tvBannerTitle);
+        tvBannerDescription = view.findViewById(R.id.tvBannerDescription);
+        btnBannerAction = view.findViewById(R.id.btnBannerAction);
+
+        // Tips Section Views
+        layoutTipsSection = view.findViewById(R.id.layoutTipsSection);
+        rvDiscoverTips = view.findViewById(R.id.rvDiscoverTips);
+        if (rvDiscoverTips != null) {
+            rvDiscoverTips.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+            tipAdapter = new DiscoverTipAdapter(requireContext(), this::showArticleDetailDialog);
+            rvDiscoverTips.setAdapter(tipAdapter);
+        }
+
+        // Ecosystem Section Views
+        layoutEcosystemSection = view.findViewById(R.id.layoutEcosystemSection);
+        rvDiscoverEcosystem = view.findViewById(R.id.rvDiscoverEcosystem);
+        if (rvDiscoverEcosystem != null) {
+            rvDiscoverEcosystem.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+            ecosystemAdapter = new DiscoverEcosystemAdapter(requireContext(), this::handleDiscoverItemClick);
+            rvDiscoverEcosystem.setAdapter(ecosystemAdapter);
+        }
+
         observeBmiData();
+        loadDiscoverData();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadDiscoverData();
+    }
+
+    private void loadDiscoverData() {
+        if (!isAdded()) return;
+        discoverRepository.fetchDiscoverItems(new DiscoverRepository.Callback<List<DiscoverDto>>() {
+            @Override
+            public void onResult(List<DiscoverDto> data, boolean fromCache) {
+                if (!isAdded() || data == null) return;
+                renderDiscoverSections(data);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                Log.w(TAG, "Không thể nạp dữ liệu Khám phá từ server: " + throwable.getMessage());
+            }
+        });
+    }
+
+    private void renderDiscoverSections(@NonNull List<DiscoverDto> allItems) {
+        String lang = LocalizationHelper.getLanguage(requireContext());
+
+        DiscoverDto bannerItem = null;
+        List<DiscoverDto> tipsList = new ArrayList<>();
+        List<DiscoverDto> ecosystemList = new ArrayList<>();
+
+        for (DiscoverDto item : allItems) {
+            if (!item.active) continue;
+
+            String cat = item.category != null ? item.category.trim() : "";
+            if (cat.equalsIgnoreCase("Giới thiệu App") || cat.equalsIgnoreCase("App Intro") || cat.equalsIgnoreCase("Banner")) {
+                if (bannerItem == null) {
+                    bannerItem = item;
+                }
+            } else if (cat.equalsIgnoreCase("Hệ Sinh Thái Dự Án") || cat.equalsIgnoreCase("Hệ sinh thái") || cat.equalsIgnoreCase("Ecosystem")) {
+                ecosystemList.add(item);
+            } else {
+                tipsList.add(item);
+            }
+        }
+
+        // 1. Render Banner Hero
+        if (bannerItem != null && cardDiscoverBanner != null) {
+            final DiscoverDto finalBanner = bannerItem;
+            cardDiscoverBanner.setVisibility(View.VISIBLE);
+
+            if (tvBannerCategory != null) {
+                tvBannerCategory.setText(finalBanner.category != null ? finalBanner.category : getString(R.string.discover_app_intro_section));
+            }
+            if (tvBannerTitle != null) {
+                tvBannerTitle.setText(finalBanner.getTitle(lang));
+            }
+            if (tvBannerDescription != null) {
+                tvBannerDescription.setText(finalBanner.getDescriptionText());
+            }
+
+            String coverUrl = MediaLoader.resolveUrl(finalBanner.getCover());
+            if (ivBannerCover != null) {
+                if (!coverUrl.isEmpty()) {
+                    Glide.with(this)
+                            .load(coverUrl)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .placeholder(R.drawable.bg_media_placeholder)
+                            .error(R.drawable.ic_workout_placeholder)
+                            .centerCrop()
+                            .into(ivBannerCover);
+                } else {
+                    ivBannerCover.setImageResource(R.drawable.bg_media_placeholder);
+                }
+            }
+
+            View.OnClickListener bannerClickListener = v -> handleDiscoverItemClick(finalBanner);
+            cardDiscoverBanner.setOnClickListener(bannerClickListener);
+            if (btnBannerAction != null) {
+                btnBannerAction.setOnClickListener(bannerClickListener);
+            }
+        } else if (cardDiscoverBanner != null) {
+            cardDiscoverBanner.setVisibility(View.GONE);
+        }
+
+        // 2. Render Góc Kiến Thức & Mẹo
+        if (layoutTipsSection != null && tipAdapter != null) {
+            if (!tipsList.isEmpty()) {
+                layoutTipsSection.setVisibility(View.VISIBLE);
+                tipAdapter.setItems(tipsList);
+            } else {
+                layoutTipsSection.setVisibility(View.GONE);
+            }
+        }
+
+        // 3. Render Hệ Sinh Thái Dự Án
+        if (layoutEcosystemSection != null && ecosystemAdapter != null) {
+            if (!ecosystemList.isEmpty()) {
+                layoutEcosystemSection.setVisibility(View.VISIBLE);
+                ecosystemAdapter.setItems(ecosystemList);
+            } else {
+                layoutEcosystemSection.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private void handleDiscoverItemClick(DiscoverDto item) {
+        if (item == null) return;
+        String action = item.getAction();
+
+        if (action != null && (action.equalsIgnoreCase("/pro") || action.contains("upgrade-pro"))) {
+            try {
+                NavHostFragment.findNavController(this).navigate(R.id.action_discover_to_proPaywall);
+            } catch (Exception e) {
+                Log.e(TAG, "Lỗi mở màn hình PRO: " + e.getMessage());
+                Toast.makeText(requireContext(), "HomeFit PRO", Toast.LENGTH_SHORT).show();
+            }
+        } else if (action != null && (action.startsWith("http://") || action.startsWith("https://"))) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(action));
+                startActivity(intent);
+            } catch (Exception e) {
+                Log.e(TAG, "Lỗi mở URL: " + e.getMessage());
+                showArticleDetailDialog(item);
+            }
+        } else {
+            showArticleDetailDialog(item);
+        }
+    }
+
+    private void showArticleDetailDialog(DiscoverDto item) {
+        if (item == null || !isAdded()) return;
+
+        try {
+            BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+            View view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_discover_detail, null, false);
+
+            ImageView ivCover = view.findViewById(R.id.ivDetailCover);
+            TextView tvCategory = view.findViewById(R.id.tvDetailCategory);
+            TextView tvTitle = view.findViewById(R.id.tvDetailTitle);
+            TextView tvContent = view.findViewById(R.id.tvDetailContent);
+            MaterialButton btnClose = view.findViewById(R.id.btnDetailClose);
+
+            String lang = LocalizationHelper.getLanguage(requireContext());
+
+            if (tvCategory != null) {
+                tvCategory.setText(item.category != null ? item.category : getString(R.string.discover_tips_section));
+            }
+            if (tvTitle != null) {
+                tvTitle.setText(item.getTitle(lang));
+            }
+            if (tvContent != null) {
+                tvContent.setText(item.getDescriptionText());
+            }
+
+            String coverUrl = MediaLoader.resolveUrl(item.getCover());
+            if (ivCover != null) {
+                if (!coverUrl.isEmpty()) {
+                    Glide.with(requireContext())
+                            .load(coverUrl)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .placeholder(R.drawable.bg_media_placeholder)
+                            .error(R.drawable.ic_workout_placeholder)
+                            .centerCrop()
+                            .into(ivCover);
+                } else {
+                    ivCover.setImageResource(R.drawable.bg_media_placeholder);
+                }
+            }
+
+            if (btnClose != null) {
+                btnClose.setOnClickListener(v -> dialog.dismiss());
+            }
+
+            dialog.setContentView(view);
+            dialog.show();
+
+        } catch (Exception e) {
+            Log.e(TAG, "Lỗi hiển thị dialog chi tiết bài viết: " + e.getMessage());
+            new AlertDialog.Builder(requireContext())
+                    .setTitle(item.getTitle(LocalizationHelper.getLanguage(requireContext())))
+                    .setMessage(item.getDescriptionText())
+                    .setPositiveButton(R.string.discover_close, null)
+                    .show();
+        }
     }
 
     private void observeBmiData() {
@@ -127,8 +377,6 @@ public class DiscoverFragment extends Fragment {
     }
 
     private void showUpdateBmiDialog() {
-        View view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_configure_exercise, null, false);
-        // Quick dialog for height & weight
         final EditText etHeight = new EditText(requireContext());
         etHeight.setHint("Chiều cao (cm)");
         etHeight.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
@@ -142,8 +390,8 @@ public class DiscoverFragment extends Fragment {
             if (userProfile.weightKg != null) etWeight.setText(String.valueOf(userProfile.weightKg));
         }
 
-        android.widget.LinearLayout container = new android.widget.LinearLayout(requireContext());
-        container.setOrientation(android.widget.LinearLayout.VERTICAL);
+        LinearLayout container = new LinearLayout(requireContext());
+        container.setOrientation(LinearLayout.VERTICAL);
         container.setPadding(48, 24, 48, 24);
         container.addView(etHeight);
         container.addView(etWeight);
@@ -183,136 +431,6 @@ public class DiscoverFragment extends Fragment {
                     } catch (Exception ignored) {}
                 })
                 .setNegativeButton("Hủy", null)
-                .show();
-    }
-
-    private void setupArticleCards(View view) {
-        String lang = com.homefit.app.util.LocalizationHelper.getLanguage(requireContext());
-
-        View cardNutrition = view.findViewById(R.id.cardTipNutrition);
-        if (cardNutrition != null) {
-            cardNutrition.setOnClickListener(v -> {
-                String title;
-                String body;
-                switch (lang) {
-                    case "en":
-                        title = "IronFitness Nutrition - 200% Workout Performance Secrets";
-                        body = "1. 40-30-30 Macro Rule:\nCombine 40% complex carbs (sweet potatoes, oats), 30% lean protein (chicken breast, eggs, fish) and 30% healthy fats (avocados, almonds).\n\n" +
-                                "2. Stay Hydrated:\nDrink 500ml water 30 min before training and maintain 2.5L daily for 30% faster metabolism.\n\n" +
-                                "3. Post-Workout Meal:\nConsume 20g protein within 45 min after workout to repair damaged muscle fibers.";
-                        break;
-                    case "ko":
-                        title = "아이언피트니스 영양 가이드 - 운동 효과 200% 높이기";
-                        body = "1. 40-30-30 영양 비율:\n복합 탄수화물 40%(고구마, 귀리), 단백질 30%(닭가슴살, 계란, 생선), 건강한 지방 30%(아보카도, 견과류)를 조합하세요.\n\n" +
-                                "2. 충분한 수분 섭취:\n운동 30분 전 물 500ml를 마시고 하루 2.5L를 유지하면 신진대사가 30% 향상됩니다.\n\n" +
-                                "3. 운동 후 식사:\n운동 종료 후 45분 이내에 단백질 20g을 섭취하여 근육 손상을 회복하세요.";
-                        break;
-                    case "ja":
-                        title = "IronFitness 栄養ガイド - 運動効果200%アップの秘訣";
-                        body = "1. 40-30-30 PFCバランス:\n複合炭水化物40%（サツマイモ、オートミール）、タンパク質30%（鶏胸肉、卵、魚）、良質な脂質30%（アボカド、ナッツ）を摂取しましょう。\n\n" +
-                                "2. 水分補給:\n運動30分前に500mlの水を飲み、1日2.5Lを維持すると代謝が30%向上します。\n\n" +
-                                "3. 運動後の栄養補給:\nトレーニング終了後45分以内にタンパク質20gを摂取し、筋肉の修復を促しましょう。";
-                        break;
-                    default:
-                        title = "Dinh Dưỡng IronFitness - Bí quyết tăng 200% hiệu quả tập";
-                        body = "1. Nguyên tắc 40-30-30:\nKết hợp 40% Carb phức hợp (khoai lang, yến mạch), 30% Đạm nạc (ức gà, trứng, cá) và 30% Chất béo tốt (bơ, hạt hạnh nhân).\n\n" +
-                                "2. Uống đủ nước:\nUống 500ml nước trước buổi tập 30 phút và duy trì 2.5 lít nước mỗi ngày giúp trao đổi chất tốt hơn 30%.\n\n" +
-                                "3. Bữa ăn sau tập:\nNạp 20g đạm trong vòng 45 phút sau khi hoàn thành buổi tập để sửa chữa sợi cơ tổn thương.";
-                        break;
-                }
-                showArticleDialog(title, body);
-            });
-        }
-
-        View cardRecovery = view.findViewById(R.id.cardTipRecovery);
-        if (cardRecovery != null) {
-            cardRecovery.setOnClickListener(v -> {
-                String title;
-                String body;
-                switch (lang) {
-                    case "en":
-                        title = "Muscle Recovery Tips - Sleep & Stretching";
-                        body = "1. 7-8 Hours Quality Sleep:\nMuscles grow during deep sleep thanks to peak HGH growth hormone secretion between 11 PM and 2 AM.\n\n" +
-                                "2. Cool-down Stretching:\nSpend 5 min doing static stretches (Child's Pose, Cobra stretch) to clear muscle-fatiguing lactic acid.\n\n" +
-                                "3. Warm Shower Relaxation:\nTake a warm shower 15 min after sweating stops to dilate blood vessels and ease muscle soreness.";
-                        break;
-                    case "ko":
-                        title = "근육 회복 팁 - 수면 & 스트레칭";
-                        body = "1. 7-8시간 황금 수면:\n성장 호르몬 HGH가 가장 많이 분비되는 밤 11시부터 새벽 2시 사이에 깊은 수면을 취하세요.\n\n" +
-                                "2. 쿨다운 스트레칭:\n운동 후 5분간 정적 스트레칭(Child's Pose, Cobra stretch)을 하여 젖산을 배출하세요.\n\n" +
-                                "3. 따뜻한 샤워:\n땀이 식은 후 15분 뒤 따뜻한 물로 샤워하면 혈관이 확장되고 근육통이 완화됩니다.";
-                        break;
-                    case "ja":
-                        title = "リカバリーのコツ - 睡眠 & ストレッチ";
-                        body = "1. 7〜8時間の質の良い睡眠:\n成長ホルモンHGHが最も分泌される午後11時から午前2時の間に深い睡眠をとりましょう。\n\n" +
-                                "2. クールダウンストレッチ:\n運動後5分間の静的ストレッチ（Child's Pose、Cobra stretch）で乳酸を排出し疲労を軽減します。\n\n" +
-                                "3. 温水シャワーでリラックス:\n汗が引いた15分後にぬるめのお湯を浴びると、血管が拡張し筋肉痛が和らぎます。";
-                        break;
-                    default:
-                        title = "Mẹo Phục Hồi Cơ Bắp - Giấc ngủ & Kéo giãn";
-                        body = "1. Giấc ngủ vàng 7-8 tiếng:\nCơ bắp phát triển trong khi ngủ nhờ hormone tăng trưởng HGH tiết ra nhiều nhất từ 23:00 đến 02:00 sáng.\n\n" +
-                                "2. Kéo giãn cơ hạ nhiệt (Cool-down):\nDành 5 phút tập các bài giãn cơ tĩnh (Child's Pose, Cobra stretch) giúp thải bỏ Axit Lactic gây mỏi cơ.\n\n" +
-                                "3. Tắm nước ấm thả lỏng:\nTắm nước ấm sau khi ngưng mồ hôi 15 phút giúp làm giãn mạch máu và giảm đau nhức cơ bắp.";
-                        break;
-                }
-                showArticleDialog(title, body);
-            });
-        }
-
-        View cardCommunity = view.findViewById(R.id.cardTipCommunity);
-        if (cardCommunity != null) {
-            cardCommunity.setOnClickListener(v -> {
-                String title;
-                String body;
-                switch (lang) {
-                    case "en":
-                        title = "IronFitness Community";
-                        body = "Over 100,000+ home athletes are training with IronFitness!\n\n" +
-                                "• Reach a 14-day Streak milestone to unlock the Warrior Badge.\n" +
-                                "• Challenge yourself with 28-Day Challenge programs from Easy to Hard.\n" +
-                                "• Share your BMI progress and body transformation photos with friends.";
-                        break;
-                    case "ko":
-                        title = "아이언피트니스 커뮤니티";
-                        body = "10만 명 이상의 홈 트레이너가 아이언피트니스와 함께 운동하고 있습니다!\n\n" +
-                                "• 14일 연속 운동 스트릭을 달성하여 워리어 배지를 획득하세요.\n" +
-                                "• Easy부터 Hard까지 28일 도전 프로그램에 도전하세요.\n" +
-                                "• BMI 변화와 변화된 체형 사진을 친구들과 공유하세요.";
-                        break;
-                    case "ja":
-                        title = "IronFitness コミュニティ";
-                        body = "10万人以上の宅トレユーザーがIronFitnessでトレーニング中！\n\n" +
-                                "• 14日間の連続トレーニングを達成して「ウォリアーバッジ」を獲得しましょう。\n" +
-                                "• 初級から上級までの28日間チャレンジプログラムに挑戦。\n" +
-                                "• BMIの変化や体型のビフォーアフターを友達とシェアしましょう。";
-                        break;
-                    default:
-                        title = "Cộng Đồng IronFitness Việt Nam";
-                        body = "Hơn 100.000+ người tập tại nhà đang rèn luyện cùng IronFitness!\n\n" +
-                                "• Đạt mốc 14 ngày chuỗi tập Streak để nhận huy hiệu Chiến Binh.\n" +
-                                "• Thử thách bản thân với chuỗi Thử Thách 28 Ngày từ Easy đến Hard.\n" +
-                                "• Chia sẻ kết quả BMI và hình ảnh thay đổi vóc dáng cùng bạn bè.";
-                        break;
-                }
-                showArticleDialog(title, body);
-            });
-        }
-    }
-
-    private void showArticleDialog(String title, String content) {
-        String lang = com.homefit.app.util.LocalizationHelper.getLanguage(requireContext());
-        String buttonText;
-        switch (lang) {
-            case "en": buttonText = "Got it"; break;
-            case "ko": buttonText = "확인"; break;
-            case "ja": buttonText = "了解"; break;
-            default: buttonText = "Đã hiểu"; break;
-        }
-
-        new AlertDialog.Builder(requireContext())
-                .setTitle(title)
-                .setMessage(content)
-                .setPositiveButton(buttonText, null)
                 .show();
     }
 }

@@ -48,6 +48,11 @@
     <string name="discover_library_desc">Xem minh họa 2D, nhóm cơ &amp; hướng dẫn chuẩn.</string>
     <string name="discover_library_btn">Mở ngay</string>
     <string name="discover_tips_section">Góc Kiến Thức &amp; Mẹo Tập Luyện</string>
+    <string name="discover_app_intro_section">Giới Thiệu App IronFitness</string>
+    <string name="discover_ecosystem_section">Hệ Sinh Thái Dự Án IronFitness</string>
+    <string name="discover_open_btn">Mở ngay</string>
+    <string name="discover_read_more">Đọc chi tiết ➔</string>
+    <string name="discover_close">Đóng</string>
     <string name="discover_tip1_category">Dinh Dưỡng IronFitness</string>
     <string name="discover_tip1_title">Bí quyết ăn uống cân bằng tăng 200% hiệu quả tập</string>
     <string name="discover_tip1_desc">Kết hợp đạm và xơ hợp lý giúp cơ bắp phục hồi nhanh hơn. Bấm để đọc chi tiết ➔</string>

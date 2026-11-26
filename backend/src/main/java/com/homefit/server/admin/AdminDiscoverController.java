@@ -50,9 +50,13 @@ public class AdminDiscoverController {
         if (item.getId() != null) {
             discoverItemRepository.findById(item.getId()).ifPresent(existing -> {
                 existing.setTitleVi(item.getTitleVi());
+                existing.setTitleEn(item.getTitleEn());
+                existing.setTitleKo(item.getTitleKo());
+                existing.setTitleJa(item.getTitleJa());
                 existing.setCategory(item.getCategory());
                 existing.setSortOrder(item.getSortOrder());
                 existing.setCoverUrl(item.getCoverUrl());
+                existing.setActionUrl(item.getActionUrl());
                 existing.setDescription(item.getDescription());
                 existing.setActive(item.isActive());
                 discoverItemRepository.save(existing);

@@ -1,5 +1,7 @@
 package com.homefit.server.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.Instant;
 
 import jakarta.persistence.Column;
@@ -24,6 +26,12 @@ public class DiscoverItem {
 
     @Column(name = "title_en", length = 200)
     private String titleEn;
+
+    @Column(name = "title_ko", length = 200)
+    private String titleKo;
+
+    @Column(name = "title_ja", length = 200)
+    private String titleJa;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
@@ -61,8 +69,20 @@ public class DiscoverItem {
     public String getTitleEn() { return titleEn; }
     public void setTitleEn(String titleEn) { this.titleEn = titleEn; }
 
+    public String getTitleKo() { return titleKo; }
+    public void setTitleKo(String titleKo) { this.titleKo = titleKo; }
+
+    public String getTitleJa() { return titleJa; }
+    public void setTitleJa(String titleJa) { this.titleJa = titleJa; }
+
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    @JsonProperty("summary")
+    public String getSummary() { return description; }
+
+    @JsonProperty("content")
+    public String getContent() { return description; }
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
@@ -70,8 +90,17 @@ public class DiscoverItem {
     public String getCoverUrl() { return coverUrl; }
     public void setCoverUrl(String coverUrl) { this.coverUrl = coverUrl; }
 
+    @JsonProperty("coverImageUrl")
+    public String getCoverImageUrl() { return coverUrl; }
+
+    @JsonProperty("mediaUrl")
+    public String getMediaUrl() { return coverUrl; }
+
     public String getActionUrl() { return actionUrl; }
     public void setActionUrl(String actionUrl) { this.actionUrl = actionUrl; }
+
+    @JsonProperty("deepLink")
+    public String getDeepLink() { return actionUrl; }
 
     public int getSortOrder() { return sortOrder; }
     public void setSortOrder(int sortOrder) { this.sortOrder = sortOrder; }

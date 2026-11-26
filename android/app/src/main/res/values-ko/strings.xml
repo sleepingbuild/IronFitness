@@ -48,6 +48,11 @@
     <string name="discover_library_desc">2D 애니메이션, 근육 부위 및 가이드 보기.</string>
     <string name="discover_library_btn">지금 열기</string>
     <string name="discover_tips_section">운동 지식 및 팁</string>
+    <string name="discover_app_intro_section">앱 소개 &amp; 주요 기능</string>
+    <string name="discover_ecosystem_section">아이언피트니스 생태계</string>
+    <string name="discover_open_btn">열기</string>
+    <string name="discover_read_more">자세히 보기 ➔</string>
+    <string name="discover_close">닫기</string>
     <string name="discover_tip1_category">영양 가이드</string>
     <string name="discover_tip1_title">운동 효과를 200% 높이는 식단 비결</string>
     <string name="discover_tip1_desc">단백질과 섬유질 조합으로 근육 회복을 돕습니다. 자세히 보기 ➔</string>

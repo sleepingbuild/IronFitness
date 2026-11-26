@@ -48,6 +48,11 @@
     <string name="discover_library_desc">2Dアニメーション、対象筋肉、ガイドを閲覧。</string>
     <string name="discover_library_btn">今すぐ開く</string>
     <string name="discover_tips_section">知識 &amp; トレーニングのコツ</string>
+    <string name="discover_app_intro_section">アプリ紹介 &amp; おすすめ</string>
+    <string name="discover_ecosystem_section">IronFitness エコシステム</string>
+    <string name="discover_open_btn">開く</string>
+    <string name="discover_read_more">詳細を見る ➔</string>
+    <string name="discover_close">閉じる</string>
     <string name="discover_tip1_category">栄養ガイド</string>
     <string name="discover_tip1_title">効果を200%高める食事のコツ</string>
     <string name="discover_tip1_desc">タンパク質と食物繊維を組み合わせて回復を促進。詳細を見る ➔</string>

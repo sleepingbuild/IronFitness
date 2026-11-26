@@ -228,6 +228,9 @@
         <action
             android:id="@+id/action_discover_to_exerciseList"
             app:destination="@id/exerciseListFragment" />
+        <action
+            android:id="@+id/action_discover_to_proPaywall"
+            app:destination="@id/proPaywallFragment" />
     </fragment>
 
     <!-- Lọc bài tập -->
