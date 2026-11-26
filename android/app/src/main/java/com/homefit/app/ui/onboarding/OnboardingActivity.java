@@ -7,8 +7,12 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.card.MaterialCardView;
 import com.homefit.app.MainActivity;
@@ -36,8 +40,22 @@ public class OnboardingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         binding = ActivityOnboardingBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            Insets bars = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            binding.llTopHeader.setPadding(
+                    binding.llTopHeader.getPaddingLeft(),
+                    bars.top + (int) (8 * getResources().getDisplayMetrics().density),
+                    binding.llTopHeader.getPaddingRight(),
+                    binding.llTopHeader.getPaddingBottom()
+            );
+            binding.cvBottomBar.setPadding(0, 0, 0, bars.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
 
         onboardingStore = new OnboardingStore(this);
 

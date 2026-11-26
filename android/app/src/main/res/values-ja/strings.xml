@@ -205,4 +205,6 @@
     <string name="delete">削除</string>
     <string name="save">保存</string>
     <string name="update_goal_survey">目標アンケートを更新 🎯</string>
+    <string name="workout_introduction">紹介</string>
+    <string name="workout_unlock">ロック解除</string>
 </resources>

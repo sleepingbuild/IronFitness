@@ -205,4 +205,6 @@
     <string name="delete">Delete</string>
     <string name="save">Save</string>
     <string name="update_goal_survey">Update Goal Survey 🎯</string>
+    <string name="workout_introduction">Introduction</string>
+    <string name="workout_unlock">Unlock</string>
 </resources>

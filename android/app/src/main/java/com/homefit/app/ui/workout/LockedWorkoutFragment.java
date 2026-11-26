@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.homefit.app.R;
 import com.homefit.app.ui.common.MediaLoader;
+import com.homefit.app.util.LocalizationHelper;
 
 public class LockedWorkoutFragment extends Fragment {
 
@@ -36,6 +37,8 @@ public class LockedWorkoutFragment extends Fragment {
         TextView tvDifficulty = view.findViewById(R.id.tvDifficulty);
         TextView tvDuration = view.findViewById(R.id.tvDuration);
         TextView tvCount = view.findViewById(R.id.tvCount);
+        TextView tvIntroHeader = view.findViewById(R.id.tvIntroHeader);
+        TextView tvDescription = view.findViewById(R.id.tvDescription);
         MaterialButton btnUnlock = view.findViewById(R.id.btnUnlock);
 
         String title = "Bài tập PRO";
@@ -55,10 +58,46 @@ public class LockedWorkoutFragment extends Fragment {
             groupKey = args.getString("groupKey", "");
         }
 
-        tvTitle.setText(title);
-        if (tvDifficulty != null) tvDifficulty.setText(difficulty);
-        tvDuration.setText(duration);
-        tvCount.setText(count);
+        tvTitle.setText(LocalizationHelper.localizeWorkoutTitle(requireContext(), title));
+        if (tvDifficulty != null) {
+            tvDifficulty.setText(LocalizationHelper.getLocalizedDifficulty(requireContext(), difficulty));
+        }
+
+        int mins = 17;
+        try {
+            if (duration != null && !duration.isEmpty()) {
+                mins = Integer.parseInt(duration.replaceAll("[^0-9]", ""));
+            }
+        } catch (Exception ignored) {}
+        tvDuration.setText(LocalizationHelper.localizeSubtitle(requireContext(), mins, difficulty).split("•")[0].trim());
+
+        int exerciseCount = 13;
+        try {
+            if (count != null && !count.isEmpty()) {
+                exerciseCount = Integer.parseInt(count.replaceAll("[^0-9]", ""));
+            }
+        } catch (Exception ignored) {}
+        String lang = LocalizationHelper.getLanguage(requireContext());
+        String localizedCount;
+        switch (lang) {
+            case "en": localizedCount = exerciseCount + " Exercises"; break;
+            case "ko": localizedCount = exerciseCount + " 운동"; break;
+            case "ja": localizedCount = exerciseCount + " エクササイズ"; break;
+            default: localizedCount = exerciseCount + " Bài tập"; break;
+        }
+        tvCount.setText(localizedCount);
+
+        if (tvIntroHeader != null) {
+            tvIntroHeader.setText(R.string.workout_introduction);
+        }
+
+        if (tvDescription != null) {
+            tvDescription.setText(LocalizationHelper.getLocalizedWorkoutDescription(requireContext(), groupKey, title));
+        }
+
+        if (btnUnlock != null) {
+            btnUnlock.setText(R.string.workout_unlock);
+        }
 
         if (coverImageUrl == null || coverImageUrl.isBlank() || coverImageUrl.contains("unsplash.com")) {
             coverImageUrl = getMuscleCoverUrlForGroup(groupKey, title);
@@ -77,9 +116,11 @@ public class LockedWorkoutFragment extends Fragment {
 
         btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
 
-        btnUnlock.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.action_lockedWorkout_to_proPaywall);
-        });
+        if (btnUnlock != null) {
+            btnUnlock.setOnClickListener(v -> {
+                NavHostFragment.findNavController(this).navigate(R.id.action_lockedWorkout_to_proPaywall);
+            });
+        }
     }
 
     private String getMuscleCoverUrlForGroup(String groupKey, String groupName) {

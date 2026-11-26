@@ -184,4 +184,6 @@
     <string name="delete">Xóa</string>
     <string name="save">Lưu</string>
     <string name="update_goal_survey">Cập nhật khảo sát mục tiêu 🎯</string>
+    <string name="workout_introduction">Giới thiệu</string>
+    <string name="workout_unlock">Mở khóa</string>
 </resources>

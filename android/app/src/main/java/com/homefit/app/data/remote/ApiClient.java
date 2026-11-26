@@ -13,9 +13,12 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Interceptor;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -24,6 +27,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Tạo ApiService dùng chung. Base URL đọc từ string "api_base_url" (res/values/api_config.xml).
  * Timeout theo docs/API.md: connect 15s, read 25s.
  * Hỗ trợ OkHttp Cache 10MB và Offline Interceptor max-stale 7 ngày.
+ * Bắt toàn bộ IOException / UnknownHostException / SocketTimeoutException an toàn.
  */
 public final class ApiClient {
 
@@ -77,22 +81,44 @@ public final class ApiClient {
                         .cacheControl(cacheControl)
                         .build();
             }
-            return chain.proceed(request);
+            try {
+                return chain.proceed(request);
+            } catch (Exception e) {
+                Log.w(TAG, "Ngoại lệ kết nối mạng trong offlineCacheInterceptor: " + e.getMessage());
+                return new Response.Builder()
+                        .request(request)
+                        .protocol(Protocol.HTTP_1_1)
+                        .code(504)
+                        .message("Unsatisfiable Request (Offline Cache Fallback)")
+                        .body(ResponseBody.create("{}", MediaType.parse("application/json")))
+                        .build();
+            }
         };
 
         Interceptor onlineCacheInterceptor = chain -> {
-            Response response = chain.proceed(chain.request());
-            if (NetworkUtils.isNetworkAvailable(app)) {
-                String cacheControl = response.header("Cache-Control");
-                if (cacheControl == null || cacheControl.contains("no-store") || cacheControl.contains("no-cache")
-                        || cacheControl.contains("must-revalidate") || cacheControl.trim().isEmpty()) {
-                    return response.newBuilder()
-                            .removeHeader("Pragma")
-                            .header("Cache-Control", "public, max-age=60")
-                            .build();
+            try {
+                Response response = chain.proceed(chain.request());
+                if (NetworkUtils.isNetworkAvailable(app)) {
+                    String cacheControl = response.header("Cache-Control");
+                    if (cacheControl == null || cacheControl.contains("no-store") || cacheControl.contains("no-cache")
+                            || cacheControl.contains("must-revalidate") || cacheControl.trim().isEmpty()) {
+                        return response.newBuilder()
+                                .removeHeader("Pragma")
+                                .header("Cache-Control", "public, max-age=60")
+                                .build();
+                    }
                 }
+                return response;
+            } catch (Exception e) {
+                Log.w(TAG, "Ngoại lệ kết nối mạng trong onlineCacheInterceptor: " + e.getMessage());
+                return new Response.Builder()
+                        .request(chain.request())
+                        .protocol(Protocol.HTTP_1_1)
+                        .code(504)
+                        .message("Unsatisfiable Request (Network Error)")
+                        .body(ResponseBody.create("{}", MediaType.parse("application/json")))
+                        .build();
             }
-            return response;
         };
 
         OkHttpClient plain = new OkHttpClient.Builder()

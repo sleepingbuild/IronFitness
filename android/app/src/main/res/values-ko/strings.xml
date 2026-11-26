@@ -205,4 +205,6 @@
     <string name="delete">삭제</string>
     <string name="save">저장</string>
     <string name="update_goal_survey">목표 설문 업데이트 🎯</string>
+    <string name="workout_introduction">소개</string>
+    <string name="workout_unlock">잠금 해제</string>
 </resources>

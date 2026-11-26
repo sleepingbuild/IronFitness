@@ -1389,6 +1389,70 @@ public class LocalizationHelper {
         return diffSuffix.isEmpty() ? locBase : locBase + " " + diffSuffix;
     }
 
+    public static String getLocalizedWorkoutDescription(Context context, String groupKey, String title) {
+        String lang = getLanguage(context);
+        String combined = ((groupKey != null ? groupKey : "") + " " + (title != null ? title : "")).toLowerCase(Locale.US);
+
+        if (combined.contains("thân trên") || combined.contains("upper") || combined.contains("nguc") || combined.contains("chest") || combined.contains("tay") || combined.contains("arm")) {
+            if (combined.contains("nguc") || combined.contains("chest") || combined.contains("tay") || combined.contains("arm")) {
+                switch (lang) {
+                    case "en":
+                        return "Build a strong chest and defined arms! Focus on effective push-up variations and bodyweight arm exercises designed to increase chest and arm strength without equipment.";
+                    case "ko":
+                        return "가슴과 팔 근육을 단단하게 다지세요! 다양한 푸시업 변형과 체중 팔 운동에 집중하여 기구 없이 가슴과 팔의 힘과 부피를 키워줍니다.";
+                    case "ja":
+                        return "たくましい胸と引き締まった腕を作りましょう！自重腕立て伏せや腕のエクササイズに集中し、器具なしで胸と腕の筋力・ボリュームを高めます。";
+                    default:
+                        return "Phát triển vòm ngực rộng và bắp tay săn chắc! Tập trung vào các biến thể chống đẩy và bài tập tay bodyweight hiệu quả giúp tăng kích thước và sức mạnh ngực tay mà không cần dụng cụ.";
+                }
+            } else {
+                switch (lang) {
+                    case "en":
+                        return "Optimize upper body and core strength! This routine combines chest, shoulder, arm, and abdominal exercises to build lean muscle, improve posture, and enhance overall endurance.";
+                    case "ko":
+                        return "상체와 코어 근력을 극대화하세요! 가슴, 어깨, 팔, 복근 운동을 조합하여 탄탄한 근육을 만들고 자세 개선 및 전반적인 지구력을 향상시킵니다.";
+                    case "ja":
+                        return "上半身と体幹の筋力を極めましょう！胸・肩・腕・腹筋を組み合わせたエクササイズで、引き締まった筋肉を作り、姿勢改善と持久力アップをサポートします。";
+                    default:
+                        return "Tối ưu hóa sức mạnh thân trên và vùng lõi! Buổi tập kết hợp các bài tập ngực, vai, tay và cơ bụng giúp phát triển cơ bắp săn chắc, cải thiện tư thế và tăng cường sức bền tổng thể.";
+                }
+            }
+        } else if (combined.contains("chan") || combined.contains("leg") || combined.contains("mong") || combined.contains("glute")) {
+            switch (lang) {
+                case "en":
+                    return "Build powerful legs and toned glutes! Squat, Lunge, and Glute Bridge variations strengthen lower body muscles, burn high calories, and boost overall athletic performance.";
+                case "ko":
+                    return "강력한 하체와 탄탄한 힙라인을 만드세요! 스쿼트, 런지, 글루트 브릿지 동작으로 하체 근력을 강화하고 칼로리를 효과적으로 소모합니다.";
+                case "ja":
+                    return "力強い脚と引き締まったヒップを作りましょう！スクワットやランジ、ヒップブリッジで下半身を強化し、高いカロリー消費と体力向上を実現します。";
+                default:
+                    return "Xây dựng đôi chân khỏe khoắn và vòng 3 săn chắc! Các bài tập Squat, Lunge và Cầu mông giúp tăng cường sức mạnh chi dưới, đốt cháy calo vượt trội và nâng cao thể lực.";
+            }
+        } else if (combined.contains("bung") || combined.contains("abs") || combined.contains("loi") || combined.contains("core")) {
+            switch (lang) {
+                case "en":
+                    return "Start your core journey today! This workout focuses on the entire abdominal region, helping you build core strength and definition. With every movement, you get closer to a strong and toned midsection!";
+                case "ko":
+                    return "오늘부터 복근 운동을 시작하세요! 이 운동은 전체 복부 부위에 집중하여 코어 힘과 선명도를 키우는 데 도움을 줍니다. 매 동작마다 강하고 탄탄한 복근에 한 걸음 더 가까워집니다!";
+                case "ja":
+                    return "今日から腹筋トレーニングを始めましょう！このワークアウトは腹部全体に集中し、体幹の筋力と引き締め効果を高めます。一回ごとの動作で、強くて引き締まった腹筋に近づきます！";
+                default:
+                    return "Khởi đầu hành trình cơ bụng ngay hôm nay! Bài tập này tập trung vào toàn bộ vùng bụng, giúp bạn tạo sự sắc nét và xây dựng sức mạnh cốt lõi. Với mỗi động tác, bạn sẽ tiến gần hơn đến một vùng bụng mạnh mẽ và săn chắc!";
+            }
+        } else {
+            switch (lang) {
+                case "en":
+                    return "Burn full-body calories and boost overall fitness! This compound workout targets all major muscle groups for maximum calorie burn, lean body conditioning, and agility.";
+                case "ko":
+                    return "전신 칼로리를 소모하고 체력을 증진하세요! 주요 근육군을 모두 자극하는 복합 운동으로 균형 잡힌 몸매와 유연성을 선사합니다.";
+                case "ja":
+                    return "全身のカロリーを消費し総合的な体力をアップ！主要な筋肉群をバランスよく刺激し、引き締まった体と柔軟性を手に入れましょう。";
+                default:
+                    return "Đốt cháy calo toàn thân và nâng cao thể lực tổng thể! Chuỗi bài tập phối hợp liên hoàn giúp tác động đến tất cả các nhóm cơ chính, mang lại vóc dáng thon gọn và dẻo dai.";
+            }
+        }
+    }
+
     public static String localizeSubtitle(Context context, int durationMin, String difficulty) {
         String localizedDiff = getLocalizedDifficulty(context, difficulty);
         String lang = getLanguage(context);
