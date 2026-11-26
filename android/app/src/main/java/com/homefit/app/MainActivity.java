@@ -1,5 +1,8 @@
 package com.homefit.app;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,20 +26,15 @@ import com.homefit.app.ads.AdsManager;
 import com.homefit.app.databinding.ActivityMainBinding;
 import com.homefit.app.ui.common.BannerAdHelper;
 import com.homefit.app.ui.common.Event;
+import com.homefit.app.util.NetworkUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Activity duy nhất chứa NavHost và thanh điều hướng dưới (W2-TV6-02, mở rộng ở W2-TV6-03).
- *
- * Insets: Activity tự xử lý thanh trạng thái, thanh điều hướng hệ thống và bàn phím,
- * rồi chặn không cho truyền xuống fragment. Fragment không cần tự cộng khoảng cách.
- * Thanh điều hướng dưới chỉ hiện ở 4 tab chính và ẩn khi bàn phím đang mở.
- *
- * Phiên đăng nhập: khi vào tab mà không còn token, hoặc server báo hết phiên, đưa về Đăng nhập.
- * Quảng cáo: bật/tắt theo cờ Premium của hồ sơ.
+ * Activity duy nhất chứa NavHost và thanh điều hướng dưới.
+ * Hỗ trợ chế độ Offline mượt mà: hiển thị thông báo "Đang ở chế độ ngoại tuyến (Offline)" khi mất kết nối.
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -61,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
     private int systemBarBottom;
     private int imeBottom;
     private boolean onTopLevelDestination;
+
+    private Snackbar offlineSnackbar;
+    private ConnectivityManager.NetworkCallback networkCallback;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -89,12 +90,12 @@ public class MainActivity extends AppCompatActivity {
 
         binding.bottomNav.setOnItemSelectedListener(this::onTabSelected);
         binding.bottomNav.setOnItemReselectedListener(item ->
-                // Chọn lại tab đang mở: quay về màn gốc của tab (ví dụ từ Chi tiết bài về Danh mục).
                 navController.popBackStack(item.getItemId(), false));
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             onTopLevelDestination = topLevelDestinations.contains(destination.getId());
             syncBottomNavSelection(destination);
             updateChrome();
+            checkOfflineMode();
             if (onTopLevelDestination && !viewModel.isLoggedIn()) {
                 binding.mainRoot.post(() -> goToLogin(true));
             }
@@ -105,12 +106,55 @@ public class MainActivity extends AppCompatActivity {
         viewModel.getSessionExpired().observe(this, this::onSessionExpired);
 
         binding.adContainer.setVisibility(android.view.View.GONE);
+        setupNetworkMonitoring();
     }
 
-    /**
-     * Chuyển tab giống NavigationUI nhưng lấy tab Tập luyện làm gốc, vì điểm vào của đồ thị là Splash.
-     * Mỗi tab giữ trạng thái riêng khi chuyển qua lại.
-     */
+    private void checkOfflineMode() {
+        if (binding == null) return;
+        if (!NetworkUtils.isNetworkAvailable(this)) {
+            if (offlineSnackbar == null || !offlineSnackbar.isShown()) {
+                offlineSnackbar = Snackbar.make(binding.mainRoot, "Đang ở chế độ ngoại tuyến (Offline)", Snackbar.LENGTH_INDEFINITE);
+                offlineSnackbar.setAction("Đã hiểu", v -> offlineSnackbar.dismiss());
+                offlineSnackbar.show();
+            }
+        } else {
+            if (offlineSnackbar != null && offlineSnackbar.isShown()) {
+                offlineSnackbar.dismiss();
+            }
+        }
+    }
+
+    private void setupNetworkMonitoring() {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm != null) {
+                networkCallback = new ConnectivityManager.NetworkCallback() {
+                    @Override
+                    public void onAvailable(@NonNull Network network) {
+                        runOnUiThread(() -> checkOfflineMode());
+                    }
+
+                    @Override
+                    public void onLost(@NonNull Network network) {
+                        runOnUiThread(() -> checkOfflineMode());
+                    }
+                };
+                cm.registerDefaultNetworkCallback(networkCallback);
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private void unregisterNetworkMonitoring() {
+        if (networkCallback != null) {
+            try {
+                ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                if (cm != null) {
+                    cm.unregisterNetworkCallback(networkCallback);
+                }
+            } catch (Exception ignored) {}
+        }
+    }
+
     private boolean onTabSelected(@NonNull MenuItem item) {
         NavOptions options = new NavOptions.Builder()
                 .setLaunchSingleTop(true)
@@ -133,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onSessionExpired(@Nullable Event<Boolean> event) {
-        if (event != null && event.getContentIfNotHandled() != null) {
+        if (event != null && event.getContentIfNotHandled() != null && NetworkUtils.isNetworkAvailable(this)) {
             goToLogin(true);
         }
     }
@@ -152,11 +196,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Hiện/ẩn thanh điều hướng dưới và đặt khoảng đệm đáy cho nội dung:
-     * khi thanh dưới hiện, nó tự đệm đúng bằng thanh điều hướng hệ thống;
-     * khi ẩn, vùng nội dung đệm bằng max(thanh hệ thống, bàn phím).
-     */
     private void updateChrome() {
         if (binding == null) {
             return;
@@ -173,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         bannerAdHelper.onResume();
-        // Tự động đồng bộ bài tập & danh mục mới nhất từ Server vào Room DB mỗi khi mở/quay lại App
+        checkOfflineMode();
         new com.homefit.app.data.repository.ExerciseRepository(this).refresh();
     }
 
@@ -190,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        unregisterNetworkMonitoring();
         bannerAdHelper.destroy();
         binding = null;
         super.onDestroy();

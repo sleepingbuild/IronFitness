@@ -309,21 +309,29 @@ public class HomeWorkoutFragment extends Fragment {
         if (binding == null) return;
         com.bumptech.glide.Glide.with(this)
                 .load("https://images.unsplash.com/photo-1549576490-b0b4831ef60a?w=800")
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                .error(R.drawable.ic_workout_placeholder)
                 .centerCrop()
                 .into(binding.ivForYouCalorieCover);
 
         com.bumptech.glide.Glide.with(this)
                 .load("https://images.unsplash.com/photo-1434596922112-19c563067271?w=800")
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                .error(R.drawable.ic_workout_placeholder)
                 .centerCrop()
                 .into(binding.ivForYouLegCover);
 
         com.bumptech.glide.Glide.with(this)
                 .load("https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=800")
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                .error(R.drawable.ic_workout_placeholder)
                 .centerCrop()
                 .into(binding.ivTabataCover);
 
         com.bumptech.glide.Glide.with(this)
                 .load("https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800")
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                .error(R.drawable.ic_workout_placeholder)
                 .centerCrop()
                 .into(binding.ivStretchBackCover);
     }

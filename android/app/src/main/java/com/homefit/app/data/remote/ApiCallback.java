@@ -1,5 +1,7 @@
 package com.homefit.app.data.remote;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -14,9 +16,11 @@ import retrofit2.Response;
 /**
  * Callback Retrofit gom mọi lỗi về (code, message). Retrofit trên Android gọi lại ở main thread.
  * Việc ghi Room trong onSuccess phải chuyển sang AppExecutors.diskIO().
+ * An toàn tuyệt đối với ngoại lệ mạng và dữ liệu rỗng.
  */
 public abstract class ApiCallback<T> implements Callback<T> {
 
+    private static final String TAG = "ApiCallback";
     private static final Gson GSON = new Gson();
 
     protected abstract void onSuccess(@NonNull T body);
@@ -25,18 +29,30 @@ public abstract class ApiCallback<T> implements Callback<T> {
 
     @Override
     public final void onResponse(@NonNull Call<T> call, @NonNull Response<T> response) {
-        T body = response.body();
-        if (response.isSuccessful() && body != null) {
-            onSuccess(body);
-            return;
+        try {
+            T body = response.body();
+            if (response.isSuccessful() && body != null) {
+                onSuccess(body);
+                return;
+            }
+            ApiErrorDto error = parseError(response);
+            onError(error.code != null ? error.code : ErrorCodes.UNKNOWN, error.message);
+        } catch (Throwable t) {
+            Log.e(TAG, "Lỗi ngoài ý muốn trong onResponse", t);
+            try {
+                onError(ErrorCodes.UNKNOWN, t.getMessage());
+            } catch (Throwable ignored) {}
         }
-        ApiErrorDto error = parseError(response);
-        onError(error.code, error.message);
     }
 
     @Override
     public final void onFailure(@NonNull Call<T> call, @NonNull Throwable t) {
-        onError(ErrorCodes.NETWORK_ERROR, t.getMessage());
+        try {
+            String msg = t != null ? t.getMessage() : "Mất kết nối mạng";
+            onError(ErrorCodes.NETWORK_ERROR, msg);
+        } catch (Throwable e) {
+            Log.e(TAG, "Lỗi ngoài ý muốn trong onFailure", e);
+        }
     }
 
     @NonNull

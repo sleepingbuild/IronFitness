@@ -1,0 +1,6 @@
+﻿"Kich_ban","So_lan","TB_ms","Min_ms","P95_ms","Max_ms"
+"P03a Dang nhap (POST /auth/login)","30","545.6","476.1","677.6","815.5"
+"P03b Danh muc (GET /categories)","30","138.5","102","191.1","634.9"
+"P03c Bai tap (GET /exercises)","30","166.6","118.1","294.5","295.7"
+"P03d Ghi 1 buoi tap (POST /workout-sessions)","30","164.5","122.1","327.1","334.1"
+"P04 Dong bo lo 100 buoi tap (batch)","1","4876.5","4876.5","4876.5","4876.5"

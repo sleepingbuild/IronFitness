@@ -110,13 +110,13 @@ public class HomeWorkoutAdapter extends RecyclerView.Adapter<HomeWorkoutAdapter.
             binding.ivCoverImage.setVisibility(View.VISIBLE);
             binding.ivIcon.setVisibility(View.GONE);
             String fullUrl = com.homefit.app.ui.common.MediaLoader.resolveUrl(coverUrl);
-            final String fallbackUrl = getDefaultCoverForGroup(dto.group, dto.group_name);
 
             Glide.with(binding.ivCoverImage)
                     .load(fullUrl)
+                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                     .fitCenter()
                     .placeholder(R.drawable.bg_media_placeholder)
-                    .error(Glide.with(binding.ivCoverImage).load(com.homefit.app.ui.common.MediaLoader.resolveUrl(fallbackUrl)).fitCenter())
+                    .error(R.drawable.ic_workout_placeholder)
                     .into(binding.ivCoverImage);
 
             binding.llDifficulty.removeAllViews();

@@ -74,7 +74,11 @@ public class CategoryAdapter extends ListAdapter<CategoryEntity, CategoryAdapter
             Glide.with(icon).clear(icon);
             if (url != null && !url.trim().isEmpty()) {
                 ImageViewCompat.setImageTintList(icon, null);
-                Glide.with(icon).load(url).placeholder(fallback).error(fallback).into(icon);
+                Glide.with(icon).load(url)
+                        .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                        .placeholder(fallback)
+                        .error(fallback)
+                        .into(icon);
             } else {
                 icon.setImageResource(fallback);
                 int primary = MaterialColors.getColor(icon, androidx.appcompat.R.attr.colorPrimary);

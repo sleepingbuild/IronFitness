@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.homefit.app.R;
 
 import java.util.Locale;
@@ -13,6 +14,7 @@ import java.util.Locale;
 /**
  * Tải ảnh/GIF minh họa bằng Glide. Video (mediaType = VIDEO) chưa phát được trong danh sách
  * nên hiển thị biểu tượng video; ExoPlayer sẽ phát trong màn tập.
+ * Đã cấu hình DiskCacheStrategy.ALL và ảnh dự phòng ic_workout_placeholder khi offline.
  */
 public final class MediaLoader {
 
@@ -229,8 +231,9 @@ public final class MediaLoader {
             Glide.with(target)
                     .asBitmap()
                     .load(fullUrl)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .placeholder(R.drawable.bg_media_placeholder)
-                    .error(Glide.with(target).asBitmap().load(getFallback2dMediaUrl(exerciseName)))
+                    .error(R.drawable.ic_workout_placeholder)
                     .fitCenter()
                     .into(target);
         } catch (Exception ignored) {}
@@ -252,8 +255,9 @@ public final class MediaLoader {
             String fullUrl = resolveExerciseMediaUrl(exerciseName, url);
             Glide.with(target)
                     .load(fullUrl)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .placeholder(R.drawable.bg_media_placeholder)
-                    .error(Glide.with(target).load(getFallback2dMediaUrl(exerciseName)))
+                    .error(R.drawable.ic_workout_placeholder)
                     .fitCenter()
                     .into(target);
         } catch (Exception ignored) {}

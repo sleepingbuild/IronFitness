@@ -68,8 +68,10 @@ public class LockedWorkoutFragment extends Fragment {
             String fullUrl = MediaLoader.resolveUrl(coverImageUrl);
             Glide.with(ivHeaderImage)
                     .load(fullUrl)
+                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                     .fitCenter()
                     .placeholder(R.drawable.bg_media_placeholder)
+                    .error(R.drawable.ic_workout_placeholder)
                     .into(ivHeaderImage);
         }
 

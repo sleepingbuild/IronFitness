@@ -114,7 +114,9 @@ public class WorkoutPlanAdapter extends ListAdapter<WorkoutPlanAdapter.Plan, Wor
 
             Glide.with(binding.ivPlanImage)
                 .load(plan.imageUrl)
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                 .placeholder(com.homefit.app.ui.library.CategoryIcons.forSlug(plan.category.slug))
+                .error(R.drawable.ic_workout_placeholder)
                 .into(binding.ivPlanImage);
 
             binding.getRoot().setOnClickListener(v -> listener.onClick(plan.category));

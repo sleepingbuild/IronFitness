@@ -91,6 +91,9 @@ public class ExerciseListAdapter extends RecyclerView.Adapter<ExerciseListAdapte
 
             Glide.with(binding.ivThumb)
                     .load(fullUrl)
+                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                    .placeholder(com.homefit.app.R.drawable.bg_media_placeholder)
+                    .error(com.homefit.app.R.drawable.ic_workout_placeholder)
                     .fitCenter()
                     .listener(new com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable>() {
                         @Override
@@ -98,6 +101,8 @@ public class ExerciseListAdapter extends RecyclerView.Adapter<ExerciseListAdapte
                             // Fallback to guaranteed 2D image URL
                             Glide.with(binding.ivThumb)
                                     .load(MediaLoader.getFallback2dMediaUrl(exerciseName))
+                                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                                    .error(com.homefit.app.R.drawable.ic_workout_placeholder)
                                     .fitCenter()
                                     .into(binding.ivThumb);
                             return true;

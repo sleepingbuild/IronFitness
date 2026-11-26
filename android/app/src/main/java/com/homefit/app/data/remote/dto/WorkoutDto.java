@@ -69,9 +69,6 @@ public class WorkoutDto {
         @SerializedName(value = "position", alternate = {"orderIndex", "order_index", "sortOrder", "sort_order"})
         public int position;
 
-        @SerializedName(value = "orderIndex", alternate = {"order_index", "sortOrder", "sort_order"})
-        public Integer orderIndex;
-
         @SerializedName(value = "exerciseId", alternate = {"exercise_id"})
         public Long exerciseId;
 
@@ -81,32 +78,17 @@ public class WorkoutDto {
         @SerializedName(value = "measure", alternate = {"unit"})
         public String measure;
 
-        @SerializedName("unit")
-        public String unit;
-
         @SerializedName(value = "value", alternate = {"quantity"})
         public int value;
-
-        @SerializedName("quantity")
-        public Integer quantity;
 
         @SerializedName(value = "restAfterSec", alternate = {"rest_after_sec", "restSeconds", "rest_seconds"})
         public int restAfterSec;
 
-        @SerializedName(value = "restSeconds", alternate = {"rest_seconds"})
-        public Integer restSeconds;
-
         @SerializedName(value = "exerciseName", alternate = {"exercise_name", "name"})
         public String exerciseName;
 
-        @SerializedName("name")
-        public String name;
-
         @SerializedName(value = "exerciseMediaUrl", alternate = {"exercise_media_url", "mediaUrl", "media_url"})
         public String exerciseMediaUrl;
-
-        @SerializedName("mediaUrl")
-        public String mediaUrl;
 
         @SerializedName(value = "exerciseMediaType", alternate = {"exercise_media_type"})
         public String exerciseMediaType;

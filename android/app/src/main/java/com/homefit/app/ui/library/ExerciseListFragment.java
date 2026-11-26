@@ -243,8 +243,10 @@ public class ExerciseListFragment extends Fragment {
         String fullUrl = com.homefit.app.ui.common.MediaLoader.resolveUrl(coverUrl);
         com.bumptech.glide.Glide.with(binding.ivHeaderBanner)
                 .load(fullUrl)
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                 .fitCenter()
                 .placeholder(R.drawable.bg_media_placeholder)
+                .error(R.drawable.ic_workout_placeholder)
                 .into(binding.ivHeaderBanner);
     }
 

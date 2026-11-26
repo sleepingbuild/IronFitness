@@ -128,10 +128,10 @@ public final class Mappers {
         e.id = d.id != null ? d.id : (System.currentTimeMillis() * 1000L + (long)(Math.random() * 1000));
         e.workoutId = d.workoutId != null ? d.workoutId : defaultWorkoutId;
         e.exerciseId = d.exerciseId != null ? d.exerciseId : 0L;
-        e.position = d.orderIndex != null ? d.orderIndex : d.position;
+        e.position = d.position;
         e.block = d.block != null ? d.block : "B";
 
-        String m = d.unit != null ? d.unit : d.measure;
+        String m = d.measure;
         if (m == null) m = "reps";
         if (m.equalsIgnoreCase("giây") || m.equalsIgnoreCase("sec") || m.equalsIgnoreCase("time")) {
             e.measure = "time";
@@ -139,13 +139,13 @@ public final class Mappers {
             e.measure = "reps";
         }
 
-        e.value = d.quantity != null ? d.quantity : d.value;
-        e.restAfterSec = d.restSeconds != null ? d.restSeconds : d.restAfterSec;
+        e.value = d.value;
+        e.restAfterSec = d.restAfterSec;
 
-        String nameStr = d.name != null ? d.name : d.exerciseName;
+        String nameStr = d.exerciseName;
         e.exerciseName = nameStr != null ? nameStr : "";
 
-        String media = d.mediaUrl != null ? d.mediaUrl : d.exerciseMediaUrl;
+        String media = d.exerciseMediaUrl;
         e.exerciseMediaUrl = media != null ? media : "";
         e.exerciseMediaType = d.exerciseMediaType != null ? d.exerciseMediaType : "GIF";
         return e;

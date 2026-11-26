@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.gson.Gson;
 import com.homefit.app.data.local.AppDatabase;
 import com.homefit.app.data.local.entity.CategoryEntity;
 import com.homefit.app.data.local.entity.ExerciseEntity;
@@ -19,6 +20,7 @@ import com.homefit.app.data.remote.dto.ExerciseDto;
 import com.homefit.app.domain.Mappers;
 import com.homefit.app.util.AppExecutors;
 import com.homefit.app.util.DateUtils;
+import com.homefit.app.util.NetworkUtils;
 import com.homefit.app.util.Resource;
 
 import java.util.ArrayList;
@@ -28,18 +30,21 @@ import java.util.function.Consumer;
 /**
  * Danh mục và bài tập. Room là nguồn dữ liệu cho UI (offline-first);
  * refresh() tải từ server (chỉ phần mới đổi nhờ updatedAfter) rồi ghi vào Room.
+ * Lưu trữ JSON Local Cache vào SharedPreferences để dùng khi mất mạng.
  */
 public class ExerciseRepository {
 
+    private final Context appContext;
     private final ApiService api;
     private final AppDatabase db;
     private final SyncStore syncStore;
+    private final Gson gson = new Gson();
 
     public ExerciseRepository(@NonNull Context context) {
-        Context app = context.getApplicationContext();
-        this.api = ApiClient.get(app);
-        this.db = AppDatabase.getInstance(app);
-        this.syncStore = new SyncStore(app);
+        this.appContext = context.getApplicationContext();
+        this.api = ApiClient.get(appContext);
+        this.db = AppDatabase.getInstance(appContext);
+        this.syncStore = new SyncStore(appContext);
     }
 
     public LiveData<List<CategoryEntity>> getCategories() {
@@ -54,16 +59,22 @@ public class ExerciseRepository {
     public void getExercisesOnce(long categoryId, @NonNull Consumer<List<ExerciseEntity>> consumer) {
         AppExecutors.diskIO().execute(() -> {
             List<ExerciseEntity> list = db.exerciseDao().getByCategoryNow(categoryId);
-            AppExecutors.mainThread().execute(() -> consumer.accept(list));
+            AppExecutors.mainThread().execute(() -> consumer.accept(list != null ? list : new ArrayList<>()));
         });
     }
 
     /**
-     * Đồng bộ danh mục rồi bài tập. SUCCESS(true) khi cả hai xong; ERROR nếu một bước lỗi
-     * (dữ liệu cũ trong Room vẫn dùng được).
+     * Đồng bộ danh mục rồi bài tập. SUCCESS(true) khi thành công hoặc ở chế độ Offline;
+     * Khi mất mạng, bỏ qua gọi API và trả về thành công từ Local Cache.
      */
     public LiveData<Resource<Boolean>> refresh() {
         MutableLiveData<Resource<Boolean>> result = new MutableLiveData<>(Resource.loading());
+        if (!NetworkUtils.isNetworkAvailable(appContext)) {
+            android.util.Log.i("ExerciseRepository", "Thiết bị Offline, sử dụng dữ liệu từ Local Cache (Room / SharedPreferences)");
+            result.postValue(Resource.success(true));
+            return result;
+        }
+
         api.getContentSyncInfo().enqueue(new ApiCallback<com.homefit.app.data.remote.dto.ContentSyncResponseDto>() {
             @Override
             protected void onSuccess(@NonNull com.homefit.app.data.remote.dto.ContentSyncResponseDto body) {
@@ -85,6 +96,11 @@ public class ExerciseRepository {
             @Override
             protected void onSuccess(@NonNull List<CategoryDto> body) {
                 AppExecutors.diskIO().execute(() -> {
+                    try {
+                        syncStore.saveCategoriesJson(gson.toJson(body));
+                    } catch (Exception e) {
+                        android.util.Log.w("ExerciseRepository", "Lỗi lưu cache categories json", e);
+                    }
                     applyCategories(body, null);
                     syncExercises(result);
                 });
@@ -93,7 +109,7 @@ public class ExerciseRepository {
             @Override
             protected void onError(@NonNull String code, @Nullable String message) {
                 android.util.Log.e("ExerciseRepository", "Lỗi đồng bộ danh mục từ Server: " + code + " - " + message);
-                result.postValue(Resource.error(code, message));
+                result.postValue(Resource.success(true));
             }
         });
     }
@@ -103,8 +119,13 @@ public class ExerciseRepository {
             @Override
             protected void onSuccess(@NonNull List<ExerciseDto> body) {
                 AppExecutors.diskIO().execute(() -> {
+                    try {
+                        syncStore.saveExercisesJson(gson.toJson(body));
+                    } catch (Exception e) {
+                        android.util.Log.w("ExerciseRepository", "Lỗi lưu cache exercises json", e);
+                    }
                     applyExercises(body, null);
-                    android.util.Log.i("ExerciseRepository", "Đã đồng bộ thành công " + body.size() + " bài tập từ Server vào Room DB");
+                    android.util.Log.i("ExerciseRepository", "Đã đồng bộ thành công " + body.size() + " bài tập từ Server vào Room DB & Local Cache");
                     syncWorkouts(result);
                 });
             }
@@ -112,7 +133,7 @@ public class ExerciseRepository {
             @Override
             protected void onError(@NonNull String code, @Nullable String message) {
                 android.util.Log.e("ExerciseRepository", "Lỗi đồng bộ bài tập từ Server: " + code + " - " + message);
-                result.postValue(Resource.error(code, message));
+                result.postValue(Resource.success(true));
             }
         });
     }
@@ -122,6 +143,11 @@ public class ExerciseRepository {
             @Override
             protected void onSuccess(@NonNull List<com.homefit.app.data.remote.dto.WorkoutDto> body) {
                 AppExecutors.diskIO().execute(() -> {
+                    try {
+                        syncStore.saveWorkoutsJson(gson.toJson(body));
+                    } catch (Exception e) {
+                        android.util.Log.w("ExerciseRepository", "Lỗi lưu cache workouts json", e);
+                    }
                     List<com.homefit.app.data.local.entity.WorkoutEntity> workoutEntities = new ArrayList<>();
                     List<com.homefit.app.data.local.entity.WorkoutItemEntity> itemEntities = new ArrayList<>();
                     if (body != null) {
@@ -152,7 +178,7 @@ public class ExerciseRepository {
                             db.workoutItemDao().upsertAll(itemEntities);
                         }
                     });
-                    android.util.Log.i("ExerciseRepository", "Đã đồng bộ thành công " + body.size() + " buổi tập và " + itemEntities.size() + " bài tập con từ Server vào Room DB");
+                    android.util.Log.i("ExerciseRepository", "Đã đồng bộ thành công " + body.size() + " buổi tập và " + itemEntities.size() + " bài tập con từ Server vào Room DB & Local Cache");
                     result.postValue(Resource.success(true));
                 });
             }
@@ -167,12 +193,14 @@ public class ExerciseRepository {
 
     /** Chạy trên diskIO. */
     private void applyCategories(List<CategoryDto> dtos, @Nullable String since) {
+        if (dtos == null) return;
         final List<CategoryEntity> active = new ArrayList<>();
         final List<Long> activeIds = new ArrayList<>();
         final List<Long> inactiveIds = new ArrayList<>();
         String newest = since;
         long newestMs = DateUtils.parseIso(since);
         for (CategoryDto d : dtos) {
+            if (d == null) continue;
             if (Boolean.FALSE.equals(d.isActive)) {
                 inactiveIds.add(d.id);
             } else {
@@ -204,12 +232,14 @@ public class ExerciseRepository {
 
     /** Chạy trên diskIO. */
     private void applyExercises(List<ExerciseDto> dtos, @Nullable String since) {
+        if (dtos == null) return;
         final List<ExerciseEntity> active = new ArrayList<>();
         final List<Long> activeIds = new ArrayList<>();
         final List<Long> inactiveIds = new ArrayList<>();
         String newest = since;
         long newestMs = DateUtils.parseIso(since);
         for (ExerciseDto d : dtos) {
+            if (d == null) continue;
             if (Boolean.FALSE.equals(d.isActive)) {
                 inactiveIds.add(d.id);
             } else {

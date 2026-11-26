@@ -156,13 +156,13 @@ public class ChallengeDayFragment extends Fragment {
                             coverUrl = getMuscleCoverUrlForGroup(currentSession.group, dayType);
                         }
                         String fullUrl = MediaLoader.resolveUrl(coverUrl);
-                        String fallbackUrl = getMuscleCoverUrlForGroup(currentSession.group, dayType);
 
                         Glide.with(this)
                                 .load(fullUrl)
+                                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                                 .fitCenter()
                                 .placeholder(R.drawable.bg_home_banner)
-                                .error(Glide.with(this).load(MediaLoader.resolveUrl(fallbackUrl)).fitCenter())
+                                .error(R.drawable.ic_workout_placeholder)
                                 .into(ivHeaderPhoto);
                     }
 
